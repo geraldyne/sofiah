@@ -34,7 +34,7 @@ class LoansgroupsTransformer extends TransformerAbstract
      * @var loan_type_groups
      */
     protected $availableIncludes = [
-        'loanstype',
+        'loantypes',
         'loantypegroups'
     ];
 
@@ -45,25 +45,25 @@ class LoansgroupsTransformer extends TransformerAbstract
     public function transform(Loansgroups $model)
     {
         return [
-            'uuid'              => $model->uuid,
-            'name'              => $model->name,
-            'loantype_id'       => $model->loantype_id,
-            'loantypegroup_id'  => $model->loantypegroup_id,
-            'created_at'        => $model->created_at->toIso8601String(),
-            'updated_at'        => $model->updated_at->toIso8601String()
+            'uuid'               => $model->uuid,
+            'name'               => $model->name,
+            'loantypes_id'       => $model->loantypes_id,
+            'loantypegroups_id'  => $model->loantypegroups_id,
+            'created_at'         => $model->created_at->toIso8601String(),
+            'updated_at'         => $model->updated_at->toIso8601String()
         ];
     }
 
     // Relaciones
     
     /**
-     * Include Loanstypes
+     * Include Loantypes
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeLoanstypes(Loansgroups $model)
+    public function includeLoantypes(Loansgroups $model)
     {
-        return $this->item($model->loanstypes, new LoanstypesTransformer);
+        return $this->item($model->loantypes, new LoantypesTransformer);
     }
 
 

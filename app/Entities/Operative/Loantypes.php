@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
-use App\Entities\Operative\Loantypegroups;
+use App\Entities\Operative\Loansgroups;
 use App\Entities\Operative\Loantypecodes;
 use App\Entities\Operative\Loan;
 use App\Entities\Operative\Specialfee;
@@ -32,7 +32,9 @@ use App\Entities\Operative\Specialfee;
  *  Modelo de Tipo de Prestamo
  */
 
-class Loantype extends Model {
+class Loantypes extends Model {
+
+    use Notifiable, UuidScopeTrait;
 
     // Nombre de la tabla a la que pertenece el modelo
 
@@ -97,7 +99,8 @@ class Loantype extends Model {
                            'billtopay_id',
                            'incomeaccount_id',
                            'operatingexpenseaccount_id',
-                           'max_amount'];
+                           'max_amount',
+                           'status'];
 
     /* 
      * RELACIONES 
@@ -109,9 +112,9 @@ class Loantype extends Model {
       * @return type
       */ 
 
-    public function loantypegroups() {
+    public function loansgroups() {
 
-        return $this->hasOne(Loantypegroups::class);
+        return $this->hasOne(Loansgroups::class);
     }
 
     /**
@@ -142,9 +145,41 @@ class Loantype extends Model {
       * @return type
       */ 
 
-    public function specialfee() {
+    public function specialfees() {
 
         return $this->hasMany(Specialfee::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }
 

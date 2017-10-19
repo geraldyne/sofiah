@@ -17,7 +17,6 @@
  */
 
 namespace App\Entities\Operative;
-namespace App\Entities\Administrative;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +31,8 @@ use App\Entities\Operative\Issuedetails;
  */
 
 class Issue extends Model {
+
+    use Notifiable, UuidScopeTrait;
 
 	// Nombre de la tabla a la que pertenece el modelo
 
@@ -48,9 +49,9 @@ class Issue extends Model {
 
     protected $fillable = ['uuid',
                            'date_issue',
-              					   'amount',
-              					   'status',
-              					   'organisms_id'];
+      					   'amount',
+      					   'status',
+      					   'organism_id'];
 
     /* 
      * RELACIONES 
@@ -76,5 +77,37 @@ class Issue extends Model {
     public function issuedetail() {
 
         return $this->hasOne(Issuedetails::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

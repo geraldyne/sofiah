@@ -31,6 +31,8 @@ use App\Entities\Operative\Specialfeedetails;
  */
 
 class Specialfee extends Model {
+
+    use Notifiable, UuidScopeTrait;
     
     // Nombre de la tabla a la que pertenece el modelo
 
@@ -44,8 +46,8 @@ class Specialfee extends Model {
      */
 
     protected $fillable = ['uuid',
-                           'loantype_id',
-                           'specialfeedetails_id'];
+                           'loantypes_id',
+                           'specialfeedetail_id'];
 
     /* 
      * RELACIONES 
@@ -72,5 +74,37 @@ class Specialfee extends Model {
     public function specialfeedetails() {
 
         return $this->hasMany(Specialfeedetails::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

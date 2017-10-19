@@ -24,15 +24,14 @@ use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Issue;
-use App\Entities\Operative\Loanmovements;
-use App\Entities\Operative\Amortdefloans;
-use App\Entities\Operative\Amortdefdetails;
 
 /**
  *  Modelo de detalle de la emisión
  */
 
 class Issuedetails extends Model {
+
+    use Notifiable, UuidScopeTrait;
 
 	// Nombre de la tabla a la que pertenece el modelo
 
@@ -56,16 +55,15 @@ class Issuedetails extends Model {
 
     protected $fillable = ['uuid',
                            'amount',
-              					   'capital',
-              					   'interests',
-              					   'loan_balance',
-              					   'quota_balance',
-              					   'quota_date',
-              					   'type',
-              					   'quota_number',
-              					   'days',
-              					   'issue_id'
-                           'amortDefDetails_id'];
+                           'capital',
+                           'interests',
+                           'loan_balance',
+                           'quota_balance',
+                           'quota_date',
+                           'type',
+                           'quota_number',
+                           'days',
+                           'issue_id'];
 
     /* 
      * RELACIONES 
@@ -82,40 +80,36 @@ class Issuedetails extends Model {
         return $this->belongsTo(Issue::class);
     }
 
-
     /**
-      * Un detalle de emision pertenece a muchos movimientos prestamos
-      * 
-      * @return type
-      */ 
-
-    public function loanmovements() {
-
-        return $this->hasMany(Loanmovements::class);
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
     }
 
-
     /**
-      * Un detalle de emision pertenece a un prestamo de amortizacion 
-      * 
-      * @return type
-      */ 
-
-    public function amortdefloans() {
-
-        return $this->belongsTo(Amortdefloans::class);
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 
-
     /**
-      * Un detalle emision tiene muchas detalles de amortizacion 
-      * 
-      * @return type
-      */ 
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
 
-    public function amortdefdetails() {
-
-        return $this->hasOne(Amortdefdetails::class);
+        return $model;
     }
 
 

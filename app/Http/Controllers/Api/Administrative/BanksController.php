@@ -111,6 +111,14 @@ class BanksController extends Controller {
     public function destroy(Request $request, $uuid) {
 
         $bank = $this->model->byUuid($uuid)->firstOrFail();
+
+        if($bank->bankdetails->count() > 0) 
+
+            return response()->json([
+
+                'status'    => false,
+                'message'   => 'El banco está registrado en una cuenta de detalles bancarios, no se puede eliminar.'
+            ]);
         
         $bank->delete();
 

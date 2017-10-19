@@ -297,6 +297,10 @@ class AssociationsController extends Controller {
         
         $direction->delete();
 
-        return $this->response->noContent();
+        return $this->response->json([
+
+                'status'    => true,
+                'message'   => '¡La asociación se ha eliminado con éxito!'
+            ]);
     }
 }

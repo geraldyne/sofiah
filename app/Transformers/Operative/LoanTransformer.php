@@ -40,8 +40,7 @@ class LoanTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'loantypes',
-        'loantypecodes',
-        'amortdefloan',
+        'amortdefloans',
         'policies',
         'bonds',
         'guarantors',
@@ -66,7 +65,7 @@ class LoanTransformer extends TransformerAbstract
             'status'                      => $model->status,
             'destination'                 => $model->destination,
             'monthly_fees'                => $model->monthly_fees,
-            'loantype_id'                 => $model->loantype_id,
+            'loantypes_id'                => $model->loantypes_id,
             'created_at'                  => $model->created_at->toIso8601String(),
             'updated_at'                  => $model->updated_at->toIso8601String()
         ];

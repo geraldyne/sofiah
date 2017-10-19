@@ -30,10 +30,12 @@ use App\Entities\Operative\Loan;
  */
 
 class Amortdefloans extends Model {
+
+    use Notifiable, UuidScopeTrait;
     
     // Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "amort_def_loans";
+    protected $table = "amortdef_loans";
     
 
     /**
@@ -61,7 +63,7 @@ class Amortdefloans extends Model {
                            'amount_quota_special',
                            'balance_quota_ordinary',
                            'balance_quota_special',
-                           'amortdef_id'];
+                           'loan_id'];
 
     /* 
      * RELACIONES 
@@ -76,6 +78,39 @@ class Amortdefloans extends Model {
     public function loan() {
 
         return $this->belongsTo(Loan::class);
+    }
+
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 
 }

@@ -25,13 +25,15 @@ use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Policie;
 use App\Entities\Operative\Bond;
-use App\Entities\Operative\Direction;
+use App\Entities\Administrative\Direction;
 
 /**
  *  Modelo de Proveedor
  */
 
 class Provider extends Model {
+
+    use Notifiable, UuidScopeTrait;
 
     // Nombre de la tabla a la que pertenece el modelo
 
@@ -99,6 +101,38 @@ class Provider extends Model {
     public function direction() {
 
         return $this->belongsTo(Direction::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 
 }

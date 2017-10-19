@@ -48,7 +48,7 @@ class LoantypecodesTransformer extends TransformerAbstract
         return [
             'uuid'           => $model->uuid,
             'loan_code'      => $model->loan_code,
-            'loantype_id'    => $model->loantype_id,
+            'loantypes_id'    => $model->loantypes_id,
             'organism_id'    => $model->organism_id,
             'created_at'     => $model->created_at->toIso8601String(),
             'updated_at'     => $model->updated_at->toIso8601String()
@@ -73,9 +73,9 @@ class LoantypecodesTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeLoans(Loantypecodes $model)
+    public function includeLoan(Loantypecodes $model)
     {
-        return $this->item($model->loans, new LoansTransformer);
+        return $this->item($model->loan, new LoanTransformer);
     }
 
 

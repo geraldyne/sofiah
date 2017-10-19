@@ -23,8 +23,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
+use App\Entities\Association;
 use App\Entities\Administrative\City;
-use App\Entities\Administrative\Association;
 use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Employee;
 

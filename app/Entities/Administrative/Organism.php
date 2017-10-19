@@ -27,7 +27,7 @@ use App\Entities\Association;
 use App\Entities\Administrative\Direction;
 use App\Entities\Administrative\Partner;
 use App\Entities\Operative\Assetstypecodes;
-use App\Entities\Operative\Issues;
+use App\Entities\Operative\Issue;
 
 class Organism extends Model {
         
@@ -96,7 +96,7 @@ class Organism extends Model {
      * @return type
      */
 
-    public function partner() {
+    public function partners() {
 
     	return $this->hasMany(Partner::class);
     }
@@ -122,7 +122,7 @@ class Organism extends Model {
 
     public function issues() {
 
-        return $this->hasOne(Issues::class);
+        return $this->hasMany(Issue::class);
     }
 
 

@@ -35,7 +35,7 @@ class SpecialfeedetailsTransformer extends TransformerAbstract
      * @var direction
      */
     protected $availableIncludes = [
-        'specialfee'
+        'specialfees'
     ];
 
     /**
@@ -59,9 +59,9 @@ class SpecialfeedetailsTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeSpecialfee(Specialfeedetails $model)
+    public function includeSpecialfees(Specialfeedetails $model)
     {
-        return $this->item($model->specialfee, new SpecialfeeTransformer);
+        return $this->item($model->specialfees, new SpecialfeeTransformer);
     }
 
 

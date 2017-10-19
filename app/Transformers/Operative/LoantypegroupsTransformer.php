@@ -46,7 +46,8 @@ class LoantypegroupsTransformer extends TransformerAbstract
         return [
             'uuid'           => $model->uuid,
             'name'           => $model->name,
-            'max_amount'     => $model->lmax_amount,
+            'max_amount'     => $model->max_amount,
+            'status'         => $model->status,
             'created_at'     => $model->created_at->toIso8601String(),
             'updated_at'     => $model->updated_at->toIso8601String()
         ];

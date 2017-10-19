@@ -26,10 +26,12 @@ use Webpatser\Uuid\Uuid;
 use App\Entities\Administrative\Organism;
 
 /**
- *  Modelo de Amortizacion
+ *  Modelo de codigo tipo haberes
  */
 
 class Assetstypecodes extends Model {
+
+  use Notifiable, UuidScopeTrait;
 
 	// Nombre de la tabla a la que pertenece el modelo
 
@@ -62,5 +64,38 @@ class Assetstypecodes extends Model {
     public function organism() {
 
         return $this->belongsTo(Organism::class);
+    }
+
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

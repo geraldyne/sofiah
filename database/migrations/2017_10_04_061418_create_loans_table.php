@@ -47,6 +47,7 @@ class CreateLoansTable extends Migration
             $table->integer('incomeaccount_id')->unsigned()->comment('Id en la tabla accounting_integrations de la cuenta a afectar cuando se causan los ingresos por préstamo');
             $table->integer('operatingexpenseaccount_id')->unsigned()->comment('Id de la tabla accounting_integrations de la cuenta de ingresos por gastos operativos a afectar');
             $table->integer('max_amount')->unsigned()->comment('Indica el monto máximo a otorgar de este tipo de préstamo. Si es 0 no tiene límites salvo la disponibilidad del asociado');
+            $table->boolean('status')->default(1)->comment('Indica el estatus del tipo de prestamo. Si es 1 esta vigente. 0 si esta suspendido');
             $table->foreign('receivable_id')->references('id')->on('accounting_integrations')->onDelete('cascade');
             $table->foreign('billtopay_id')->references('id')->on('accounting_integrations')->onDelete('cascade');
             $table->foreign('incomeaccount_id')->references('id')->on('accounting_integrations')->onDelete('cascade');
@@ -63,9 +64,9 @@ class CreateLoansTable extends Migration
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
             $table->integer('loan_code')->unsigned()->comment('Código para el tipo de préstamo asignado por el organismo');
-            $table->integer('loantype_id')->unsigned()->comment('Id del tipo de préstamo que por configuración acepta cuotas especiales');            
+            $table->integer('loantypes_id')->unsigned()->comment('Id del tipo de préstamo que por configuración acepta cuotas especiales');            
             $table->integer('organism_id')->unsigned()->comment('Id en la tabla organisms del organismo que asigna el código al tipo de préstamo');            
-            $table->foreign('loantype_id')->references('id')->on('loan_types')->onDelete('cascade');
+            $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');
             $table->foreign('organism_id')->references('id')->on('organisms')->onDelete('cascade');
             $table->timestamps();
         });
@@ -77,8 +78,9 @@ class CreateLoansTable extends Migration
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
-            $table->float('max_amount')->comment('Monto máximo a prestar al asociado para este grupo de tipo de préstamos, se debe sumar todos los montos otorgados para el tipo de préstamo del grupo');            
+            $table->double('max_amount')->comment('Monto máximo a prestar al asociado para este grupo de tipo de préstamos, se debe sumar todos los montos otorgados para el tipo de préstamo del grupo');            
             $table->string('name')->comment('Nombre del grupo de tipo de préstamo');
+             $table->boolean('status')->default(1)->comment('Indica el estatus del tipo de prestamo. Si es 1 esta vigente. 0 si esta suspendido');
             $table->timestamps();
         });
 
@@ -89,10 +91,11 @@ class CreateLoansTable extends Migration
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
-            $table->integer('loantype_id')->unsigned()->comment('Id del tipo de préstamo que pertenece al grupo.');            
-            $table->integer('loantypegroup_id')->unsigned()->comment('Id del grupo al que pertenece el tipo de préstamo.');            
-            $table->foreign('loantype_id')->references('id')->on('loan_types')->onDelete('cascade');
-            $table->foreign('loantypegroup_id')->references('id')->on('loan_type_groups')->onDelete('cascade');
+            $table->string('name')->comment('Nombre del grupo de préstamo');
+            $table->integer('loantypes_id')->unsigned()->comment('Id del tipo de préstamo que pertenece al grupo.');            
+            $table->integer('loantypegroups_id')->unsigned()->comment('Id del grupo al que pertenece el tipo de préstamo.');            
+            $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');
+            $table->foreign('loantypegroups_id')->references('id')->on('loan_type_groups')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -101,7 +104,7 @@ class CreateLoansTable extends Migration
         // CUOTA ESPECIAL DETALLE
         // En esta tabla se almacenan los meses autorizados para la retención de estas cuotas especiales, se relaciona con la tabla Cuota Especial que almacena la definición de las cuotas especiales por tipo de préstamo.
         
-        Schema::create('special_fee_details', function (Blueprint $table) {
+        Schema::create('specialfee_details', function (Blueprint $table) {
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
@@ -118,10 +121,11 @@ class CreateLoansTable extends Migration
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
-            $table->integer('loantype_id')->unsigned()->comment('Id del tipo de préstamo.');
-            $table->integer('specialfeedetails_id')->unsigned()->comment('Id del detalle de la cuota especial.');             
-            $table->foreign('loantype_id')->references('id')->on('loan_types')->onDelete('cascade');
-            $table->foreign('specialfeedetails_id')->references('id')->on('special_fee_details')->onDelete('cascade');
+            $table->integer('loantypes_id')->unsigned()->comment('Id del tipo de préstamo.');
+            $table->integer('specialfeedetail_id')->unsigned()->comment('Id del detalle de la cuota especial.');   
+
+            $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');
+            $table->foreign('specialfeedetail_id')->references('id')->on('specialfee_details')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -144,8 +148,8 @@ class CreateLoansTable extends Migration
             $table->string('destination')->comment('Indicar el motivo por el cual está solicitando el préstamo');
             $table->integer('monthly_fees')->unsigned()->comment('Número de coutas para el pago del préstamo');
 
-            $table->integer('loantype_id')->unsigned()->comment('Id del tipo de préstamo que pertenece al grupo.');
-            $table->foreign('loantype_id')->references('id')->on('loan_types')->onDelete('cascade');           
+            $table->integer('loantypes_id')->unsigned()->comment('Id del tipo de préstamo que pertenece al grupo.');
+            $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');           
             
             $table->timestamps();
         });
@@ -166,6 +170,7 @@ class CreateLoansTable extends Migration
             $table->integer('rif')->comment('Número de Registro de Información Fiscal del proveedor');
             $table->integer('phone')->comment('Número de teléfono de contacto del proveedor');
             $table->integer('direction_id')->unsigned()->comment('Direccion del proveedor');
+            $table->enum('status', ['A','S'])->default('A')->comment('A: Activo - S: Suspendido');
             $table->foreign('direction_id')->references('id')->on('directions')->onDelete('cascade');
             
             $table->timestamps();
@@ -203,7 +208,7 @@ class CreateLoansTable extends Migration
             $table->date('issue_date')->comment('Fecha en que la poliza es otorgada');
             $table->date('due_date')->comment('Fecha en que la poliza se vence');
             $table->float('amount')->comment('Monto otorgado de la poliza');
-            $table->boolean('status')->unsigned()->comment('V: Activa - F: Vencida');
+            $table->enum('status', ['A','V'])->comment('A: Activa - V: Vencida');
 
             $table->integer('provider_id')->unsigned()->comment('Id del proveedor de la poliza');            
             $table->foreign('provider_id')->references('id')->on('providers')->onDelete('cascade');
@@ -224,7 +229,7 @@ class CreateLoansTable extends Migration
             $table->float('amount')->comment('Monto afianzado por el fiador');
             $table->float('balance')->comment('Saldo pendiente del monto afianzado');
             $table->float('percentage')->comment('Porcentaje del monto afianzado en base al total de la fianza');
-            $table->boolean('status')->unsigned()->comment('V: Pendiente - F: Cancelada');
+            $table->enum('status', ['P','C'])->comment('P: Pendiente - C: Cancelado');
 
             $table->integer('partner_id')->unsigned()->comment('Id del proveedor de la poliza');           
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');

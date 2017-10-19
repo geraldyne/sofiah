@@ -37,7 +37,7 @@ use League\Fractal;
  *  Controlador Asociados
  */
 
-class PartnersController extends Controller {
+class PartnerController extends Controller {
 
     use Helpers;
 
@@ -117,7 +117,7 @@ class PartnersController extends Controller {
 
             $user = User::create($request->all());
 
-            $user->assignRole('associate');
+            $user->assignRole('partner');
 
             $request->merge(array('style'     => 'bg-blue'));
             $request->merge(array('ĺang'      => 'es'));
@@ -197,11 +197,14 @@ class PartnersController extends Controller {
 
             $managers = $partner->managers;
 
-            foreach($managers as $manager) {
+            if($managers) {
 
-                $manager->status = false;
+                foreach($managers as $manager) {
 
-                $manager->save();
+                    $manager->status = false;
+
+                    $manager->save();
+                }
             }
 
             $request->merge(array('retirement_date' => null));
@@ -218,11 +221,14 @@ class PartnersController extends Controller {
 
             $managers = $partner->managers;
 
-            foreach($managers as $manager) {
+            if($managers) {
 
-                $manager->status = false;
+                foreach($managers as $manager) {
 
-                $manager->save();
+                    $manager->status = false;
+
+                    $manager->save();
+                }
             }
 
             if($partner->retirement_date) {
@@ -247,11 +253,14 @@ class PartnersController extends Controller {
 
             $managers = $partner->managers;
 
-            foreach($managers as $manager) {
+            if($managers) {
 
-                $manager->status = false;
+                foreach($managers as $manager) {
 
-                $manager->save();
+                    $manager->status = false;
+
+                    $manager->save();
+                }
             }
 
             if($partner->retirement_date) {
@@ -277,13 +286,16 @@ class PartnersController extends Controller {
 
         $bank = Bank::byUuid($request->bankuuid)->first();
 
-        $request->merge(array('bank_id' => $bank->id));
+        if($bank) {
 
-        $bankdetails = $partner->bankdetails;
+            $request->merge(array('bank_id' => $bank->id));
 
-        $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+            $bankdetails = $partner->bankdetails;
 
-        $request->merge(array('bankdetails_id' => $bankdetails->id));
+            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+
+            $request->merge(array('bankdetails_id' => $bankdetails->id));
+        }
 
         $partner->update($request->all());
 
@@ -306,7 +318,7 @@ class PartnersController extends Controller {
 
         $bankdetails = $partner->bankdetails;
 
-        $user->delete();
+        $user->forceDelete();
         
         $bankdetails->delete();
 

@@ -139,4 +139,9 @@ class User extends Authenticatable
 
         return $model;
     }
+
+    public function findForPassport($username) {
+
+        return $this->where('email', $username)->firstOrFail();
+    }
 }

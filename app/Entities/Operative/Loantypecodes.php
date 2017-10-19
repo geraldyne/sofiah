@@ -19,7 +19,6 @@
 
 
 namespace App\Entities\Operative;
-namespace App\Entities\Administrative;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +34,9 @@ use App\Entities\Administrative\Organism;
  */
 
 class Loantypecodes extends Model {
+
+    use Notifiable, UuidScopeTrait;
+
     
     // Nombre de la tabla a la que pertenece el modelo
 
@@ -48,7 +50,7 @@ class Loantypecodes extends Model {
 
     protected $fillable = ['uuid',
                            'loan_code',
-                           'loantype_id',
+                           'loantypes_id',
                            'organism_id'];
 
     /* 
@@ -86,5 +88,37 @@ class Loantypecodes extends Model {
     public function organism() {
 
         return $this->belongsTo(Organism::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

@@ -26,11 +26,14 @@ use Webpatser\Uuid\Uuid;
 use App\Entities\Operative\Loansgroups;
 
 
+
 /**
  *  Modelo de grupos de tipo de prestamos
  */
 
 class Loantypegroups extends Model {
+
+    use Notifiable, UuidScopeTrait;
 
     // Nombre de la tabla a la que pertenece el modelo
 
@@ -45,7 +48,8 @@ class Loantypegroups extends Model {
 
     protected $fillable = ['uuid',
                            'max_amount',
-    					             'name'];
+    					   'name',
+                           'status'];
 
     /* 
      * RELACIONES 
@@ -61,6 +65,38 @@ class Loantypegroups extends Model {
     public function loansgroups() {
 
         return $this->hasMany(Loansgroups::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
     
 }

@@ -32,6 +32,8 @@ use App\Entities\Administrative\Partner;
 
 class Guarantor extends Model {
 
+    use Notifiable, UuidScopeTrait;
+
     // Nombre de la tabla a la que pertenece el modelo
 
     protected $table = "guarantors";
@@ -49,11 +51,11 @@ class Guarantor extends Model {
 
     protected $fillable = ['uuid',
                            'amount',
-    					             'balance',
-    					             'percentage',
-              			       'status',
-              			       'partner_id',
-              			       'loan_id'];
+			               'balance',
+			               'percentage',
+              			   'status',
+              			   'partner_id',
+              			   'loan_id'];
 
     /* 
      * RELACIONES 
@@ -79,5 +81,37 @@ class Guarantor extends Model {
     public function partner() {
 
         return $this->belongsTo(Partner::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

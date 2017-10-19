@@ -55,6 +55,7 @@ class AmortdefdetailsTransformer extends TransformerAbstract
             'quota_number'    => $model->quota_number,
             'days'            => $model->days,
             'issuedetails_id' => $model->issuedetails_id,
+            'amortdef_id'     => $model->amortdef_id,
             'created_at'      => $model->created_at->toIso8601String(),
             'updated_at'      => $model->updated_at->toIso8601String()
         ];

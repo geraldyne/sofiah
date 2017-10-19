@@ -24,8 +24,8 @@ class CreateAmortizationIssueTable extends Migration
             $table->float('amount')->comment('Monto total de la emisión al cobro');
             $table->enum('status', ['P','A','C'])->comment('Estatus de la emisión. P: Pendiente. A: Aplicada. C: Cobrada.');
 
-            $table->integer('organisms_id')->unsigned()->comment('Id de la emision.');
-            $table->foreign('organisms_id')->references('id')->on('organisms')->onDelete('cascade');
+            $table->integer('organism_id')->unsigned()->comment('Id de la emision.');
+            $table->foreign('organism_id')->references('id')->on('organisms')->onDelete('cascade');
             
             $table->timestamps();
         });
@@ -48,9 +48,24 @@ class CreateAmortizationIssueTable extends Migration
             $table->integer('quota_number')->unsigned()->comment('Número de la cuota, este número es consecutivo');
             $table->integer('days')->unsigned()->comment('Días de pago de la cuota');
 
-            $table->integer('issues_id')->unsigned()->comment('Id de la emision.');
-            $table->foreign('issues_id')->references('id')->on('issues')->onDelete('cascade');
+            $table->integer('issue_id')->unsigned()->comment('Id de la emision.');
+            $table->foreign('issue_id')->references('id')->on('issues')->onDelete('cascade');
 
+            $table->timestamps();
+        });
+
+
+        // AMORTIZACIONES
+        // En esta tabla se almacenan las cuotas efectivamente retenidas por el organismo según la emisión enviada al cobro.
+        
+        Schema::create('amort_def', function (Blueprint $table) {
+
+            $table->increments('id');
+            $table->uuid('uuid')->index()->unique();
+            $table->date('date_issue')->comment('Fecha en que se generó la amortización');
+            $table->float('amount')->comment('Monto total de la emisión al cobro');
+            $table->enum('status', ['P','A','C'])->comment('Estatus de la emisión. P: Pendiente. A: Aplicada. C: Cobrada.');
+            
             $table->timestamps();
         });
 
@@ -75,21 +90,9 @@ class CreateAmortizationIssueTable extends Migration
             $table->integer('issuedetails_id')->unsigned()->comment('Id de los detalles de la emision');
             $table->foreign('issuedetails_id')->references('id')->on('issue_details')->onDelete('cascade');
 
-            $table->timestamps();
-        });
+            $table->integer('amortdef_id')->unsigned()->comment('Id de la amortización');
+            $table->foreign('amortdef_id')->references('id')->on('amort_def')->onDelete('cascade');
 
-
-        // AMORTIZACIONES
-        // En esta tabla se almacenan las cuotas efectivamente retenidas por el organismo según la emisión enviada al cobro.
-        
-        Schema::create('amort_def', function (Blueprint $table) {
-
-            $table->increments('id');
-            $table->uuid('uuid')->index()->unique();
-            $table->date('date_issue')->comment('Fecha en que se generó la amortización');
-            $table->float('amount')->comment('Monto total de la emisión al cobro');
-            $table->enum('status', ['P','A','C'])->comment('Estatus de la emisión. P: Pendiente. A: Aplicada. C: Cobrada.');
-            
             $table->timestamps();
         });
 
@@ -112,8 +115,8 @@ class CreateAmortizationIssueTable extends Migration
             $table->float('balance_quota_ordinary')->comment('');
             $table->float('balance_quota_special')->comment('');
 
-            $table->integer('amortdef_id')->unsigned()->comment('Id de la amortización');
-            $table->foreign('amortdef_id')->references('id')->on('amort_def')->onDelete('cascade');
+            $table->integer('loan_id')->unsigned()->comment('Id de la prestamo');
+            $table->foreign('loan_id')->references('id')->on('loans')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -128,8 +131,8 @@ class CreateAmortizationIssueTable extends Migration
     public function down()
     {   
         Schema::dropIfExists('amortdef_loans');
-        Schema::dropIfExists('amort_def');
         Schema::dropIfExists('amort_def_details');
+        Schema::dropIfExists('amort_def');
         Schema::dropIfExists('issue_details');
         Schema::dropIfExists('issues');
     }

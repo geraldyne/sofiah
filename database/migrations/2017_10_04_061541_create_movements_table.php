@@ -24,8 +24,12 @@ class CreateMovementsTable extends Migration
             $table->float('amount')->comment('Monto del movimiento. Si es de tipo préstamo registrar en positivo, si es amortización o abono registrar en negativo.');
             $table->enum('type', ['PR','AM','AB'])->comment('Tipo de movimiento. PR: Préstamo. AM: Amortización. AB: Abono.');
             $table->enum('status', ['P','A'])->comment('Estatus del movimiento. P: Pendiente. A: Aplicada.');
+
             $table->integer('loan_id')->unsigned()->comment('Id del préstamo al que pertenece el movimiento.');
             $table->foreign('loan_id')->references('id')->on('loans')->onDelete('cascade');
+
+            $table->integer('amortdefdetails_id')->unsigned()->comment('Id de la amortización detalles');
+            $table->foreign('amortdefdetails_id')->references('id')->on('amort_def_details')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -41,6 +45,7 @@ class CreateMovementsTable extends Migration
             $table->enum('status', ['P','A'])->comment('Estatus del movimiento. P: Pendiente. A: Aplicada.');
             $table->float('total_amount')->comment('Monto total del movimiento');
             $table->string('description')->comment('Ingresar el motivo por el que está realizando el movimiento de haberes el asociado');
+            
             $table->integer('partner_id')->unsigned()->comment('Id del préstamo al que pertenece el movimiento.');
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
 

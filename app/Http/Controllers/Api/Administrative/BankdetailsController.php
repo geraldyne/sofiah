@@ -69,29 +69,6 @@ class BankdetailsController extends Controller {
         return $this->response->item($bankdetails, new BankdetailsTransformer());  
     }
 
-    public function store(Request $request) {
-        
-        $this->validate($request, [
-
-            'account_number'    => 'required|max:20|unique:bankdetails',
-            'account_type'      => 'required|max:1',
-            'bank_id'           => 'required'
-        ]);
-
-        $bank = Bank::byUuid($request->bank_id)->firstOrFail();
-
-        $request->merge(array('bank_id' => $bank->id));
-
-
-        $bankdetails = $this->model->create($request->all());
-
-        return response()->json([ 
-            'status'  => true, 
-            'message' => 'Los detalles de la cuenta bancaria se ha registrado exitosamente!', 
-            'object'  => $bankdetails 
-        ]);
-    }
-
     public function update(Request $request, $uuid) {
 
         $bankdetails = $this->model->byUuid($uuid)->firstOrFail();
@@ -122,17 +99,5 @@ class BankdetailsController extends Controller {
         $bankdetails->update($request->all());
 
         return $this->response->item($bankdetails->fresh(), new BankdetailsTransformer());
-    }
-
-    public function destroy(Request $request, $uuid) {
-
-        $bankdetails = $this->model->byUuid($uuid)->firstOrFail();
-        
-        $bankdetails->delete();
-
-        return response()->json([ 
-            'status' => true, 
-            'message' => 'La cuenta se ha eliminado exitosamente!', 
-        ]);
     }
 }

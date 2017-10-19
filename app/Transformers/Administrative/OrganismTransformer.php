@@ -18,7 +18,9 @@ class OrganismTransformer extends TransformerAbstract
     protected $availableIncludes = [
         'direction',
         'association',
-        'partner'
+        'partners',
+        'assetstypecodes',
+        'issues'
     ];
 
     /**
@@ -78,8 +80,28 @@ class OrganismTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includePartner(Organism $model)
+    public function includePartners(Organism $model)
     {
-        return $this->item($model->partner, new PartnerTransformer);
+        return $this->item($model->partners, new PartnerTransformer);
+    }
+
+    /**
+     * Include Assetstypecodes
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAssetstypecodes(Organism $model)
+    {
+        return $this->item($model->assetstypecodes, new AssetstypecodesTransformer);
+    }
+
+    /**
+     * Include Issues
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeIssues(Organism $model)
+    {
+        return $this->item($model->issues, new IssueTransformer);
     }
 }

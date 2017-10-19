@@ -53,7 +53,13 @@ class OrganismsController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with('direction', 'association', 'partner')->paginate($request->get('limit', config('app.pagination_limit')));
+        $paginator = $this->model->with(
+            'direction', 
+            'association', 
+            'partners',
+            'assetstypecodes',
+            'issues'
+        )->paginate($request->get('limit', config('app.pagination_limit')));
         
         if ($request->has('limit')) {
         
@@ -178,7 +184,9 @@ class OrganismsController extends Controller {
 
         $request->merge(array('direction_id' => $direction->id));
 
-        #
+        $association = Association::byUuid($request->association_id)->firstOrFail();
+
+        $request->merge(array('association_id' => $association->id));
 
         $this->validate($request, $rules);
 

@@ -142,6 +142,14 @@ class Accountlvl6Controller extends Controller {
 
         $accountlvl6 = $this->model->byUuid($uuid)->firstOrFail();
         
+        if($accountlvl6->dailymovementdetails->count() > 0) 
+
+            return response()->json([
+
+                'status'    => false,
+                'message'   => 'La cuenta posee un movimiento registrado, no se puede eliminar.'
+            ]);
+
         $accountlvl6->delete();
 
         return response()->json([ 

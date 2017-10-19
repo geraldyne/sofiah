@@ -33,7 +33,7 @@ class AmortdefloansTransformer extends TransformerAbstract
      * @var loans
      */
     protected $availableIncludes = [
-        'loans'
+        'loan'
     ];
 
     /**
@@ -53,7 +53,7 @@ class AmortdefloansTransformer extends TransformerAbstract
             'amount_quota_special'     => $model->amount_quota_special,
             'balance_quota_ordinary'   => $model->balance_quota_ordinary,
             'balance_quota_special'    => $model->balance_quota_special,
-            'amortdef_id'              => $model->amortdef_id,
+            'loan_id'                  => $model->loan_id,
             'created_at'               => $model->created_at->toIso8601String(),
             'updated_at'               => $model->updated_at->toIso8601String()
         ];
@@ -68,7 +68,7 @@ class AmortdefloansTransformer extends TransformerAbstract
      */
     public function includeLoans(Amortdefloans $model)
     {
-        return $this->item($model->loans, new LoansTransformer);
+        return $this->item($model->loan, new LoansTransformer);
     }
 
 

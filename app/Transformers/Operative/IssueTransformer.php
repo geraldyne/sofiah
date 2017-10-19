@@ -33,8 +33,7 @@ class IssueTransformer extends TransformerAbstract
      * @var loans
      */
     protected $availableIncludes = [
-        'organism',
-        'issuedetails'
+        'organism'
     ];
 
     /**
@@ -48,24 +47,13 @@ class IssueTransformer extends TransformerAbstract
             'date_issue'     => $model->date_issue,
             'amount'         => $model->amount,
             'status'         => $model->status,
-            'organisms_id'   => $model->organisms_id,
+            'organism_id'   => $model->organism_id,
             'created_at'     => $model->created_at->toIso8601String(),
             'updated_at'     => $model->updated_at->toIso8601String()
         ];
     }
 
     // Relaciones
-    
-    /**
-     * Include Issuedetails
-     *
-     * @return League\Fractal\ItemResource
-     */
-    public function includeIssuedetails(Issue $model)
-    {
-        return $this->item($model->issuedetails, new IssuedetailsTransformer);
-    }
-
 
     /**
      * Include Organism

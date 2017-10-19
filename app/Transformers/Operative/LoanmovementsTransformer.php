@@ -33,8 +33,8 @@ class LoanmovementsTransformer extends TransformerAbstract
      * @var loans
      */
     protected $availableIncludes = [
-        'loans',
-        'issuedetails'
+        'loan',
+        'amortdefdetails'
     ];
 
     /**
@@ -44,37 +44,38 @@ class LoanmovementsTransformer extends TransformerAbstract
     public function transform(Loanmovements $model)
     {
         return [
-            'uuid'           => $model->uuid,
-            'date_issue'     => $model->date_issue,
-            'amount'         => $model->amount,
-            'type'           => $model->type,
-            'status'         => $model->status,
-            'loan_id'        => $model->loan_id,
-            'created_at'     => $model->created_at->toIso8601String(),
-            'updated_at'     => $model->updated_at->toIso8601String()
+            'uuid'               => $model->uuid,
+            'date_issue'         => $model->date_issue,
+            'amount'             => $model->amount,
+            'type'               => $model->type,
+            'status'             => $model->status,
+            'loan_id'            => $model->loan_id,
+            'amortdefdetails_id' => $model->amortdefdetails_id,
+            'created_at'         => $model->created_at->toIso8601String(),
+            'updated_at'         => $model->updated_at->toIso8601String()
         ];
     }
 
     // Relaciones
     
     /**
-     * Include Loans
+     * Include Loan
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeLoans(Loanmovements $model)
+    public function includeLoan(Loanmovements $model)
     {
-        return $this->item($model->loans, new LoansTransformer);
+        return $this->item($model->loan, new LoanTransformer);
     }
 
     /**
-     * Include Issuedetails
+     * Include amortdefdetails
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeIssuedetails(Loanmovements $model)
+    public function includeAmortdefdetails(Loanmovements $model)
     {
-        return $this->item($model->issuedetails, new IssuedetailsTransformer);
+        return $this->item($model->amortdefdetails, new AmortdefdetailsTransformer);
     }
 
 }

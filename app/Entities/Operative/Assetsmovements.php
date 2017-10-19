@@ -32,6 +32,8 @@ use App\Entities\Operative\Assetsmovementsdetails;
 
 class Assetsmovements extends Model {
 
+    use Notifiable, UuidScopeTrait;
+
 	// Nombre de la tabla a la que pertenece el modelo
 
     protected $table = "assets_movements";
@@ -81,18 +83,36 @@ class Assetsmovements extends Model {
         return $this->hasMany(Assetsmovementsdetails::class);
     }
 
+
     /**
-     * Mutators
-     * 
-     * @param Date $date 
-     * 
-     * @return type
+     *  Setup model event hooks UUID
      */
-
-    public function getFechaEmisionAttribute($date)
+    public static function boot()
     {
-        if($date) return Carbon::parse($date);
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
 
-        else return null;
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

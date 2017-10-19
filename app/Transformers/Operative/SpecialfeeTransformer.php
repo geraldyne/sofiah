@@ -47,8 +47,8 @@ class SpecialfeeTransformer extends TransformerAbstract
     {
         return [
             'uuid'                   => $model->uuid,
-            'loantype_id'            => $model->loantype_id,
-            'specialfeedetails_id'   => $model->specialfeedetails_id,
+            'loantypes_id'           => $model->loantypes_id,
+            'specialfeedetail_id'    => $model->specialfeedetail_id,
             'created_at'             => $model->created_at->toIso8601String(),
             'updated_at'             => $model->updated_at->toIso8601String()
         ];

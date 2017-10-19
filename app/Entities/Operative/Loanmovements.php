@@ -24,13 +24,15 @@ use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Loan;
-use App\Entities\Operative\Issuedetails;
+use App\Entities\Operative\Amortdefdetails;
 
 /**
  *  Modelo de movimiento de prestamo
  */
 
 class Loanmovements extends Model {
+
+    use Notifiable, UuidScopeTrait;
 
 	// Nombre de la tabla a la que pertenece el modelo
 
@@ -51,7 +53,8 @@ class Loanmovements extends Model {
               					   'amount',
               					   'type',
               					   'status',
-              					   'loan_id'];
+              					   'loan_id',
+                           'amortdefdetails_id'];
 
     /* 
      * RELACIONES 
@@ -75,8 +78,40 @@ class Loanmovements extends Model {
       * @return type
       */ 
 
-    public function issuedetails() {
+    public function amortdefdetails() {
 
-        return $this->belongsTo(Issuedetails::class);
+        return $this->belongsTo(Amortdefdetails::class);
+    }
+
+    /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public static function create(array $attributes = [])
+    {
+        $model = static::query()->create($attributes);
+
+        return $model;
     }
 }

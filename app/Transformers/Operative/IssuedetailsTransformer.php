@@ -33,10 +33,7 @@ class IssuedetailsTransformer extends TransformerAbstract
      * @var loans
      */
     protected $availableIncludes = [
-        'issues',
-        'loanmovements',
-        'amortdefloans',
-        'amortdefdetails'
+        'issue'
     ];
 
     /**
@@ -65,46 +62,13 @@ class IssuedetailsTransformer extends TransformerAbstract
     // Relaciones
     
     /**
-     * Include Issues
+     * Include Issue
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeIssues(Issuedetails $model)
+    public function includeIssue(Issuedetails $model)
     {
-        return $this->item($model->issues, new IssuesTransformer);
-    }
-
-
-    /**
-     * Include Loanmovements
-     *
-     * @return League\Fractal\ItemResource
-     */
-    public function includeLoanmovements(Issuedetails $model)
-    {
-        return $this->collection($model->loanmovements, new LoanmovementsTransformer);
-    }
-
-
-    /**
-     * Include Amortdefloans
-     *
-     * @return League\Fractal\ItemResource
-     */
-    public function includeAmortdefloans(Issuedetails $model)
-    {
-        return $this->item($model->amortdefloans, new AmortdefloansTransformer);
-    }
-
-
-    /**
-     * Include Amortdefdetails
-     *
-     * @return League\Fractal\ItemResource
-     */
-    public function includeAmortdefdetails(Issuedetails $model)
-    {
-        return $this->item($model->amortdefdetails, new AmortdefdetailsTransformer);
+        return $this->item($model->issue, new IssuesTransformer);
     }
 
 
