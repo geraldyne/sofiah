@@ -117,7 +117,7 @@ class CreateLoansTable extends Migration
         // CUOTA ESPECIAL 
         // En esta tabla se almacena la relacion entre el tipo de préstamo y la cuota especial
         
-        Schema::create('special_fee', function (Blueprint $table) {
+        Schema::create('specialfee', function (Blueprint $table) {
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();

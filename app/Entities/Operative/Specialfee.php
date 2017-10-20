@@ -36,7 +36,7 @@ class Specialfee extends Model {
     
     // Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "special_fee";
+    protected $table = "specialfee";
 
     /**
      * The attributes that are mass assignable.
