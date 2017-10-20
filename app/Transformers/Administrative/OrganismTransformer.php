@@ -20,6 +20,7 @@ class OrganismTransformer extends TransformerAbstract
         'association',
         'partners',
         'assetstypecodes',
+        'loantypecodes',
         'issues'
     ];
 
@@ -92,7 +93,17 @@ class OrganismTransformer extends TransformerAbstract
      */
     public function includeAssetstypecodes(Organism $model)
     {
-        return $this->item($model->assetstypecodes, new AssetstypecodesTransformer);
+        return $this->collection($model->assetstypecodes, new AssetstypecodesTransformer);
+    }
+
+    /**
+     * Include Assetstypecodes
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeLoantypecodes(Organism $model)
+    {
+        return $this->collection($model->loantypecodes, new LoantypecodesTransformer);
     }
 
     /**
@@ -102,6 +113,6 @@ class OrganismTransformer extends TransformerAbstract
      */
     public function includeIssues(Organism $model)
     {
-        return $this->item($model->issues, new IssueTransformer);
+        return $this->collection($model->issues, new IssueTransformer);
     }
 }

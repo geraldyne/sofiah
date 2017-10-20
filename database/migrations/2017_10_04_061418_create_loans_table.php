@@ -104,7 +104,7 @@ class CreateLoansTable extends Migration
         // CUOTA ESPECIAL DETALLE
         // En esta tabla se almacenan los meses autorizados para la retención de estas cuotas especiales, se relaciona con la tabla Cuota Especial que almacena la definición de las cuotas especiales por tipo de préstamo.
         
-        Schema::create('specialfee_details', function (Blueprint $table) {
+        Schema::create('special_fee_details', function (Blueprint $table) {
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
@@ -117,15 +117,15 @@ class CreateLoansTable extends Migration
         // CUOTA ESPECIAL 
         // En esta tabla se almacena la relacion entre el tipo de préstamo y la cuota especial
         
-        Schema::create('specialfee', function (Blueprint $table) {
+        Schema::create('special_fee', function (Blueprint $table) {
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
             $table->integer('loantypes_id')->unsigned()->comment('Id del tipo de préstamo.');
-            $table->integer('specialfeedetail_id')->unsigned()->comment('Id del detalle de la cuota especial.');   
+            $table->integer('specialfeedetails_id')->unsigned()->comment('Id del detalle de la cuota especial.');   
 
             $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');
-            $table->foreign('specialfeedetail_id')->references('id')->on('specialfee_details')->onDelete('cascade');
+            $table->foreign('specialfeedetails_id')->references('id')->on('special_fee_details')->onDelete('cascade');
 
             $table->timestamps();
         });

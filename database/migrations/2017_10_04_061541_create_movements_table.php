@@ -60,8 +60,8 @@ class CreateMovementsTable extends Migration
             $table->uuid('uuid')->index()->unique();
             $table->float('amount')->comment('Monto del movimiento. Si es de tipo ahorro registrar en positivo, si es cualquier otro en negativo.');
             $table->enum('type', ['AP','AI','AV'])->comment('Tipo de movimiento. AP: Aporte patronal. AI: Aporte individual. AV: Aporte voluntario.');
-            $table->integer('assetsmovement_id')->unsigned()->comment('Id del movimiento de haberes al que pertenece el detalle.');
-            $table->foreign('assetsmovement_id')->references('id')->on('assets_movements')->onDelete('cascade');
+            $table->integer('assetsmovements_id')->unsigned()->comment('Id del movimiento de haberes al que pertenece el detalle.');
+            $table->foreign('assetsmovements_id')->references('id')->on('assets_movements')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -76,9 +76,9 @@ class CreateMovementsTable extends Migration
             $table->integer('assets_organisms_code')->unsigned()->comment('Codigo de haberes organismos');
             $table->enum('type', ['AP','AI','AV'])->comment('Tipo de movimiento. AP: Aporte patronal. AI: Aporte individual. AV: Aporte voluntario.');    
             
-            $table->integer('organisms_id')->unsigned()->comment('id del organismo');            
+            $table->integer('organism_id')->unsigned()->comment('id del organismo');            
 
-            $table->foreign('organisms_id')->references('id')->on('organisms')->onDelete('cascade');
+            $table->foreign('organism_id')->references('id')->on('organisms')->onDelete('cascade');
 
             $table->timestamps();
         });

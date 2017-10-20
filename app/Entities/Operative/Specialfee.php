@@ -36,7 +36,7 @@ class Specialfee extends Model {
     
     // Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "specialfee";
+    protected $table = "special_fee";
 
     /**
      * The attributes that are mass assignable.
@@ -47,7 +47,7 @@ class Specialfee extends Model {
 
     protected $fillable = ['uuid',
                            'loantypes_id',
-                           'specialfeedetail_id'];
+                           'specialfeedetails_id'];
 
     /* 
      * RELACIONES 
@@ -73,7 +73,7 @@ class Specialfee extends Model {
 
     public function specialfeedetails() {
 
-        return $this->hasMany(Specialfeedetails::class);
+        return $this->belongsTo(Specialfeedetails::class);
     }
 
     /**

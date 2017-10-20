@@ -35,7 +35,7 @@ class Specialfeedetails extends Model {
     
     // Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "specialfee_details";
+    protected $table = "special_fee_details";
 
     /**
      * The attributes that are mass assignable.
@@ -58,7 +58,7 @@ class Specialfeedetails extends Model {
 
     public function specialfees() {
 
-        return $this->belongsTo(Specialfee::class);
+        return $this->hasMany(Specialfee::class);
     }
 
     /**

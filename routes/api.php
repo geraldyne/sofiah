@@ -498,6 +498,34 @@ $api->version('v1', function($api){
                     $api->patch('/{uuid}', 'Api\Operative\GuarantorController@update');
                     $api->delete('/{uuid}', 'Api\Operative\GuarantorController@destroy');
                 });
+
+
+                # Rutas para movimientos haberes 
+
+                $api->group(['prefix' => 'assetsmovements'], function($api){
+
+                    $api->get('/', 'Api\Operative\AssetsmovementsController@index');
+                    $api->post('/', 'Api\Operative\AssetsmovementsController@store');
+                    $api->get('/{uuid}', 'Api\Operative\AssetsmovementsController@show');
+                    $api->put('/{uuid}', 'Api\Operative\AssetsmovementsController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\AssetsmovementsController@update');
+                    $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsController@destroy');
+                });
+
+
+                # Rutas para movimientos haberes detalles
+
+                $api->group(['prefix' => 'assetsmovementsdetails'], function($api){
+
+                    $api->get('/', 'Api\Operative\AssetsmovementsdetailsController@index');
+                    $api->post('/', 'Api\Operative\AssetsmovementsdetailsController@store');
+                    $api->get('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@show');
+                    $api->put('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@update');
+                    $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@destroy');
+                });
+
+
             });
             
             # Rutas del módulo de usuarios

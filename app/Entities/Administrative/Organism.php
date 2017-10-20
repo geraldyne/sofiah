@@ -27,6 +27,7 @@ use App\Entities\Association;
 use App\Entities\Administrative\Direction;
 use App\Entities\Administrative\Partner;
 use App\Entities\Operative\Assetstypecodes;
+use App\Entities\Operative\Loantypecodes;
 use App\Entities\Operative\Issue;
 
 class Organism extends Model {
@@ -103,7 +104,7 @@ class Organism extends Model {
 
 
     /**
-     * Un organismo tiene muchos asociados
+     * Un organismo tiene muchos codigo tipo haberes
      * 
      * @return type
      */
@@ -111,6 +112,18 @@ class Organism extends Model {
     public function assetstypecodes() {
 
         return $this->hasMany(Assetstypecodes::class);
+    }
+
+
+    /**
+     * Un organismo tiene muchos codigos de tipo de prestamo
+     * 
+     * @return type
+     */
+
+    public function loantypecodes() {
+
+        return $this->hasMany(Loantypecodes::class);
     }
 
 

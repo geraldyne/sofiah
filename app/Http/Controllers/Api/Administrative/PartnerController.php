@@ -62,7 +62,10 @@ class PartnerController extends Controller {
             'user',
             'bankdetails',
             'managers',
-            'dividends'
+            'dividends',
+            'guarantors',
+            'loans',
+            'assetsmovements'
         )->paginate($request->get('limit', config('app.pagination_limit')));
         
         if ($request->has('limit')) {
@@ -81,6 +84,7 @@ class PartnerController extends Controller {
     }
     
     public function store(Request $request) {
+
 
         $this->validate($request, [
 

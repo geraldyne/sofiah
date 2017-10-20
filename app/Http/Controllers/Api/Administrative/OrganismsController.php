@@ -58,6 +58,7 @@ class OrganismsController extends Controller {
             'association', 
             'partners',
             'assetstypecodes',
+            'loantypecodes',
             'issues'
         )->paginate($request->get('limit', config('app.pagination_limit')));
         

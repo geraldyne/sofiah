@@ -61,7 +61,7 @@ class SpecialfeedetailsTransformer extends TransformerAbstract
      */
     public function includeSpecialfees(Specialfeedetails $model)
     {
-        return $this->item($model->specialfees, new SpecialfeeTransformer);
+        return $this->collection($model->specialfees, new SpecialfeeTransformer);
     }
 
 

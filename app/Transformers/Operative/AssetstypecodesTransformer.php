@@ -48,7 +48,7 @@ class AssetstypecodesTransformer extends TransformerAbstract
             'uuid'                  => $model->uuid,
             'assets_organisms_code' => $model->assets_organisms_code,
             'type'                  => $model->type,
-            'organisms_id'          => $model->organisms_id,
+            'organism_id'           => $model->organism_id,
             'created_at'            => $model->created_at->toIso8601String(),
             'updated_at'            => $model->updated_at->toIso8601String()
         ];

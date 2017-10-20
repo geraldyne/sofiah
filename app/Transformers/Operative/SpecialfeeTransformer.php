@@ -48,7 +48,7 @@ class SpecialfeeTransformer extends TransformerAbstract
         return [
             'uuid'                   => $model->uuid,
             'loantypes_id'           => $model->loantypes_id,
-            'specialfeedetail_id'    => $model->specialfeedetail_id,
+            'specialfeedetails_id'   => $model->specialfeedetails_id,
             'created_at'             => $model->created_at->toIso8601String(),
             'updated_at'             => $model->updated_at->toIso8601String()
         ];
@@ -74,7 +74,7 @@ class SpecialfeeTransformer extends TransformerAbstract
      */
     public function includeSpecialfeedetails(Specialfee $model)
     {
-        return $this->collection($model->specialfeedetails, new SpecialfeedetailsTransformer);
+        return $this->item($model->specialfeedetails, new SpecialfeedetailsTransformer);
     }
 
 

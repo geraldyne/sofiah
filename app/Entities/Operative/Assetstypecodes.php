@@ -49,7 +49,7 @@ class Assetstypecodes extends Model {
                           'uuid',
                           'assets_organisms_code',
                           'type',
-                          'organisms_id'];
+                          'organism_id'];
 
     /* 
      * RELACIONES 
