@@ -23,6 +23,12 @@ use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Loantypes;
+use App\Entities\Operative\Loansgroups;
+use App\Entities\Operative\Loantypecodes;
+use App\Entities\Operative\Guarantor;
+use App\Entities\Operative\Specialfee;
+use App\Entities\Operative\Specialfeedetails;
+use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Accountingintegration;
 use App\Transformers\Operative\LoantypesTransformer;
 
@@ -32,7 +38,7 @@ use League\Fractal;
  *  Controlador tipos de préstamos
  */
 
-class LoantypesController extends Controller {
+class viewLoantypesController extends Controller {
 
     use Helpers;
 
@@ -64,7 +70,23 @@ class LoantypesController extends Controller {
             $paginator->appends('limit', $request->get('limit'));
         }
 
-        return response()->json(['paginator' => $paginator]);
+        return $this->response->paginator($paginator, new LoantypesTransformer());
+    }
+
+    public function create()
+    {
+        $organisms = Organism::all();
+
+        $loansgroups = Loansgroups::all();
+
+        $accountingintegration = Accountingintegration::all();
+
+        return response()->json([ 
+            'organisms'              => $organisms, 
+            'loansgroups'            => $loansgroups, 
+            'accountingintegration'  => $accountingintegration
+        ]);
+
     }
 
     public function show($id) {
@@ -76,7 +98,6 @@ class LoantypesController extends Controller {
 
     public function store(Request $request) {
 
-        
         $this->validate($request, [
 
             'name'                                => 'required|unique:loan_types',
@@ -105,8 +126,16 @@ class LoantypesController extends Controller {
             'billtopay_id'                        => 'required',
             'incomeaccount_id'                    => 'required',
             'max_amount'                          => 'required|numeric',
-            'operatingexpenseaccount_id'          => 'required'
+            'operatingexpenseaccount_id'          => 'required',
+            //'organismList'                        => 'required',
+            'loan_code'                           => 'required|numeric',
+            'organism_id'                         => 'required',
+            //'specialfeeList'                      => 'required',
+            'month_specialfee'                    => 'required'
         ]);
+
+        // Registramos un tipo de prestamo
+
 
         $receivable = Accountingintegration::byUuid($request->receivable_id)->firstOrFail();
 
@@ -130,10 +159,99 @@ class LoantypesController extends Controller {
 
         $loantypes = $this->model->create($request->all());
 
+
+        // Registramos un codigo de tipo de prestamo
+
+        /*
+
+        foreach ($organismList as $organisms) 
+        {
+            $organism = Organism::byUuid($organisms->organism_id)->firstOrFail();
+
+            $request->merge(array('organism_id' => $organism->id));
+
+            $loantypecodes =  new Loantypecodes();
+
+            $loantypecodes->loan_code = $organisms->loan_code;
+
+            $loantypecodes->loantypes_id = $loantypes->id;
+
+            $loantypecodes->organism_id = $organism->id;
+
+            $loantypecodes->save();
+        }
+
+        */
+
+        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
+
+        $request->merge(array('organism_id' => $organism->id));
+
+        $loantypecodes =  new Loantypecodes();
+
+        $loantypecodes->loan_code = $request->loan_code;
+
+        $loantypecodes->loantypes_id = $loantypes->id;
+
+        $loantypecodes->organism_id = $organism->id;
+
+        $loantypecodes->save();
+
+        /*
+
+        foreach ($specialfeeList as $month) 
+        {
+            // Registramos el detalle de la cuota especial
+
+            $specialfeedetails = new Specialfeedetails();
+
+            $specialfeedetails->month = $month;
+
+            $specialfeedetails->save();
+
+
+            // Registramos la cuota especial
+
+            $specialfee = new Specialfee();
+
+            $specialfee->loantypes_id = $loantypes->id;
+
+            $specialfee->specialfeedetails_id = $specialfeedetails->id;
+
+            $specialfee->save();
+        }
+
+
+        */
+
+        // Registramos el detalle de la cuota especial
+
+        $specialfeedetails = new Specialfeedetails();
+
+        $specialfeedetails->month = $request->month_specialfee;
+
+        $specialfeedetails->save();
+
+
+        // Registramos la cuota especial
+
+        $specialfee = new Specialfee();
+
+        $specialfee->loantypes_id = $loantypes->id;
+
+        $specialfee->specialfeedetails_id = $specialfeedetails->id;
+
+        $specialfee->save();
+
+
+
         return response()->json([ 
-            'status'  => true, 
-            'message' => 'El tipo de prestamo se ha registrado exitosamente!', 
-            'object'  => $loantypes 
+            'status'             => true, 
+            'message'            => 'El tipo de prestamo se ha registrado exitosamente!', 
+            'loantypes'          => $loantypes,
+            'loantypecodes'      => $loantypecodes,
+            'specialfeedetails'  => $specialfeedetails,
+            'specialfee'         => $specialfee 
         ]);
     }
 
@@ -169,14 +287,19 @@ class LoantypesController extends Controller {
             'billtopay_id'                        => 'required',
             'incomeaccount_id'                    => 'required',
             'max_amount'                          => 'required|numeric',
-            'operatingexpenseaccount_id'          => 'required'
+            'operatingexpenseaccount_id'          => 'required',
+            //'organismList'                        => 'required',
+            'loan_code'                           => 'required|numeric',
+            'organism_id'                         => 'required',
+            //'specialfeeList'                      => 'required',
+            'month_specialfee'                    => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'name'                                => 'required',
+                'name'                                => 'required|unique:loan_types',
                 'guarantor'                           => 'required|boolean',
                 'guarantee'                           => 'required|boolean',
                 'guarantee_comision'                  => 'required|boolean',
@@ -202,9 +325,17 @@ class LoantypesController extends Controller {
                 'billtopay_id'                        => 'required',
                 'incomeaccount_id'                    => 'required',
                 'max_amount'                          => 'required|numeric',
-                'operatingexpenseaccount_id'          => 'required'
+                'operatingexpenseaccount_id'          => 'required',
+                //'organismList'                        => 'required',
+                'loan_code'                           => 'required|numeric',
+                'organism_id'                         => 'required',
+                //'specialfeeList'                      => 'required',
+                'month_specialfee'                    => 'required'
             ];
         }
+
+        // Registramos un tipo de prestamo
+
 
         $receivable = Accountingintegration::byUuid($request->receivable_id)->firstOrFail();
 
@@ -225,9 +356,97 @@ class LoantypesController extends Controller {
 
         $request->merge(array('operatingexpenseaccount_id' => $operatingexpenseaccount->id));
 
+
         $this->validate($request, $rules);
- 
+
         $loantypes->update($request->all());
+
+
+        // Registramos un codigo de tipo de prestamo
+
+        /*
+
+        foreach ($organismList as $organisms) 
+        {
+            $organism = Organism::byUuid($organisms->organism_id)->firstOrFail();
+
+            $request->merge(array('organism_id' => $organism->id));
+
+            // Registramos un codigo de tipo de prestamo asociado a ese organismo
+
+            $loantypecodes =  new Loantypecodes();
+
+            $loantypecodes->loan_code = $organisms->loan_code;
+
+            $loantypecodes->loantypes_id = $loantypes->id;
+
+            $loantypecodes->organism_id = $organism->id;
+
+            $loantypecodes->save();
+        }
+
+        */
+
+        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
+
+        $request->merge(array('organism_id' => $organism->id));
+
+        $loantypecodes =  new Loantypecodes();
+
+        $loantypecodes->loan_code = $request->loan_code;
+
+        $loantypecodes->loantypes_id = $loantypes->id;
+
+        $loantypecodes->organism_id = $organism->id;
+
+        $loantypecodes->save();
+
+        /*
+
+        foreach ($specialfeeList as $month) 
+        {
+            // Registramos el detalle de la cuota especial
+
+            $specialfeedetails = new Specialfeedetails();
+
+            $specialfeedetails->month = $month;
+
+            $specialfeedetails->save();
+
+
+            // Registramos la cuota especial
+
+            $specialfee = new Specialfee();
+
+            $specialfee->loantypes_id = $loantypes->id;
+
+            $specialfee->specialfeedetails_id = $specialfeedetails->id;
+
+            $specialfee->save();
+        }
+
+
+        */
+
+        // Registramos el detalle de la cuota especial
+
+        $specialfeedetails = new Specialfeedetails();
+
+        $specialfeedetails->month = $request->month_specialfee;
+
+        $specialfeedetails->save();
+
+
+        // Registramos la cuota especial
+
+        $specialfee = new Specialfee();
+
+        $specialfee->loantypes_id = $loantypes->id;
+
+        $specialfee->specialfeedetails_id = $specialfeedetails->id;
+
+        $specialfee->save();
+
 
         return $this->response->item($loantypes->fresh(), new LoantypesTransformer());
     }
@@ -235,14 +454,6 @@ class LoantypesController extends Controller {
     public function destroy(Request $request, $uuid) {
 
         $loantypes = $this->model->byUuid($uuid)->firstOrFail();
-
-        if($loantypes->loans->count() > 0) {
-
-            return response()->json([ 
-                'status' => false, 
-                'message' => 'El tipo de prestamo posee prestamos asociados, no se puede eliminar.', 
-            ]);
-        }
 
         $loantypes->status= 0;
 

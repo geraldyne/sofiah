@@ -66,6 +66,22 @@ class CreateMovementsTable extends Migration
             $table->timestamps();
         });
 
+        // SALDO HABERES 
+        
+        Schema::create('assets_balance', function (Blueprint $table) {
+            
+            $table->increments('id');
+            $table->uuid('uuid')->index()->unique();
+            $table->float('balance_employers_contribution')->comment('Saldo del aporte patronal del asociado');
+            $table->float('balance_individual_contribution')->comment('Saldo del aporte individual del asociado');
+            $table->float('balance_voluntary_contribution')->comment('Saldo del aporte voluntario del asociado');
+            
+            $table->integer('partner_id')->unsigned()->comment('Id del asociado a la cual pertenece el saldo.');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
+
+            $table->timestamps();
+        });
+
 
         // CODIGO TIPO HABERES 
         

@@ -27,7 +27,8 @@ class partnerTransformer extends TransformerAbstract
         'dividends',
         'guarantors',
         'loans',
-        'assetsmovements'
+        'assetsmovements',
+        'assetsbalance'
     ];
 
     /**
@@ -133,6 +134,14 @@ class partnerTransformer extends TransformerAbstract
         return $this->collection($model->assetsmovements, new AssetsmovementsTransformer);
     }
 
-
+    /**
+     * Include Loans
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAssetsbalance(Partner $model)
+    {
+        return $this->item($model->assetsbalance, new AssetsbalanceTransformer);
+    }
 
 }
