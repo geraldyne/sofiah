@@ -149,7 +149,10 @@ class CreateLoansTable extends Migration
             $table->integer('monthly_fees')->unsigned()->comment('Número de coutas para el pago del préstamo');
 
             $table->integer('loantypes_id')->unsigned()->comment('Id del tipo de préstamo que pertenece al grupo.');
-            $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');           
+            $table->foreign('loantypes_id')->references('id')->on('loan_types')->onDelete('cascade');       
+
+            $table->integer('partner_id')->unsigned()->comment('Id del asociado a la cual corresponde el prestamo.');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');           
             
             $table->timestamps();
         });

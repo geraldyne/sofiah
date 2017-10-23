@@ -554,13 +554,13 @@ $api->version('v1', function($api){
 
                 # Rutas para saldo haberes 
 
-                $api->group(['prefix' => 'AssetsbalanceController'], function($api){
+                $api->group(['prefix' => 'Assetsbalance'], function($api){
 
-                    $api->get('/', 'Api\Operative\AssetsbalanceControllerController@index');
-                    $api->post('/', 'Api\Operative\AssetsbalanceControllerController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AssetsbalanceControllerController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AssetsbalanceControllerController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AssetsbalanceControllerController@update');
+                    $api->get('/', 'Api\Operative\AssetsbalanceController@index');
+                    $api->post('/', 'Api\Operative\AssetsbalanceController@store');
+                    $api->get('/{uuid}', 'Api\Operative\AssetsbalanceController@show');
+                    $api->put('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
                 });
 
             });

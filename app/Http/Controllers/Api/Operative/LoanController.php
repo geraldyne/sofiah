@@ -24,6 +24,7 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Loan;
 use App\Entities\Operative\Loantypes;
+use App\Entities\Administrative\Partner;
 use App\Entities\Administrative\Accountingintegration;
 use App\Transformers\Operative\LoanTransformer;
 
@@ -92,13 +93,19 @@ class LoanController extends Controller {
             'status'                     => 'required',
             'destination'                => 'required',
             'monthly_fees'               => 'required',
-            'loantypes_id'               => 'required'
+            'loantypes_id'               => 'required',
+            'partner_id'                 => 'required'
             
         ]);
 
         $loantypes = Loantypes::byUuid($request->loantypes_id)->firstOrFail();
 
         $request->merge(array('loantypes_id' => $loantypes->id));
+
+
+        $partner = Partner::byUuid($request->partner_id)->firstOrFail();
+
+        $request->merge(array('partner_id' => $partner->id));
 
 
         $loan = $this->model->create($request->all());
@@ -125,7 +132,8 @@ class LoanController extends Controller {
             'status'                     => 'required',
             'destination'                => 'required',
             'monthly_fees'               => 'required',
-            'loantypes_id'               => 'required'
+            'loantypes_id'               => 'required',
+            'partner_id'                 => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -141,15 +149,21 @@ class LoanController extends Controller {
                 'status'                     => 'required',
                 'destination'                => 'required',
                 'monthly_fees'               => 'required',
-                'loantypes_id'               => 'required'
+                'loantypes_id'               => 'required',
+                'partner_id'                 => 'required'
             ];
         }
 
         $loantypes = Loantypes::byUuid($request->loantypes_id)->firstOrFail();
 
         $request->merge(array('loantypes_id' => $loantypes->id));
-        
 
+
+        $partner = Partner::byUuid($request->partner_id)->firstOrFail();
+
+        $request->merge(array('partner_id' => $partner->id));
+
+        
         $this->validate($request, $rules);
  
         $loan->update($request->all());

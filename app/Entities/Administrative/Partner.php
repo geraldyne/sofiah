@@ -29,8 +29,8 @@ use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Manager;
 use App\Entities\Administrative\Dividend;
 
-use App\Entities\Operative\Loans;
-use App\Entities\Operative\Guarantors;
+use App\Entities\Operative\Loan;
+use App\Entities\Operative\Guarantor;
 use App\Entities\Operative\Assetsbalance;
 use App\Entities\Operative\Assetsmovements;
 

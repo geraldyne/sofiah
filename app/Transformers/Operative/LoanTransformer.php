@@ -66,6 +66,7 @@ class LoanTransformer extends TransformerAbstract
             'destination'                 => $model->destination,
             'monthly_fees'                => $model->monthly_fees,
             'loantypes_id'                => $model->loantypes_id,
+            'partner_id'                  => $model->partner_id,
             'created_at'                  => $model->created_at->toIso8601String(),
             'updated_at'                  => $model->updated_at->toIso8601String()
         ];

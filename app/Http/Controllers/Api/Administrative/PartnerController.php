@@ -65,7 +65,8 @@ class PartnerController extends Controller {
             'dividends',
             'guarantors',
             'loans',
-            'assetsmovements'
+            'assetsmovements',
+            'assetsbalance'
         )->paginate($request->get('limit', config('app.pagination_limit')));
         
         if ($request->has('limit')) {
