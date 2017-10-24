@@ -34,7 +34,8 @@ class LoanmovementsTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'loan',
-        'amortdefdetails'
+        'amortdefdetails',
+        'loanamortmovements'
     ];
 
     /**
@@ -49,8 +50,7 @@ class LoanmovementsTransformer extends TransformerAbstract
             'amount'             => $model->amount,
             'type'               => $model->type,
             'status'             => $model->status,
-            'loan_id'            => $model->loan_id,
-            'amortdefdetails_id' => $model->amortdefdetails_id,
+            'loan_id'            => $model->loan_id
             'created_at'         => $model->created_at->toIso8601String(),
             'updated_at'         => $model->updated_at->toIso8601String()
         ];
@@ -76,6 +76,16 @@ class LoanmovementsTransformer extends TransformerAbstract
     public function includeAmortdefdetails(Loanmovements $model)
     {
         return $this->item($model->amortdefdetails, new AmortdefdetailsTransformer);
+    }
+
+    /**
+     * Include loanamortmovements
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeLoanamortmovements(Loanmovements $model)
+    {
+        return $this->collection($model->loanamortmovements, new LoanamortmovementsTransformer);
     }
 
 }

@@ -28,6 +28,20 @@ class CreateMovementsTable extends Migration
             $table->integer('loan_id')->unsigned()->comment('Id del préstamo al que pertenece el movimiento.');
             $table->foreign('loan_id')->references('id')->on('loans')->onDelete('cascade');
 
+            $table->timestamps();
+        });
+
+        // MOVIMIENTOS AMORTIZACION PRESTAMOS 
+        // En esta tabla se almacenan la relacion de todos los movimientos que se realizan a un préstamo otorgado hasta su cancelación. Tabla pivote entre amortizacion detalle y movimiento prestamo
+        
+        Schema::create('loan_amort_movements', function (Blueprint $table) {
+            
+            $table->increments('id');
+            $table->uuid('uuid')->index()->unique();
+
+            $table->integer('loanmovement_id')->unsigned()->comment('Id del préstamo al que pertenece el movimiento.');
+            $table->foreign('loanmovement_id')->references('id')->on('loan_movements')->onDelete('cascade');
+
             $table->integer('amortdefdetails_id')->unsigned()->comment('Id de la amortización detalles');
             $table->foreign('amortdefdetails_id')->references('id')->on('amort_def_details')->onDelete('cascade');
 

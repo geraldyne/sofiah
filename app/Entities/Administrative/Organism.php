@@ -58,6 +58,7 @@ class Organism extends Model {
         'rif',
         'payroll_type',
         'status',
+        'disponibility',
         'percentage_employers_contribution',
         'percentage_individual_contribution',
         'percentage_voluntary_contribution',

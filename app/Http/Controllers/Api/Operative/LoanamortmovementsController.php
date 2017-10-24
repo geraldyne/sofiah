@@ -24,22 +24,22 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Loan;
 use App\Entities\Operative\Amortdefdetails;
-use App\Entities\Operative\Loanmovements;
-use App\Transformers\Operative\LoanmovementsTransformer;
+use App\Entities\Operative\Loanamortmovements;
+use App\Transformers\Operative\LoanamortmovementsTransformer;
 
 use League\Fractal;
 
 /**
- *  Controlador movimientos prestamos
+ *  Controlador Movimientos Amortizacion Prestamos 
  */
 
-class LoanmovementsController extends Controller {
+class LoanamortmovementsController extends Controller {
 
     use Helpers;
 
     protected $model;
 
-    public function __construct(Loanmovements $model) {
+    public function __construct(Loanamortmovements $model) {
         
         $this->model = $model;
     }
@@ -54,9 +54,8 @@ class LoanmovementsController extends Controller {
         }
 
         $paginator = $this->model->with(
-            'loan',
-            'amortdefdetails',
-            'loanamortmovements'
+            'loanmovements',
+            'amortdefdetails'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {
@@ -64,25 +63,21 @@ class LoanmovementsController extends Controller {
             $paginator->appends('limit', $request->get('limit'));
         }
 
-        return $this->response->paginator($paginator, new LoanmovementsTransformer());
+        return $this->response->paginator($paginator, new LoanamortmovementsTransformer());
     }
 
     public function show($id) {
         
-        $loanmovements = $this->model->byUuid($id)->firstOrFail();
+        $loanamortmovements = $this->model->byUuid($id)->firstOrFail();
 
-        return $this->response->item($loanmovements, new LoanmovementsTransformer());  
+        return $this->response->item($loanamortmovements, new LoanamortmovementsTransformer());  
     }
 
     public function store(Request $request) {
         
         $this->validate($request, [
 
-            'date_issue'          => 'required',
-            'amount'              => 'required',
-            'type'                => 'required',
-            'status'              => 'required',
-            'loan_id'             => 'required',
+            'loanmovement_id'     => 'required',
             'amortdefdetails_id'  => 'required'
         ]);
 
@@ -96,38 +91,30 @@ class LoanmovementsController extends Controller {
         $request->merge(array('amortdefdetails_id' => $amortdefdetails->id));
 
 
-        $loanmovements = $this->model->create($request->all());
+        $loanamortmovements = $this->model->create($request->all());
 
         return response()->json([ 
             'status'  => true, 
             'message' => 'El movimiento del prestamo se ha registrado exitosamente!', 
-            'object'  => $loanmovements 
+            'object'  => $loanamortmovements 
         ]);
     }
 
     public function update(Request $request, $uuid) {
 
-        $loanmovements = $this->model->byUuid($uuid)->firstOrFail();
+        $loanamortmovements = $this->model->byUuid($uuid)->firstOrFail();
 
         $rules = [
 
-            'date_issue'          => 'required',
-            'amount'              => 'required',
-            'type'                => 'required',
-            'status'              => 'required',
-            'loan_id'             => 'required',
-            'amortdefdetails_id'  => 'required' 
+            'loanmovement_id'     => 'required',
+            'amortdefdetails_id'  => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'date_issue'          => 'required',
-                'amount'              => 'required',
-                'type'                => 'required',
-                'status'              => 'required',
-                'loan_id'             => 'required',
+                'loanmovement_id'     => 'required',
                 'amortdefdetails_id'  => 'required'
             ];
         }
@@ -144,9 +131,9 @@ class LoanmovementsController extends Controller {
 
         $this->validate($request, $rules);
 
-        $loanmovements->update($request->all());
+        $loanamortmovements->update($request->all());
 
-        return $this->response->item($loanmovements->fresh(), new LoanmovementsTransformer());
+        return $this->response->item($loanamortmovements->fresh(), new LoanamortmovementsTransformer());
     }
 
     

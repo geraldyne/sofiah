@@ -34,7 +34,8 @@ class AmortdefdetailsTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'amortdef',
-        'issuedetails'
+        'issuedetails',
+        'loanamortmovements'
     ];
 
     /**
@@ -82,6 +83,16 @@ class AmortdefdetailsTransformer extends TransformerAbstract
     public function includeIssuedetails(Amortdefdetails $model)
     {
         return $this->item($model->issuedetails, new IssuedetailsTransformer);
+    }
+
+    /**
+     * Include Amortization
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeLoanamortmovements(Amortdefdetails $model)
+    {
+        return $this->item($model->loanamortmovements, new LoanamortmovementsTransformer);
     }
 
 }

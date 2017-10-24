@@ -75,6 +75,7 @@ class viewLoantypesController extends Controller {
 
     public function create()
     {
+
         $organisms = Organism::all();
 
         $loansgroups = Loansgroups::all();

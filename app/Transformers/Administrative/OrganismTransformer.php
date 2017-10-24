@@ -45,6 +45,7 @@ class OrganismTransformer extends TransformerAbstract
             'direction_id' => $model->direction_id,
             'payroll_type' => $model->payroll_type,
             'status' => $model->status,
+            'disponibility' => $model->disponibility,
             'percentage_employers_contribution' => $model->percentage_employers_contribution,
             'percentage_individual_contribution' => $model->percentage_individual_contribution,
             'percentage_voluntary_contribution' => $model->percentage_voluntary_contribution,

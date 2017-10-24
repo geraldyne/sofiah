@@ -24,7 +24,7 @@ use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Loan;
-use App\Entities\Operative\Amortdefdetails;
+use App\Entities\Operative\Loanamortmovements;
 
 /**
  *  Modelo de movimiento de prestamo
@@ -53,8 +53,7 @@ class Loanmovements extends Model {
               					   'amount',
               					   'type',
               					   'status',
-              					   'loan_id',
-                           'amortdefdetails_id'];
+              					   'loan_id'];
 
     /* 
      * RELACIONES 
@@ -71,16 +70,15 @@ class Loanmovements extends Model {
         return $this->belongsTo(Loan::class);
     }
 
-
     /**
       * Un movimiento de préstamo pertenece a una emision detalles
       * 
       * @return type
       */ 
 
-    public function amortdefdetails() {
+    public function loanamortmovements() {
 
-        return $this->belongsTo(Amortdefdetails::class);
+        return $this->hasMany(Loanamortmovements::class);
     }
 
     /**

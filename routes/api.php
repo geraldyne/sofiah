@@ -373,7 +373,7 @@ $api->version('v1', function($api){
                 $api->group(['prefix' => 'view/loan'], function($api){
 
                     $api->get('/', 'Api\Operative\viewLoanController@index');
-                    $api->get('/create', 'Api\Operative\viewLoanController@create');
+                    $api->post('/create', 'Api\Operative\viewLoanController@create');
                     $api->post('/', 'Api\Operative\viewLoanController@store');
                     $api->get('/{uuid}', 'Api\Operative\viewLoanController@show');
                     $api->put('/{uuid}', 'Api\Operative\viewLoanController@update');
@@ -561,6 +561,17 @@ $api->version('v1', function($api){
                     $api->get('/{uuid}', 'Api\Operative\AssetsbalanceController@show');
                     $api->put('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
                     $api->patch('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
+                });
+
+                # Rutas para Movimientos Amortizacion Prestamos
+
+                $api->group(['prefix' => 'loanamortmovements'], function($api){
+
+                    $api->get('/', 'Api\Operative\LoanamortmovementsController@index');
+                    $api->post('/', 'Api\Operative\LoanamortmovementsController@store');
+                    $api->get('/{uuid}', 'Api\Operative\LoanamortmovementsController@show');
+                    $api->put('/{uuid}', 'Api\Operative\LoanamortmovementsController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\LoanamortmovementsController@update');
                 });
 
             });
