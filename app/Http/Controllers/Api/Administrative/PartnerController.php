@@ -63,14 +63,23 @@ class PartnerController extends Controller {
             'bankdetails',
             'managers',
             'dividends'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
-        
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        )->get();
 
-        return $this->response->paginator($paginator, new PartnerTransformer());
+        return $this->response->collection($paginator, new PartnerTransformer());
+    }
+
+    public function create() {
+        
+        $organisms = $this->api->get('administrative/organisms');
+        $banks     = $this->api->get('administrative/banks');
+
+        return response()->json([
+
+            'status'    => true,
+            'organisms' => $organisms,
+            'banks'     => $banks
+
+        ]);
     }
 
     public function show($id) {

@@ -58,14 +58,9 @@ class Accountlvl6Controller extends Controller {
             'cashflow', 
             'heritagechange',
             'dailymovementdetails'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
+        )->get();
 
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new Accountlvl6Transformer());
+        return $this->response->collection($paginator, new Accountlvl6Transformer());
     }
 
     public function show($id) {

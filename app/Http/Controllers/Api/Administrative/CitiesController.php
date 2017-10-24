@@ -52,14 +52,9 @@ class CitiesController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
         
-        $paginator = $this->model->with('state','directions')->paginate($request->get('limit', config('app.pagination_limit')));
-        
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        $paginator = $this->model->with('state','directions')->get();
 
-        return $this->response->paginator($paginator, new CityTransformer());
+        return $this->response->collection($paginator, new CityTransformer());
     }
 
     public function show($id) {

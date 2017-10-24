@@ -2,9 +2,9 @@
 
 $api = app('Dingo\Api\Routing\Router');
 
-$api->version('v1', function($api){
+$api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
-    $api->group(['middleware' => 'api', 'namespace' => 'App\Http\Controllers'], function($api) {
+    $api->group(['middleware' => 'api'], function($api) {
 
         $api->get('ping', 'Api\PingController@index');
 
@@ -14,149 +14,63 @@ $api->version('v1', function($api){
             
             $api->group(['prefix' => 'administrative'], function ($api) {
 
-                # Rutas para las cuentas de integración
+                # Index
+                # Store
+                # Show
+                # Update (put, patch)
+                # Destroy
 
-                $api->group(['prefix' => 'accountingintegration'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\AccountingintegrationController@index');
-                    $api->post('/', 'Api\Administrative\AccountingintegrationController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\AccountingintegrationController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\AccountingintegrationController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\AccountingintegrationController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\AccountingintegrationController@destroy');
-                });
+                $api->get('/', 'Api\Administrative\AdministrativeController@index');
 
                 # Rutas para las cuentas de integración
 
-                $api->group(['prefix' => 'accountingyear'], function ($api) {
+                $api->resource('accountingintegration', 'Api\Administrative\AccountingintegrationController', ['except' => ['edit', 'create']]);
 
-                    $api->get('/', 'Api\Administrative\AccountingyearController@index');
-                    $api->post('/', 'Api\Administrative\AccountingyearController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\AccountingyearController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\AccountingyearController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\AccountingyearController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\AccountingyearController@destroy');
-                });
+                # Rutas para las cuentas de integración
+
+                $api->resource('accountingyear', 'Api\Administrative\AccountingyearController', ['except' => ['edit', 'create']]);
 
                 # Rutas para las asociaciones
 
-                $api->group(['prefix' => 'associations'], function ($api) {
-
-                    $api->get('/', 'Api\AssociationsController@index');
-                    $api->post('/', 'Api\AssociationsController@store');
-                    $api->get('/{uuid}', 'Api\AssociationsController@show');
-                    $api->put('/{uuid}', 'Api\AssociationsController@update');
-                    $api->patch('/{uuid}', 'Api\AssociationsController@update');
-                    $api->delete('/{uuid}', 'Api\AssociationsController@destroy');
-                });
+                $api->get('associations/create', 'Api\AssociationsController@create');
+                $api->resource('associations', 'Api\AssociationsController', ['except' => ['edit', 'show', 'create']]);
 
                 # Rutas para los paises
                 
-                $api->group(['prefix' => 'countries'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\CountriesController@index');
-                    $api->post('/', 'Api\Administrative\CountriesController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\CountriesController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\CountriesController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\CountriesController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\CountriesController@destroy');
-                });
+                $api->resource('countries', 'Api\Administrative\CountriesController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los estados
                 
-                $api->group(['prefix' => 'states'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\StatesController@index');
-                    $api->post('/', 'Api\Administrative\StatesController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\StatesController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\StatesController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\StatesController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\StatesController@destroy');
-                });
+                $api->resource('states', 'Api\Administrative\StatesController', ['except' => ['edit', 'create']]);
 
                 # Rutas para las ciudades
                 
-                $api->group(['prefix' => 'cities'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\CitiesController@index');
-                    $api->post('/', 'Api\Administrative\CitiesController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\CitiesController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\CitiesController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\CitiesController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\CitiesController@destroy');
-                });
+                $api->resource('cities', 'Api\Administrative\CitiesController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los organismos
 
-                $api->group(['prefix' => 'organisms'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\OrganismsController@index');
-                    $api->post('/', 'Api\Administrative\OrganismsController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\OrganismsController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\OrganismsController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\OrganismsController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\OrganismsController@destroy');
-                });
+                $api->resource('organisms', 'Api\Administrative\OrganismsController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los bancos
                 
-                $api->group(['prefix' => 'banks'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\BanksController@index');
-                    $api->post('/', 'Api\Administrative\BanksController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\BanksController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\BanksController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\BanksController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\BanksController@destroy');
-                });
+                $api->resource('banks', 'Api\Administrative\BanksController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los flujo de efectivo
                 
-                $api->group(['prefix' => 'cashflow'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\CashflowController@index');
-                    $api->post('/', 'Api\Administrative\CashflowController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\CashflowController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\CashflowController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\CashflowController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\CashflowController@destroy');
-                });
+                $api->resource('cashflow', 'Api\Administrative\CashflowController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los flujo de efectivo
                 
-                $api->group(['prefix' => 'charges'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\ChargesController@index');
-                    $api->post('/', 'Api\Administrative\ChargesController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\ChargesController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\ChargesController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\ChargesController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\ChargesController@destroy');
-                });
+                $api->resource('charges', 'Api\Administrative\ChargesController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los asociados
                 
-                $api->group(['prefix' => 'partner'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\PartnerController@index');
-                    $api->post('/', 'Api\Administrative\PartnerController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\PartnerController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\PartnerController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\PartnerController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\PartnerController@destroy');
-                });
+                $api->get('partner/create', 'Api\Administrative\PartnerController@create');
+                $api->resource('partner', 'Api\Administrative\PartnerController', ['except' => 'edit']);
 
                 # Rutas para las dividendos
                 
-                $api->group(['prefix' => 'dividends'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\DividendsController@index');
-                    $api->post('/', 'Api\Administrative\DividendsController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\DividendsController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\DividendsController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\DividendsController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\DividendsController@destroy');
-                });
+                $api->resource('dividends', 'Api\Administrative\DividendsController', ['except' => ['edit', 'create']]);
 
                 # Rutas para las direcciones
                 
@@ -255,16 +169,8 @@ $api->version('v1', function($api){
                 });
 
                 # Rutas para las cuentas nivel 5
-                
-                $api->group(['prefix' => 'accountlvl5'], function ($api) {
 
-                    $api->get('/', 'Api\Administrative\Accountlvl5Controller@index');
-                    $api->post('/', 'Api\Administrative\Accountlvl5Controller@store');
-                    $api->get('/{uuid}', 'Api\Administrative\Accountlvl5Controller@show');
-                    $api->put('/{uuid}', 'Api\Administrative\Accountlvl5Controller@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\Accountlvl5Controller@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\Accountlvl5Controller@destroy');
-                });
+                $api->resource('accountlvl5', 'Api\Administrative\Accountlvl5Controller', ['except' => ['edit', 'create']]);
 
                 # Rutas para las cuentas nivel 6
                 

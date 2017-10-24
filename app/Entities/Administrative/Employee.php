@@ -81,7 +81,6 @@ class Employee extends Model {
         'bankdetails_id'
     ];
             
-
 	/* 
      * RELACIONES 
      */

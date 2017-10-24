@@ -68,7 +68,7 @@ class Dailymovementdetails extends Model {
 	 * @return type
 	 */
 
-	public function accounts() {
+	public function account() {
 
         return $this->belongsTo(Accountslvl6::class);
     }

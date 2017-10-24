@@ -52,14 +52,9 @@ class StatesController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
         
-        $paginator = $this->model->with('country','cities')->paginate($request->get('limit', config('app.pagination_limit')));
-        
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        $paginator = $this->model->with('country','cities')->get();
 
-        return $this->response->paginator($paginator, new StateTransformer());
+        return $this->response->collection($paginator, new StateTransformer());
     }
 
     public function show($id) {

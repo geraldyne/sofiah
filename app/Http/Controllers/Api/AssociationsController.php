@@ -53,21 +53,34 @@ class AssociationsController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with('organisms', 'direction', 'employees')->paginate($request->get('limit', config('app.pagination_limit')));
-        
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        $paginator = $this->model->with('organisms', 'direction', 'employees')->get();
 
-        return $this->response->paginator($paginator, new AssociationTransformer());
+        return $this->response->collection($paginator, new AssociationTransformer());
     }
 
-    public function show($id) {
+    public function create() {
         
-        $association = $this->model->byUuid($id)->firstOrFail();
+        if(count(Association::all()) == 0) {
 
-        return $this->response->item($association, new AssociationTransformer());
+            $countries = $this->api->get('administrative/countries?include=states.cities');
+
+            $accounts = $this->api->get('administrative/accountlvl6');
+
+            return response()->json([
+
+                'status'    => true,
+                'countries' => $countries,
+                'accounts'  => $accounts->where('account_type','=','patrimonio')
+
+            ]);
+
+        } else {
+
+            return response()->json([
+
+                'status' => false
+            ]);
+        }
     }
     
     public function store(Request $request) {
@@ -116,7 +129,7 @@ class AssociationsController extends Controller {
         ]);
 
         # Obtiene la ciudad mediante el UUID
-         
+        
         $city = City::byUuid($request->city_id)->firstOrFail();
 
         $request->merge(array('city_id' => $city->id));
@@ -124,7 +137,7 @@ class AssociationsController extends Controller {
         $direction = Direction::create($request->only('city_id','direction'));
         
         $request->merge(array('direction_id' => $direction->id));
-        
+
         // FALTA
         // EL
         // LOGO

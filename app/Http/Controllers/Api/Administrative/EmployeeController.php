@@ -92,9 +92,7 @@ class EmployeeController extends Controller {
             'user_id'          => 'required',
             'direction_id'     => 'required',
             'association_id'   => 'required',
-            'bankdetails_id'  => 'required',
-            'created_at'       =>  getdate(),
-            'updated_at'       =>  getdate()
+            'bankdetails_id'   => 'required'
         ]);
 
         $user = User::byUuid($request->user_id)->firstOrFail();

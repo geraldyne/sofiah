@@ -90,10 +90,10 @@ class CreateDailyMovementsTable extends Migration
             $table->float('debit')->comment('Monto afectado al debe en el comprobante');
             $table->float('asset')->comment('Monto afectado al haber en el comprobante');
             $table->integer('dailymovement_id')->unsigned()->comment('Movimiento diario al que pertene');
-            $table->integer('account_id')->unsigned()->comment('Cuenta afectada en la integración');
+            $table->integer('accountlvl6_id')->unsigned()->comment('Cuenta afectada en la integración');
             
             $table->foreign('dailymovement_id')->references('id')->on('daily_movements')->onDelete('cascade');
-            $table->foreign('account_id')->references('id')->on('accounts_lvl6')->onDelete('cascade');
+            $table->foreign('accountlvl6_id')->references('id')->on('accounts_lvl6')->onDelete('cascade');
             
             $table->timestamps();
         });

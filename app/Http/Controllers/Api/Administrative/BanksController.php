@@ -51,14 +51,9 @@ class BanksController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
         
-        $paginator = $this->model->with('bankdetails')->paginate($request->get('limit', config('app.pagination_limit')));
-        
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        $paginator = $this->model->with('bankdetails')->get();
 
-        return $this->response->paginator($paginator, new BankTransformer());
+        return $this->response->collection($paginator, new BankTransformer());
     }
 
     public function show($id) {
