@@ -20,6 +20,7 @@ class OrganismTransformer extends TransformerAbstract
         'association',
         'partners',
         'assetstypecodes',
+        'loantypecodes',
         'issues'
     ];
 
@@ -44,6 +45,7 @@ class OrganismTransformer extends TransformerAbstract
             'direction_id' => $model->direction_id,
             'payroll_type' => $model->payroll_type,
             'status' => $model->status,
+            'disponibility' => $model->disponibility,
             'percentage_employers_contribution' => $model->percentage_employers_contribution,
             'percentage_individual_contribution' => $model->percentage_individual_contribution,
             'percentage_voluntary_contribution' => $model->percentage_voluntary_contribution,
@@ -92,7 +94,17 @@ class OrganismTransformer extends TransformerAbstract
      */
     public function includeAssetstypecodes(Organism $model)
     {
-        return $this->item($model->assetstypecodes, new AssetstypecodesTransformer);
+        return $this->collection($model->assetstypecodes, new AssetstypecodesTransformer);
+    }
+
+    /**
+     * Include Assetstypecodes
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeLoantypecodes(Organism $model)
+    {
+        return $this->collection($model->loantypecodes, new LoantypecodesTransformer);
     }
 
     /**
@@ -102,6 +114,6 @@ class OrganismTransformer extends TransformerAbstract
      */
     public function includeIssues(Organism $model)
     {
-        return $this->item($model->issues, new IssueTransformer);
+        return $this->collection($model->issues, new IssueTransformer);
     }
 }

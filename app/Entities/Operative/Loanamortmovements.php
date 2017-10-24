@@ -23,88 +23,58 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
-use App\Entities\Operative\Amortdef;
-use App\Entities\Operative\Issuedetails;
-use App\Entities\Operative\Loanamortmovements;
-
+use App\Entities\Operative\Loanmovements;
+use App\Entities\Operative\Amortdefdetails;
 
 /**
- *  Modelo de detalles de la amortización
+ *  Modelo de Movimientos Amortizacion Prestamos 
  */
 
-class Amortdefdetails extends Model {
+class Loanamortmovements extends Model {
 
     use Notifiable, UuidScopeTrait;
 
 	// Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "amort_def_details";
+    protected $table = "loan_amort_movements";
 
     /**
      * The attributes that are mass assignable.
      *
+     * @var Date    date_issue
      * @var Double  amount
-     * @var Double  capital
-     * @var Double  interests
-     * @var Double  loan_balance
-     * @var Double  quota_balance
-     * @var Date    quota_date
-     * @var Enum    type
-     * @var Integer quota_number
-     * @var Integer days
-     * @var Integer issuedetails_id
+     * @var Enum    status
      */
 
-    protected $fillable = ['uuid',
-                           'amount',
-    					   'capital',
-    					   'interests',
-    					   'loan_balance',
-    					   'quota_balance',
-    					   'quota_date',
-    					   'type',
-    					   'quota_number',
-    					   'days',
-    					   'issuedetails_id',
-                           'amortdef_id'];
+    protected $fillable = [
+                          'uuid',
+                          'loanmovement_id',
+                          'amortdefdetails_id'];
 
     /* 
      * RELACIONES 
      */
 
     /**
-      * Un detalle de amortización pertenece a una amortización
+      * Un movimiento amortizacion de prestamo tiene muchos movimientos de prestamos
       * 
       * @return type
       */ 
 
-    public function amortdef() {
+    public function loanmovements() {
 
-        return $this->belongsTo(Amortdef::class);
+        return $this->belongsTo(Loanmovements::class);
     }
 
-
     /**
-      * Un detalle de amortización pertenece a un detalle de emision
+      * Un movimiento amortizacion de prestamo posee una amortizacion detalle
       * 
       * @return type
       */ 
 
-    public function issuedetails() {
+    public function amortdefdetails() {
 
-        return $this->belongsTo(Issuedetails::class);
-    }
-
-
-    /**
-      * Un detalle de amortización pertenece a un detalle de emision
-      * 
-      * @return type
-      */ 
-
-    public function loanamortmovements() {
-
-        return $this->hasOne(Loanamortmovements::class);
+        return $this->belongsTo(Amortdefdetails::class);
     }
 
 

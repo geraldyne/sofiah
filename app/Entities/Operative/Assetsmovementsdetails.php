@@ -47,8 +47,8 @@ class Assetsmovementsdetails extends Model {
 
     protected $fillable = ['uuid',
                            'amount',
-              					   'type',
-              					   'assetsmovement_id'];
+      					   'type',
+      					   'assetsmovements_id'];
 
     /* 
      * RELACIONES 

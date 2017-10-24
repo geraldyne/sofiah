@@ -76,7 +76,7 @@ class RolesController extends Controller
 
         return response()->json([ 
             'status'  => true, 
-            'message' => 'La cuenta se ha registrado exitosamente!', 
+            'message' => 'El rol se ha registrado exitosamente!', 
             'object'  => $role 
         ]);
     }

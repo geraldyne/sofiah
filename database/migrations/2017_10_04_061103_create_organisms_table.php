@@ -32,6 +32,7 @@ class CreateOrganismsTable extends Migration
             $table->integer('direction_id')->unsigned()->comment('Direccion del organismo');
             $table->enum('payroll_type', ['S','Q','M'])->comment('Almacena el tipo de nómina del organismo. S: Semanal Q: Quincenal M: Mensual');
             $table->boolean('status')->comment('V: Activo - F: Inactivo');
+            $table->float('disponibility')->comment('Porcentaje de ahorros para la disponibilidad');
             $table->float('percentage_employers_contribution')->comment('Porcentaje del aporte patronal a la asociacion');
             $table->float('percentage_individual_contribution')->comment('Porcentaje del aporte individual a la asociacion');
             $table->float('percentage_voluntary_contribution')->comment('Porcentaje del aporte voluntario a la asociacion');

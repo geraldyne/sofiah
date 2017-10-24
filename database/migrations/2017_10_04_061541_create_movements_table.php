@@ -28,6 +28,20 @@ class CreateMovementsTable extends Migration
             $table->integer('loan_id')->unsigned()->comment('Id del préstamo al que pertenece el movimiento.');
             $table->foreign('loan_id')->references('id')->on('loans')->onDelete('cascade');
 
+            $table->timestamps();
+        });
+
+        // MOVIMIENTOS AMORTIZACION PRESTAMOS 
+        // En esta tabla se almacenan la relacion de todos los movimientos que se realizan a un préstamo otorgado hasta su cancelación. Tabla pivote entre amortizacion detalle y movimiento prestamo
+        
+        Schema::create('loan_amort_movements', function (Blueprint $table) {
+            
+            $table->increments('id');
+            $table->uuid('uuid')->index()->unique();
+
+            $table->integer('loanmovement_id')->unsigned()->comment('Id del préstamo al que pertenece el movimiento.');
+            $table->foreign('loanmovement_id')->references('id')->on('loan_movements')->onDelete('cascade');
+
             $table->integer('amortdefdetails_id')->unsigned()->comment('Id de la amortización detalles');
             $table->foreign('amortdefdetails_id')->references('id')->on('amort_def_details')->onDelete('cascade');
 
@@ -60,8 +74,24 @@ class CreateMovementsTable extends Migration
             $table->uuid('uuid')->index()->unique();
             $table->float('amount')->comment('Monto del movimiento. Si es de tipo ahorro registrar en positivo, si es cualquier otro en negativo.');
             $table->enum('type', ['AP','AI','AV'])->comment('Tipo de movimiento. AP: Aporte patronal. AI: Aporte individual. AV: Aporte voluntario.');
-            $table->integer('assetsmovement_id')->unsigned()->comment('Id del movimiento de haberes al que pertenece el detalle.');
-            $table->foreign('assetsmovement_id')->references('id')->on('assets_movements')->onDelete('cascade');
+            $table->integer('assetsmovements_id')->unsigned()->comment('Id del movimiento de haberes al que pertenece el detalle.');
+            $table->foreign('assetsmovements_id')->references('id')->on('assets_movements')->onDelete('cascade');
+
+            $table->timestamps();
+        });
+
+        // SALDO HABERES 
+        
+        Schema::create('assets_balance', function (Blueprint $table) {
+            
+            $table->increments('id');
+            $table->uuid('uuid')->index()->unique();
+            $table->float('balance_employers_contribution')->comment('Saldo del aporte patronal del asociado');
+            $table->float('balance_individual_contribution')->comment('Saldo del aporte individual del asociado');
+            $table->float('balance_voluntary_contribution')->comment('Saldo del aporte voluntario del asociado');
+            
+            $table->integer('partner_id')->unsigned()->comment('Id del asociado a la cual pertenece el saldo.');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -76,9 +106,9 @@ class CreateMovementsTable extends Migration
             $table->integer('assets_organisms_code')->unsigned()->comment('Codigo de haberes organismos');
             $table->enum('type', ['AP','AI','AV'])->comment('Tipo de movimiento. AP: Aporte patronal. AI: Aporte individual. AV: Aporte voluntario.');    
             
-            $table->integer('organisms_id')->unsigned()->comment('id del organismo');            
+            $table->integer('organism_id')->unsigned()->comment('id del organismo');            
 
-            $table->foreign('organisms_id')->references('id')->on('organisms')->onDelete('cascade');
+            $table->foreign('organism_id')->references('id')->on('organisms')->onDelete('cascade');
 
             $table->timestamps();
         });

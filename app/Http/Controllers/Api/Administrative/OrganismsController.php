@@ -58,6 +58,7 @@ class OrganismsController extends Controller {
             'association', 
             'partners',
             'assetstypecodes',
+            'loantypecodes',
             'issues'
         )->paginate($request->get('limit', config('app.pagination_limit')));
         
@@ -94,7 +95,7 @@ class OrganismsController extends Controller {
             'rif' => 'required|alpha_dash|max:12|unique:organisms',
             'payroll_type' => 'required',
             'status' => 'required|boolean',
-
+            'disponibility' => 'required',
             'percentage_employers_contribution' => 'required|numeric',
             'percentage_individual_contribution' => 'required|numeric',
             'percentage_voluntary_contribution' => 'required|numeric',
@@ -133,44 +134,50 @@ class OrganismsController extends Controller {
 
         $rules = [
 
+            'name' => 'required|unique:organisms',
             'alias' => 'required',
-            'email' => 'required|email|max:120',
-            'web_site' => 'sometimes|required|url',
+            'email' => 'required|email|unique:users|max:120',
+            'web_site' => 'url',
             'zone' => 'required',
             'contact' => 'required',
             'phone' => 'required|numeric',
+            'rif' => 'required|alpha_dash|max:12|unique:organisms',
             'payroll_type' => 'required',
             'status' => 'required|boolean',
-
+            'disponibility' => 'required',
             'percentage_employers_contribution' => 'required|numeric',
             'percentage_individual_contribution' => 'required|numeric',
             'percentage_voluntary_contribution' => 'required|numeric',
 
             'direction' => 'required',
             'city_id' => 'required|alpha_dash',
-            'direction_id' => 'required|alpha_dash'
+
+            'association_id' => 'required|alpha_dash'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'alias' => 'sometimes|required',
-                'email' => 'sometimes|required|email|unique:users|max:120',
-                'web_site' => 'sometimes|required|url',
-                'zone' => 'sometimes|required',
-                'contact' => 'sometimes|required',
-                'phone' => 'sometimes|required|numeric',
-                'payroll_type' => 'sometimes|required',
-                'status' => 'sometimes|required|boolean',
+                'name' => 'required|unique:organisms',
+                'alias' => 'required',
+                'email' => 'required|email|unique:users|max:120',
+                'web_site' => 'url',
+                'zone' => 'required',
+                'contact' => 'required',
+                'phone' => 'required|numeric',
+                'rif' => 'required|alpha_dash|max:12|unique:organisms',
+                'payroll_type' => 'required',
+                'status' => 'required|boolean',
+                'disponibility' => 'required',
+                'percentage_employers_contribution' => 'required|numeric',
+                'percentage_individual_contribution' => 'required|numeric',
+                'percentage_voluntary_contribution' => 'required|numeric',
 
-                'percentage_employers_contribution' => 'sometimes|required|numeric',
-                'percentage_individual_contribution' => 'sometimes|required|numeric',
-                'percentage_voluntary_contribution' => 'sometimes|required|numeric',
+                'direction' => 'required',
+                'city_id' => 'required|alpha_dash',
 
-                'direction' => 'sometimes|required',
-                'city_id' => 'sometimes|required|alpha_dash',
-                'direction_id' => 'sometimes|required|alpha_dash'
+                'association_id' => 'required|alpha_dash'
             ];
         }
 

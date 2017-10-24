@@ -70,7 +70,8 @@ class Loan extends Model {
                            'status',
                            'destination',
                            'monthly_fees',
-                           'loantypes_id'];
+                           'loantypes_id',
+                           'partner_id'];
 
     /* 
      * RELACIONES 

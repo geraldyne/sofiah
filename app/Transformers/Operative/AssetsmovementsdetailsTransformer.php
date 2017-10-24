@@ -46,7 +46,7 @@ class AssetsmovementsdetailsTransformer extends TransformerAbstract
             'uuid'                 => $model->uuid,
             'amount'               => $model->amount,
             'type'                 => $model->type,
-            'assetsmovement_id'    => $model->assets_movement_id,
+            'assetsmovements_id'    => $model->assetsmovements_id,
             'created_at'           => $model->created_at->toIso8601String(),
             'updated_at'           => $model->updated_at->toIso8601String()
         ];

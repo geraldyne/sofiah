@@ -78,7 +78,7 @@ class SpecialfeeController extends Controller {
         $this->validate($request, [
 
             'loantypes_id'         => 'required',
-            'specialfeedetail_id'  => 'required'
+            'specialfeedetails_id'  => 'required'
         ]);
 
         $Loantypes = Loantypes::byUuid($request->loantypes_id)->firstOrFail();
@@ -86,9 +86,9 @@ class SpecialfeeController extends Controller {
         $request->merge(array('loantypes_id' => $Loantypes->id));
 
         
-        $specialfeedetails = Specialfeedetails::byUuid($request->specialfeedetail_id)->firstOrFail();
+        $specialfeedetails = Specialfeedetails::byUuid($request->specialfeedetails_id)->firstOrFail();
 
-        $request->merge(array('specialfeedetail_id' => $specialfeedetails->id));
+        $request->merge(array('specialfeedetails_id' => $specialfeedetails->id));
 
         $specialfee = $this->model->create($request->all());
 

@@ -18,14 +18,14 @@
 
 namespace App\Transformers\Operative;
 
-use App\Entities\Operative\Assetstypecodes;
+use App\Entities\Operative\Loanamortmovements;
 use League\Fractal\TransformerAbstract;
 
 /**
  * Class Amort_defTransformer.
  */
 
-class AssetstypecodesTransformer extends TransformerAbstract
+class LoanamortmovementsTransformer extends TransformerAbstract
 {
     /**
      * List of resources possible to include
@@ -34,21 +34,21 @@ class AssetstypecodesTransformer extends TransformerAbstract
      * @var amort_def_details
      */
     protected $availableIncludes = [
-        'organism'
+        'loanmovements',
+        'amortdefdetails'
     ];
 
     /**
      * @param Amort_def $model
      * @return array
      */
-    public function transform(Assetstypecodes $model)
+    public function transform(Loanamortmovements $model)
     {
         return [
 
-            'uuid'                  => $model->uuid,
-            'assets_organisms_code' => $model->assets_organisms_code,
-            'type'                  => $model->type,
-            'organism_id'           => $model->organism_id,
+            'id'                    => $model->uuid,
+            'loanmovement_id'       => $model->loanmovement_id,
+            'amortdefdetails_id'    => $model->amortdefdetails_id,
             'created_at'            => $model->created_at->toIso8601String(),
             'updated_at'            => $model->updated_at->toIso8601String()
         ];
@@ -57,12 +57,22 @@ class AssetstypecodesTransformer extends TransformerAbstract
     // Relaciones
 
     /**
-     * Include Organism
+     * Include Loans
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeOrganism(Assetstypecodes $model)
+    public function includeLoanmovements(Loanamortmovements $model)
     {
-        return $this->item($model->organism, new OrganismTransformer);
+        return $this->item($model->loanmovements, new LoanmovementsTransformer);
+    }
+
+    /**
+     * Include Loans
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAmortdefdetails(Loanamortmovements $model)
+    {
+        return $this->item($model->amortdefdetails, new AmortdefdetailsTransformer);
     }
 }

@@ -29,8 +29,11 @@ use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Manager;
 use App\Entities\Administrative\Dividend;
 
-use App\Entities\Administrative\Guarantors;
-use App\Entities\Administrative\Loans;
+use App\Entities\Operative\Loan;
+use App\Entities\Operative\Guarantor;
+use App\Entities\Operative\Assetsbalance;
+use App\Entities\Operative\Assetsmovements;
+
 
 class Partner extends Model {
     
@@ -167,6 +170,28 @@ class Partner extends Model {
     public function loans() {
 
         return $this->hasMany(Loan::class);
+    }
+
+    /**
+     * Un asociado posee muchos prestamos
+     * 
+     * @return type
+     */
+
+    public function assetsmovements() {
+
+        return $this->hasMany(Assetsmovements::class);
+    }
+
+    /**
+     * Un asociado posee muchos prestamos
+     * 
+     * @return type
+     */
+
+    public function assetsbalance() {
+
+        return $this->hasOne(Assetsbalance::class);
     }
 
     /**

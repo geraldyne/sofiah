@@ -23,9 +23,12 @@ use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Loan;
-use App\Entities\Operative\Loantypes;
+use App\Entities\Operative\Bond;
+use App\Entities\Operative\Guarantor;
+use App\Entities\Operative\Provider;
+use App\Entities\Operative\Amortdef;
+use App\Entities\Operative\Loanmovements;
 use App\Entities\Administrative\Partner;
-use App\Entities\Administrative\Accountingintegration;
 use App\Transformers\Operative\LoanTransformer;
 
 use League\Fractal;
@@ -34,7 +37,7 @@ use League\Fractal;
  *  Controlador tipos de préstamos
  */
 
-class LoanController extends Controller {
+class viewLoanController extends Controller {
 
     use Helpers;
 
@@ -72,6 +75,30 @@ class LoanController extends Controller {
         return $this->response->paginator($paginator, new LoanTransformer());
     }
 
+    public function create(Request $request)
+    {
+        if ($request->id_card) 
+        {
+            $partner = Partner::where('id_card', $request->id_card)->firstOrFail();
+
+        }
+        else if ($request->employee_code) 
+        {
+            $partner = Partner::where('employee_code', $request->employee_code)->firstOrFail();
+        }
+
+        $disponibility = (($partner->assetsbalance->balance_voluntary_contribution + $partner->assetsbalance->balance_individual_contribution + $partner->assetsbalance->balance_employers_contribution) * $partner->organism->disponibility) - $partner->loans->sum('balance');
+
+        $provider = Provider::all();
+
+        return response()->json([ 
+            'partner'        => $partner, 
+            'disponibility'  => $disponibility,
+            'provider'       => $provider
+        ]);
+
+    }
+
     public function show($id) {
         
         $loan = $this->model->byUuid($id)->firstOrFail();
@@ -94,21 +121,89 @@ class LoanController extends Controller {
             'destination'                => 'required',
             'monthly_fees'               => 'required',
             'loantypes_id'               => 'required',
-            'partner_id'                 => 'required'
+            // Amortizacion Prestamo
+            'amortizations'              => 'required',
+            // Fianza
+            'bond_number'                => 'required',
+            'bond_amount'                => 'required',
+            'bond_commission'            => 'required',
+            'provider_id'                => 'required',
+            // Fiadores 
+            'guarantors'                 => 'required',
             
         ]);
+
+        // Guardamos las amortizaciones del prestamo
+
+        foreach ($amortizations as $amort) 
+        {
+            $amortization = new Amortdef();
+
+            $amortization->date_issue = $amort->issue_date;
+            $amortization->amount     = $amort->amount;
+            $amortization->status     = 'P';
+
+            $amortization->save();
+        }
+
+
+        // Guardamos el Prestamo
 
         $loantypes = Loantypes::byUuid($request->loantypes_id)->firstOrFail();
 
         $request->merge(array('loantypes_id' => $loantypes->id));
 
 
-        $partner = Partner::byUuid($request->partner_id)->firstOrFail();
-
-        $request->merge(array('partner_id' => $partner->id));
+        $loan = $this->model->create($request->except([ 'amortizations', 'bond_number', 'bond_amount', 'bond_commission', 'provider_id', 'guarantors']));
 
 
-        $loan = $this->model->create($request->all());
+        // Guardamos los detalles de la Fianza
+
+        $provider = Provider::byUuid($request->provider_id)->firstOrFail();
+
+        $request->merge(array('provider_id' => $provider->id));
+
+        $bond = new Bond();
+
+        $bond->number      = $request->bond_number;
+
+        $bond->issue_date  = $request->issue_date;
+        
+        $bond->amount      = $request->bond_amount;
+
+        $bond->commission  = $request->bond_commission;
+
+        $bond->provider_id = $request->provider_id;
+        
+        $bond->loan_id     = $loan->id;
+
+        $bond->save();
+
+
+        // Guardamos los Fiadores
+
+        $foreach ($guarantors as $guarantor) 
+        {
+            $Guarantor = new Guarantor();
+
+            $Guarantor->amount     = $guarantor->amount;
+
+            $Guarantor->balance    = $guarantor->balance;
+
+            $Guarantor->percentage = $guarantor->percentage;
+
+            $Guarantor->status     = 'P';
+
+            $Guarantor->partner_id = $guarantor->partner_id;
+
+            $Guarantor->loan_id    = $loan->id;
+
+            $Guarantor->save();
+        }
+
+        $loanmovement = new Loanmovements();
+
+        $loanmovement 
 
         return response()->json([ 
             'status'  => true, 
@@ -132,8 +227,7 @@ class LoanController extends Controller {
             'status'                     => 'required',
             'destination'                => 'required',
             'monthly_fees'               => 'required',
-            'loantypes_id'               => 'required',
-            'partner_id'                 => 'required'
+            'loantypes_id'               => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -149,21 +243,15 @@ class LoanController extends Controller {
                 'status'                     => 'required',
                 'destination'                => 'required',
                 'monthly_fees'               => 'required',
-                'loantypes_id'               => 'required',
-                'partner_id'                 => 'required'
+                'loantypes_id'               => 'required'
             ];
         }
 
         $loantypes = Loantypes::byUuid($request->loantypes_id)->firstOrFail();
 
         $request->merge(array('loantypes_id' => $loantypes->id));
-
-
-        $partner = Partner::byUuid($request->partner_id)->firstOrFail();
-
-        $request->merge(array('partner_id' => $partner->id));
-
         
+
         $this->validate($request, $rules);
  
         $loan->update($request->all());

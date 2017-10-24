@@ -33,7 +33,7 @@ class AssetsmovementsTransformer extends TransformerAbstract
      * @var amortization
      */
     protected $availableIncludes = [
-        'partners',
+        'partner',
         'assetsmovementsdetails'
     ];
 
@@ -59,13 +59,13 @@ class AssetsmovementsTransformer extends TransformerAbstract
     // Relaciones
     
     /**
-     * Include Partners
+     * Include Partner
      *
      * @return League\Fractal\ItemResource
      */
-    public function includePartners(Assetsmovements $model)
+    public function includePartner(Assetsmovements $model)
     {
-        return $this->item($model->partners, new PartnersTransformer);
+        return $this->item($model->partner, new PartnerTransformer);
     }
 
 

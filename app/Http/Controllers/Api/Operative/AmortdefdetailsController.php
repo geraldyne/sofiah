@@ -55,7 +55,8 @@ class AmortdefdetailsController extends Controller {
 
         $paginator = $this->model->with(
             'amortdef',
-            'issuedetails'
+            'issuedetails',
+            'loanamortmovements'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {

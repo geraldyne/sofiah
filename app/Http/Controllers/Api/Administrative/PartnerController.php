@@ -69,6 +69,14 @@ class PartnerController extends Controller {
     }
 
     public function create() {
+            'dividends',
+            'guarantors',
+            'loans',
+            'assetsmovements',
+            'assetsbalance'
+        )->paginate($request->get('limit', config('app.pagination_limit')));
+        
+        if ($request->has('limit')) {
         
         $organisms = $this->api->get('administrative/organisms');
         $banks     = $this->api->get('administrative/banks');
@@ -90,6 +98,7 @@ class PartnerController extends Controller {
     }
     
     public function store(Request $request) {
+
 
         $this->validate($request, [
 

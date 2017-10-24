@@ -22,24 +22,23 @@ namespace App\Http\Controllers\Api\Operative;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
-use App\Entities\Operative\Loan;
-use App\Entities\Operative\Guarantor;
 use App\Entities\Administrative\Partner;
-use App\Transformers\Operative\GuarantorTransformer;
+use App\Entities\Operative\Assetsmovements;
+use App\Transformers\Operative\AssetsmovementsTransformer;
 
 use League\Fractal;
 
 /**
- *  Controlador fiadores
+ *  Controlador haberes detalles
  */
 
-class GuarantorController extends Controller {
+class AssetsmovementsController extends Controller {
 
     use Helpers;
 
     protected $model;
 
-    public function __construct(Guarantor $model) {
+    public function __construct(Assetsmovements $model) {
         
         $this->model = $model;
     }
@@ -54,8 +53,8 @@ class GuarantorController extends Controller {
         }
 
         $paginator = $this->model->with(
-            'loan',
-            'partner'
+            'partner',
+            'assetsmovementsdetails'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {
@@ -63,26 +62,26 @@ class GuarantorController extends Controller {
             $paginator->appends('limit', $request->get('limit'));
         }
 
-        return $this->response->paginator($paginator, new GuarantorTransformer());
+        return $this->response->paginator($paginator, new AssetsmovementsTransformer());
     }
 
     public function show($id) {
         
-        $guarantor = $this->model->byUuid($id)->firstOrFail();
+        $assetsmovements = $this->model->byUuid($id)->firstOrFail();
 
-        return $this->response->item($guarantor, new GuarantorTransformer());  
+        return $this->response->item($assetsmovements, new AssetsmovementsTransformer());  
     }
 
     public function store(Request $request) {
         
         $this->validate($request, [
 
-            'amount'         => 'required',
-            'balance'        => 'required',
-            'percentage'     => 'required',
-            'status'         => 'required',
-            'partner_id'     => 'required',
-            'loan_id'        => 'required'
+            'date_issue'         => 'required',
+            'reason'             => 'required',
+            'status'             => 'required',
+            'total_amount'       => 'required',
+            'description'        => 'required',
+            'partner_id'         => 'required'
             
         ]);
 
@@ -91,44 +90,39 @@ class GuarantorController extends Controller {
         $request->merge(array('partner_id' => $partner->id));
 
 
-        $loan = Loan::byUuid($request->loan_id)->firstOrFail();
-
-        $request->merge(array('loan_id' => $loan->id));
-
-
-        $guarantor = $this->model->create($request->all());
+        $assetsmovements = $this->model->create($request->all());
 
         return response()->json([ 
             'status'  => true, 
-            'message' => 'El fiador se ha registrado exitosamente!', 
-            'object'  => $guarantor 
+            'message' => 'El movimiento de haberes se ha registrado exitosamente!', 
+            'object'  => $assetsmovements 
         ]);
     }
 
     public function update(Request $request, $uuid) {
 
-        $guarantor = $this->model->byUuid($uuid)->firstOrFail();
+        $assetsmovements = $this->model->byUuid($uuid)->firstOrFail();
 
         $rules = [
 
-            'amount'         => 'required',
-            'balance'        => 'required',
-            'percentage'     => 'required',
-            'status'         => 'required',
-            'partner_id'     => 'required',
-            'loan_id'        => 'required'
+            'date_issue'         => 'required',
+            'reason'             => 'required',
+            'status'             => 'required',
+            'total_amount'       => 'required',
+            'description'        => 'required',
+            'partner_id'         => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'amount'         => 'required',
-                'balance'        => 'required',
-                'percentage'     => 'required',
-                'status'         => 'required',
-                'partner_id'     => 'required',
-                'loan_id'        => 'required'
+                'date_issue'         => 'required',
+                'reason'             => 'required',
+                'status'             => 'required',
+                'total_amount'       => 'required',
+                'description'        => 'required',
+                'partner_id'         => 'required'
             ];
         }
 
@@ -137,23 +131,18 @@ class GuarantorController extends Controller {
         $request->merge(array('partner_id' => $partner->id));
 
 
-        $loan = Loan::byUuid($request->loan_id)->firstOrFail();
-
-        $request->merge(array('loan_id' => $loan->id));
-
-
         $this->validate($request, $rules);
  
-        $guarantor->update($request->all());
+        $assetsmovements->update($request->all());
 
-        return $this->response->item($guarantor->fresh(), new GuarantorTransformer());
+        return $this->response->item($assetsmovements->fresh(), new AssetsmovementsTransformer());
     }
 
     public function destroy(Request $request, $uuid) {
 
-        $Guarantor = $this->model->byUuid($uuid)->firstOrFail();
+        $Assetsmovements = $this->model->byUuid($uuid)->firstOrFail();
 
-        if($Guarantor->Guarantors->count() > 0) {
+        if($Assetsmovements->Assetsmovementss->count() > 0) {
 
             return response()->json([ 
                 'status' => false, 
@@ -161,9 +150,9 @@ class GuarantorController extends Controller {
             ]);
         }
 
-        $Guarantor->status= 0;
+        $Assetsmovements->status= 0;
 
-        $Guarantor->update();
+        $Assetsmovements->update();
 
         return response()->json([ 
             'status' => true, 

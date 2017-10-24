@@ -23,42 +23,48 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
-use App\Entities\Operative\Specialfee;
+use App\Entities\Administrative\Partner;
 
 /**
- *  Modelo de Cuota Especial Detalles
+ *  Modelo de Saldo Haberes
  */
 
-class Specialfeedetails extends Model {
+class Assetsbalance extends Model {
 
     use Notifiable, UuidScopeTrait;
-    
+
     // Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "special_fee_details";
+    protected $table = "assets_balance";
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var Date    loantype_id
-     * @var Double  special_fee_details
+     * @var float    balance_employers_contribution
+     * @var float    balance_individual_contribution
+     * @var float    balance_voluntary_contribution
+     * @var Integer  partner_id
      */
-
-    protected $fillable = ['uuid', 'month'];
+    
+    protected $fillable = ['uuid',
+                           'balance_employers_contribution',
+                           'balance_individual_contribution',
+                           'balance_voluntary_contribution',  
+                           'partner_id'];
 
     /* 
      * RELACIONES 
      */
 
     /**
-      * Una cuota especial detalle pertenece a una cuota especial 
+      * Una fianza pertenece a un préstamo
       * 
       * @return type
       */ 
 
-    public function specialfees() {
+    public function partner() {
 
-        return $this->hasMany(Specialfee::class);
+        return $this->belongsTo(Partner::class);
     }
 
     /**

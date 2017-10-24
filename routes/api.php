@@ -201,6 +201,20 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->delete('/{uuid}', 'Api\Operative\LoantypesController@destroy');
                 });
 
+
+                # Rutas para los tipos de préstamos
+
+                $api->group(['prefix' => 'view/loantypes'], function($api){
+
+                    $api->get('/', 'Api\Operative\viewLoantypesController@index');
+                    $api->get('/create', 'Api\Operative\viewLoantypesController@create');
+                    $api->post('/', 'Api\Operative\viewLoantypesController@store');
+                    $api->get('/{uuid}', 'Api\Operative\viewLoantypesController@show');
+                    $api->put('/{uuid}', 'Api\Operative\viewLoantypesController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\viewLoantypesController@update');
+                    $api->delete('/{uuid}', 'Api\Operative\viewLoantypesController@destroy');
+                });
+
                 # Rutas para los grupos de tipo de préstamos
 
                 $api->group(['prefix' => 'loantypegroups'], function($api){
@@ -257,6 +271,19 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->get('/{uuid}', 'Api\Operative\LoanController@show');
                     $api->put('/{uuid}', 'Api\Operative\LoanController@update');
                     $api->patch('/{uuid}', 'Api\Operative\LoanController@update');
+                });
+
+
+                # Rutas para prestamos
+
+                $api->group(['prefix' => 'view/loan'], function($api){
+
+                    $api->get('/', 'Api\Operative\viewLoanController@index');
+                    $api->post('/create', 'Api\Operative\viewLoanController@create');
+                    $api->post('/', 'Api\Operative\viewLoanController@store');
+                    $api->get('/{uuid}', 'Api\Operative\viewLoanController@show');
+                    $api->put('/{uuid}', 'Api\Operative\viewLoanController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\viewLoanController@update');
                 });
 
 
@@ -404,6 +431,55 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->patch('/{uuid}', 'Api\Operative\GuarantorController@update');
                     $api->delete('/{uuid}', 'Api\Operative\GuarantorController@destroy');
                 });
+
+
+                # Rutas para movimientos haberes 
+
+                $api->group(['prefix' => 'assetsmovements'], function($api){
+
+                    $api->get('/', 'Api\Operative\AssetsmovementsController@index');
+                    $api->post('/', 'Api\Operative\AssetsmovementsController@store');
+                    $api->get('/{uuid}', 'Api\Operative\AssetsmovementsController@show');
+                    $api->put('/{uuid}', 'Api\Operative\AssetsmovementsController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\AssetsmovementsController@update');
+                    $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsController@destroy');
+                });
+
+
+                # Rutas para movimientos haberes detalles
+
+                $api->group(['prefix' => 'assetsmovementsdetails'], function($api){
+
+                    $api->get('/', 'Api\Operative\AssetsmovementsdetailsController@index');
+                    $api->post('/', 'Api\Operative\AssetsmovementsdetailsController@store');
+                    $api->get('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@show');
+                    $api->put('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@update');
+                    $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@destroy');
+                });
+
+                # Rutas para saldo haberes 
+
+                $api->group(['prefix' => 'Assetsbalance'], function($api){
+
+                    $api->get('/', 'Api\Operative\AssetsbalanceController@index');
+                    $api->post('/', 'Api\Operative\AssetsbalanceController@store');
+                    $api->get('/{uuid}', 'Api\Operative\AssetsbalanceController@show');
+                    $api->put('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
+                });
+
+                # Rutas para Movimientos Amortizacion Prestamos
+
+                $api->group(['prefix' => 'loanamortmovements'], function($api){
+
+                    $api->get('/', 'Api\Operative\LoanamortmovementsController@index');
+                    $api->post('/', 'Api\Operative\LoanamortmovementsController@store');
+                    $api->get('/{uuid}', 'Api\Operative\LoanamortmovementsController@show');
+                    $api->put('/{uuid}', 'Api\Operative\LoanamortmovementsController@update');
+                    $api->patch('/{uuid}', 'Api\Operative\LoanamortmovementsController@update');
+                });
+
             });
             
             # Rutas del módulo de usuarios
