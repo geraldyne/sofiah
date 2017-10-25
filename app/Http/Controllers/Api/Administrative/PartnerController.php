@@ -23,6 +23,7 @@ use App\Entities\Association;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\User;
+use App\Entities\Association;
 use App\Entities\Administrative\Bank;
 use App\Entities\Administrative\Partner;
 use App\Entities\Administrative\Organism;
@@ -69,23 +70,15 @@ class PartnerController extends Controller {
     }
 
     public function create() {
-            'dividends',
-            'guarantors',
-            'loans',
-            'assetsmovements',
-            'assetsbalance'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
         
-        if ($request->has('limit')) {
-        
-        $organisms = $this->api->get('administrative/organisms');
-        $banks     = $this->api->get('administrative/banks');
+        $associations   = $this->api->get('administrative/associations?include=organisms');
+        $banks          = $this->api->get('administrative/banks');
 
         return response()->json([
 
-            'status'    => true,
-            'organisms' => $organisms,
-            'banks'     => $banks
+            'status'        => true,
+            'associations'  => $associations,
+            'banks'         => $banks
 
         ]);
     }

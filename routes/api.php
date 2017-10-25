@@ -20,7 +20,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 # Update (put, patch)
                 # Destroy
 
-                $api->get('/main', 'Api\Administrative\AdministrativeController@index');
+                $api->get('/', 'Api\Administrative\AdministrativeController@index');
 
                 # Rutas para las cuentas de integración
 

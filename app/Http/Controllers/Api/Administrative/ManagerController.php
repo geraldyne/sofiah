@@ -66,6 +66,21 @@ class ManagersController extends Controller {
         return $this->response->paginator($paginator, new ManagerTransformer());
     }
 
+    public function create($idcard) {
+        
+        $associations = $this->api->get('administrative/associations?include=organisms');
+        $partner      = $this->api->get('administrative/partners/'.$idcard);
+        $charges      = $this->api->get('administrative/charges');
+
+        return response()->json([
+
+            'status'       => true,
+            'associations' => $associations,
+            'partner'      => $partners,
+            'charges'      => $charges
+        ]);
+    }
+
     public function show($id) {
         
         $Manager = $this->model->byUuid($id)->firstOrFail();
@@ -93,9 +108,7 @@ class ManagersController extends Controller {
             'user_id'          => 'required',
             'direction_id'     => 'required',
             'association_id'   => 'required',
-            'bank_details_id'  => 'required',
-            'created_at'       =>  getdate(),
-            'updated_at'       =>  getdate()
+            'bank_details_id'  => 'required'
         ]);
 
         $user = User::byUuid($request->user_id)->firstOrFail();

@@ -71,7 +71,6 @@ class AssociationsController extends Controller {
                 'status'    => true,
                 'countries' => $countries,
                 'accounts'  => $accounts->where('account_type','=','patrimonio')
-
             ]);
 
         } else {
