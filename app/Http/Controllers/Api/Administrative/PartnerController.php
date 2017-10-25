@@ -29,6 +29,9 @@ use App\Entities\Administrative\Partner;
 use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Preference;
 use App\Entities\Administrative\Bankdetails;
+
+use App\Entities\Operative\Assetsbalance;
+
 use App\Transformers\Administrative\PartnerTransformer;
 
 use Carbon\Carbon;
@@ -168,6 +171,13 @@ class PartnerController extends Controller {
         }
 
         $partner = $this->model->create($request->except(['bankuuid', 'account_number','account_type']));
+
+        $request->merge(array('balance_individual_contribution' => 0));
+        $request->merge(array('balance_employers_contribution' => 0));
+        $request->merge(array('balance_voluntary_contribution' => 0));
+        $request->merge(array('partner_id' => $partner->id));
+
+        $balance = Assetsbalance::create($request->only(['balance_individual_contribution','balance_employers_contribution','balance_voluntary_contribution', 'partner_id']));
 
         return response()->json([
 
