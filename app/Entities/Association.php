@@ -23,9 +23,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
+use App\Entities\Administrative\Accountlvl6;
 use App\Entities\Administrative\Direction;
 use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Employee;
+use App\Entities\Administrative\Accountassociation;
 
 class Association extends Model {
 
@@ -63,14 +65,7 @@ class Association extends Model {
         'lock_date',
         'time_to_reincorporate',
         'loan_time',
-        'percent_legal_reserve',
-        'employers_contribution_account_id',
-        'deferred_employer_contribution_account_id',
-        'individual_contribution_account_id',
-        'deferred_individual_contribution_account_id',
-        'voluntary_contribution_account_id',
-        'deferred_voluntary_contribution_account_id',
-        'legal_reserve_account_id'
+        'percent_legal_reserve'
     ];
 
     /*
@@ -89,6 +84,13 @@ class Association extends Model {
     public function organisms() {
 
         return $this->hasMany(Organism::class);
+    }
+
+    // Una asociacion tiene muchos organismos
+
+    public function accountsassociation() {
+
+        return $this->hasMany(Accountassociation::class);
     }
 
     // Una asociacion tiene muchos empleados

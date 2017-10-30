@@ -33,7 +33,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 # Rutas para las asociaciones
 
                 $api->get('associations/create', 'Api\AssociationsController@create');
-                $api->resource('associations', 'Api\AssociationsController', ['except' => ['edit', 'show', 'create']]);
+                $api->resource('associations', 'Api\AssociationsController', ['except' => ['edit', 'show']]);
 
                 # Rutas para los paises
                 

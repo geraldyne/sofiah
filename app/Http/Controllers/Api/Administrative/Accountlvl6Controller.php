@@ -57,7 +57,8 @@ class Accountlvl6Controller extends Controller {
             'accountingintegration', 
             'cashflow', 
             'heritagechange',
-            'dailymovementdetails'
+            'dailymovementdetails',
+            'accountsassociation'
         )->get();
 
         return $this->response->collection($paginator, new Accountlvl6Transformer());

@@ -37,7 +37,7 @@ class CreateAssociationsTable extends Migration
             // INTEGRACIÓN CONTABLE BÁSICA
 
             $table->float('percent_legal_reserve')->comment('Porcentaje destinado para la reserva legal');
-
+/*
             $table->integer('employers_contribution_account_id')->unsigned()->comment('Código cuenta para aporte patronal');
             $table->integer('deferred_employer_contribution_account_id')->unsigned()->comment('Código cuenta para el registro de los aportes patronales diferidos');
             $table->integer('individual_contribution_account_id')->unsigned()->comment('Código cuenta para aporte individual');
@@ -53,11 +53,24 @@ class CreateAssociationsTable extends Migration
             $table->foreign('voluntary_contribution_account_id')->references('id')->on('accounts_lvl6')->onDelete('cascade');
             $table->foreign('deferred_voluntary_contribution_account_id')->references('id')->on('accounts_lvl6')->onDelete('cascade');
             $table->foreign('legal_reserve_account_id')->references('id')->on('accounts_lvl6')->onDelete('cascade');
-
+*/
             // FIN DE INTEGRACIÓN
 
             $table->foreign('direction_id')->references('id')->on('directions')->onDelete('cascade');
             $table->unique(['alias', 'rif', 'sudeca' ,'email', 'uuid']);
+            $table->timestamps();
+        });
+
+        Schema::create('accountsassociation', function (Blueprint $table) {
+
+            $table->increments('id');
+            $table->uuid('uuid')->index();
+            $table->string('description')->comment('Descripción de la cuenta');
+            $table->integer('association_id')->unsigned()->comment('Código de la asociación');
+            $table->integer('accountlvl6_id')->unsigned()->comment('Código de la cuenta de nivel 6');
+            $table->foreign('association_id')->references('id')->on('associations')->onDelete('cascade');
+            $table->foreign('accountlvl6_id')->references('id')->on('accounts_lvl6')->onDelete('cascade');
+            $table->unique(['uuid']);
             $table->timestamps();
         });
 
