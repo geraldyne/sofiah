@@ -53,79 +53,117 @@ class OrganismsController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
+        $organisms = $this->model->with(
+
             'direction', 
             'association', 
             'partners',
             'assetstypecodes',
             'loantypecodes',
             'issues'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
         
-        if ($request->has('limit')) {
+        )->get();
         
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new OrganismTransformer());
+        return $this->response->collection($organisms, new OrganismTransformer());
     }
 
-    public function show($id) {
+    public function create() {
         
-        $organism = $this->model->byUuid($id)->firstOrFail();
+        $countries = $this->api->get('administrative/countries?include=states.cities');
 
-        $this->response->item($organism, new OrganismTransformer());
-    }
-    
-    public function store(Request $request) {
-
-        if( ! $request->web_site)
-
-            $request->merge(array('web_site' => 'https://sofiah.com.ve'));
-
-        $this->validate($request, [
-
-            'name' => 'required|unique:organisms',
-            'alias' => 'required',
-            'email' => 'required|email|unique:users|max:120',
-            'web_site' => 'url',
-            'zone' => 'required',
-            'contact' => 'required',
-            'phone' => 'required|numeric',
-            'rif' => 'required|alpha_dash|max:12|unique:organisms',
-            'payroll_type' => 'required',
-            'status' => 'required|boolean',
-            'disponibility' => 'required',
-            'percentage_employers_contribution' => 'required|numeric',
-            'percentage_individual_contribution' => 'required|numeric',
-            'percentage_voluntary_contribution' => 'required|numeric',
-
-            'direction' => 'required',
-            'city_id' => 'required|alpha_dash',
-
-            'association_id' => 'required|alpha_dash'
-        ]);
-
-        $city = City::byUuid($request->city_id)->firstOrFail();
-
-        $request->merge(array('city_id' => $city->id));
-
-        $direction = Direction::create($request->only('city_id','direction'));
-        
-        $request->merge(array('direction_id' => $direction->id));
-        
-        $association = Association::byUuid($request->association_id)->firstOrFail();
-
-        $request->merge(array('association_id' => $association->id));
-
-        $organism = $this->model->create($request->except(['direction', 'city_id']));
+        $association = $this->api->get('administrative/associations');
 
         return response()->json([
 
             'status'    => true,
-            'message'   => '¡El organismo se ha creado con éxito!',
-            'object'    => $organism
+            'countries' => $countries,
+            'association'  => $association
         ]);
+    }
+
+    public function show($id) {
+
+        $organism = $this->model->byUuid($id)->firstOrFail();
+
+        return $this->response->item($organism, new OrganismTransformer());
+    }
+    
+    public function store(Request $request) {
+
+        # Si el organismo no tiene sitio web carga automáticamente el sitio del sistema Sofiah
+
+            if( ! $request->web_site) $request->merge(array('web_site' => 'https://sofiah.com.ve'));
+
+        # Evalúa cada dato recibido
+
+            $this->validate($request, [
+
+                'name' => 'required|unique:organisms',
+                'alias' => 'required',
+                'email' => 'required|email|unique:users|max:120',
+                'web_site' => 'url',
+                'zone' => 'required',
+                'contact' => 'required',
+                'phone' => 'required|numeric',
+                'rif' => 'required|alpha_dash|max:12|unique:organisms',
+                'payroll_type' => 'required',
+                'status' => 'required|boolean',
+                'disponibility' => 'required',
+                'percentage_employers_contribution' => 'required|numeric',
+                'percentage_individual_contribution' => 'required|numeric',
+                'percentage_voluntary_contribution' => 'required|numeric',
+
+                'direction' => 'required',
+                'city_id' => 'required|alpha_dash',
+
+                'association_id' => 'required|alpha_dash'
+            ]);
+
+        # Obtiene la ciudad mediante el UUID
+
+            $city = City::byUuid($request->city_id)->firstOrFail();
+
+            $request->merge(array('city_id' => $city->id));
+
+        # Crea la dirección
+
+            $direction = Direction::create($request->only('city_id','direction'));
+        
+            if($direction) $request->merge(array('direction_id' => $direction->id));
+
+            else return response()->json([
+
+                'status'    => false,
+                'message'   => '¡No se ha podido almacenar la dirección del organismo! Por favor verifique los datos he intente nuevamente.'
+            ]);
+
+        # Obtiene la asociación mediante el UUID
+        
+            $association = Association::byUuid($request->association_id)->firstOrFail();
+
+            $request->merge(array('association_id' => $association->id));
+
+        # Crea el organismo
+
+            $organism = $this->model->create($request->except(['direction', 'city_id']));
+
+            if($organism) return response()->json([
+
+                'status'    => true,
+                'message'   => '¡El organismo se ha creado con éxito!',
+                'object'    => $organism
+            ]);
+
+            else {
+
+                $direction->delete();
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al crear el organismo! Por favor verifique los datos he intente nuevamente.'
+                ]);
+            }
     }
 
     public function update(Request $request, $uuid) {

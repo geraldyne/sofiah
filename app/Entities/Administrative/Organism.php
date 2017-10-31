@@ -53,7 +53,6 @@ class Organism extends Model {
         'web_site',
         'zone',
         'contact',
-        'slug',
         'phone',
         'rif',
         'payroll_type',

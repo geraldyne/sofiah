@@ -55,6 +55,7 @@ class AssociationsController extends Controller {
         }
 
         $association = $this->model->with(
+            
             'organisms', 
             'direction', 
             'employees',

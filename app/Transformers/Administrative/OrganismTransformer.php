@@ -39,7 +39,6 @@ class OrganismTransformer extends TransformerAbstract
             'web_site' => $model->web_site,
             'zone' => $model->zone,
             'contact' => $model->contact,
-            'slug' => $model->slug,
             'phone' => $model->phone,
             'rif' => $model->rif,
             'direction_id' => $model->direction_id,
@@ -74,7 +73,7 @@ class OrganismTransformer extends TransformerAbstract
      */
     public function includeAssociation(Organism $model)
     {
-        return $this->item($model->association, new AssociationTransformer);
+        return $this->item($model->association, new \App\Transformers\AssociationTransformer);
     }
     
     /**

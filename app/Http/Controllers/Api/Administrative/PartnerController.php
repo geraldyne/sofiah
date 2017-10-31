@@ -19,9 +19,9 @@ namespace App\Http\Controllers\Api\Administrative;
 
 
 use Illuminate\Http\Request;
-use App\Entities\Association;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+
 use App\Entities\User;
 use App\Entities\Association;
 use App\Entities\Administrative\Bank;
@@ -61,20 +61,23 @@ class PartnerController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
+        $partner = $this->model->with(
+
             'organism',
             'user',
             'bankdetails',
             'managers',
             'dividends'
+
         )->get();
 
-        return $this->response->collection($paginator, new PartnerTransformer());
+        return $this->response->collection($partner, new PartnerTransformer());
     }
 
     public function create() {
         
         $associations   = $this->api->get('administrative/associations?include=organisms');
+
         $banks          = $this->api->get('administrative/banks');
 
         return response()->json([
@@ -95,80 +98,97 @@ class PartnerController extends Controller {
     
     public function store(Request $request) {
 
-
-        $this->validate($request, [
-
-            'employee_code' => 'required|unique:partners',
-            'names' => 'required',
-            'lastnames' => 'required',
-            'email' => 'required|email|max:120|unique:partners',
-            'title' => 'required',
-            'local_phone' => 'required|numeric',
-            'nationality' => 'required',
-            'status' => 'required',
-            'id_card' => 'required|unique:partners|unique:partners',
-            'phone' => 'required|numeric',
-            'organism_id' => 'required|alpha_dash',
-            'bankuuid' => '',
-            'account_number' => 'unique:bank_details',
-            'account_type' => '',
-        ]);
-
-        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
-
-        $request->merge(array('organism_id' => $organism->id));
-
-        # crea el usuario
+        # Evalúa cada dato recibido
         
-        $username = substr(strtolower($request->names), 0, 3).explode(' ', strtolower($request->lastnames.''))[0].substr($request->id_card, -3);
+            $this->validate($request, [
 
-        if( ! User::where('name','=',$username)->exists()) {
-
-            $request->merge(array('name' => $username));
-            $request->merge(array('password' => $username));
-
-            $request->merge(array('status' => true));
-
-            $user = User::create($request->all());
-
-            $user->assignRole('partner');
-
-            $request->merge(array('style'     => 'bg-blue'));
-            $request->merge(array('ĺang'      => 'es'));
-            $request->merge(array('zoom'      => '80'));
-            $request->merge(array('user_id'   => $user->id));
-
-            $preference = Preference::create($request->all());
-        
-        } else {
-
-            $user = User::where('name','=',$username)->first();
-
-            $request->merge(array('user_id' => $user->id));
-        }
-
-        $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
-
-        # crea los detalles de bancos
-
-        $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
-        
-        if(! Bankdetails::where('account_number','=',$request->account_number)->exists()) {
-
-            $request->merge(array('bank_id' => $bank->id));
-
-            $details = Bankdetails::create($request->only(['bank_id','account_number','account_type']));
-            
-            $request->merge(array('bankdetails_id' => $details->id));
-        
-        } else {
-
-            return response()->json([
-
-                'status'    => false,
-                'message'   => 'La cuenta bancaria ingresada ya existe'
+                'employee_code' => 'required|unique:partners',
+                'names' => 'required',
+                'lastnames' => 'required',
+                'email' => 'required|email|max:120|unique:partners',
+                'title' => 'required',
+                'local_phone' => 'required|numeric',
+                'nationality' => 'required',
+                'status' => 'required',
+                'id_card' => 'required|unique:partners|unique:partners',
+                'phone' => 'required|numeric',
+                'organism_id' => 'required|alpha_dash',
+                'bankuuid' => '',
+                'account_number' => 'unique:bank_details',
+                'account_type' => '',
             ]);
-        }
+
+        # Obtiene el organismo mediante el UUID
+
+            $organism = Organism::byUuid($request->organism_id)->firstOrFail();
+
+            $request->merge(array('organism_id' => $organism->id));
+
+        # Crea el nombre de usuario y luego el usuario si no existe
+        
+            $username = substr(strtolower($request->names), 0, 3).explode(' ', strtolower($request->lastnames.''))[0].substr($request->id_card, -3);
+
+            if( ! User::where('name','=',$username)->exists()) {
+
+                $request->merge(array('name'        => $username));
+
+                $request->merge(array('email'       => $request->email));
+
+                $request->merge(array('password'    => $username)); # ALMACENA LA CLAVE COMO EL NOMBRE DE USUARIO, DEBE ACTUALIZAR EN SU PRIMER INICIO DE SESIÓN
+
+                $request->merge(array('status'      => true));
+
+                $user = User::create($request->only(['name', 'email', 'password', 'status']));
+
+                if( ! $user) return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar el usuario! Por favor verifique los datos he intente nuevamente.'
+                ]);
+
+                $user->assignRole('partner');
+
+                if( $user->roles->count() == 0) { $user->forceDelete(); }
+
+                $request->merge(array('user_id' => $user->id));
+
+                $preference = Preference::create($request->only(['user_id']));
+
+                if( ! $preference) return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar las preferencias de usuario! Por favor verifique los datos he intente nuevamente.'
+                ]);
+            
+            } else {
+
+                $user = User::where('name','=',$username)->firstOrFail();
+
+                $request->merge(array('user_id' => $user->id));
+            }
+
+            $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
+
+        # Crea los detalles de bancos
+
+            $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
+            
+            if(! Bankdetails::where('account_number','=',$request->account_number)->exists()) {
+
+                $request->merge(array('bank_id' => $bank->id));
+
+                $details = Bankdetails::create($request->only(['bank_id','account_number','account_type']));
+                
+                $request->merge(array('bankdetails_id' => $details->id));
+            
+            } else {
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => 'La cuenta bancaria ingresada ya existe'
+                ]);
+            }
 
         $partner = $this->model->create($request->except(['bankuuid', 'account_number','account_type']));
 

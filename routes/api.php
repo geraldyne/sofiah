@@ -49,7 +49,8 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                 # Rutas para los organismos
 
-                $api->resource('organisms', 'Api\Administrative\OrganismsController', ['except' => ['edit', 'create']]);
+                $api->get('organisms/create', 'Api\Administrative\OrganismsController@create');
+                $api->resource('organisms', 'Api\Administrative\OrganismsController', ['except' => 'edit']);
 
                 # Rutas para los bancos
                 
