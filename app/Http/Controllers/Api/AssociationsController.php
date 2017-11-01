@@ -54,14 +54,7 @@ class AssociationsController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $association = $this->model->with(
-            
-            'organisms', 
-            'direction', 
-            'employees',
-            'accountsassociation'
-
-        )->get();
+        $association = $this->model->get();
 
         return $this->response->collection($association, new AssociationTransformer());
     }
@@ -78,6 +71,30 @@ class AssociationsController extends Controller {
 
                 'status'    => true,
                 'countries' => $countries,
+                'accounts'  => $accounts->where('account_type','=','patrimonio')
+            ]);
+
+        } else {
+
+            return response()->json([
+
+                'status' => false
+            ]);
+        }
+    }
+
+    public function edit() {
+        
+        if(count(Association::all()) > 0) {
+
+            $association = $this->api->get('administrative/associations?include=direction.city.state,accountsassociation.accountlvl6');
+
+            $accounts = $this->api->get('administrative/accountlvl6');
+
+            return response()->json([
+
+                'status'    => true,
+                'association' => $association,
                 'accounts'  => $accounts->where('account_type','=','patrimonio')
             ]);
 
@@ -107,7 +124,7 @@ class AssociationsController extends Controller {
                 'name' => 'required|unique:associations',
                 'alias' => 'required|unique:associations',
                 'sudeca' => 'required|alpha_dash|max:6|unique:associations',
-                'email' => 'required|email|unique:users|max:120|unique:associations',
+                'email' => 'required|email|max:120|unique:associations',
                 'web_site' => 'sometimes|required|url',
                 'phone' => 'required|numeric',
                 'rif' => 'required|alpha_dash|max:12|unique:associations',
@@ -343,13 +360,8 @@ class AssociationsController extends Controller {
 
         $rules = [
 
-            'name' => 'required',
-            'alias' => 'required',
-            'sudeca' => 'required|alpha_dash|max:6',
-            'email' => 'required|email|unique:users|max:120',
             'web_site' => 'sometimes|required|url',
             'phone' => 'required|numeric',
-            'rif' => 'required|alpha_dash|max:12',
             'lock_date' => 'required|date',
             'time_to_reincorporate' => 'required|numeric',
             'loan_time' => 'required|numeric',
@@ -373,13 +385,8 @@ class AssociationsController extends Controller {
 
             $rules = [
 
-                'name' => 'sometimes|required',
-                'alias' => 'sometimes|required',
-                'sudeca' => 'sometimes|required|alpha_dash|max:6',
-                'email' => 'sometimes|required|email|unique:users|max:120',
                 'web_site' => 'sometimes|required|url',
                 'phone' => 'sometimes|required|numeric',
-                'rif' => 'sometimes|required|alpha_dash|max:12',
                 'lock_date' => 'sometimes|required|date',
                 'time_to_reincorporate' => 'sometimes|required|numeric',
                 'loan_time' => 'sometimes|required|numeric',

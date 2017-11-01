@@ -11,7 +11,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
         $api->group(['middleware' => ['auth:api']], function ($api) {
 
             # Rutas del módulo administrativo
-            
+
             $api->group(['prefix' => 'administrative'], function ($api) {
 
                 # Index
@@ -20,7 +20,44 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 # Update (put, patch)
                 # Destroy
 
-                $api->get('/', 'Api\Administrative\AdministrativeController@index');
+                # RUTA PRINCIPAL
+
+                    $api->get('/', 'Api\Administrative\AdministrativeController@index');
+
+                # RUTAS DE DIRECCION
+
+                    # Rutas para los paises
+
+                        $api->resource('countries', 'Api\Administrative\CountriesController');
+
+                    # Rutas para los estados
+
+                        $api->resource('states', 'Api\Administrative\StatesController');
+
+                    # Rutas para las ciudades
+
+                        $api->resource('cities', 'Api\Administrative\CitiesController');
+
+                # RUTAS DE ASOCIACIONES
+
+                  $api->get('associations/create', 'Api\AssociationsController@create');
+                  $api->get('associations/edit', 'Api\AssociationsController@edit');
+                  $api->resource('associations', 'Api\AssociationsController', ['except' => ['show']]);
+
+                # RUTAS DE ORGANISMOS
+
+                  $api->get('organisms/create', 'Api\Administrative\OrganismsController@create');
+                  $api->resource('organisms', 'Api\Administrative\OrganismsController', ['except' => 'edit']);
+
+                # RUTAS DE ASOCIADOS
+
+                  $api->get('partner/create', 'Api\Administrative\PartnerController@create');
+                  $api->resource('partner', 'Api\Administrative\PartnerController', ['except' => 'edit']);
+
+                # RUTAS DE EMPLEADOS
+                 
+                $api->get('employee/create', 'Api\Administrative\EmployeeController@create');
+                $api->resource('employee', 'Api\Administrative\EmployeeController', ['except' => 'edit']);
 
                 # Rutas para las cuentas de integración
 
@@ -30,51 +67,31 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                 $api->resource('accountingyear', 'Api\Administrative\AccountingyearController', ['except' => ['edit', 'create']]);
 
-                # Rutas para las asociaciones
 
-                $api->get('associations/create', 'Api\AssociationsController@create');
-                $api->resource('associations', 'Api\AssociationsController', ['except' => ['edit', 'show']]);
 
-                # Rutas para los paises
-                
-                $api->resource('countries', 'Api\Administrative\CountriesController', ['except' => ['edit', 'create']]);
 
-                # Rutas para los estados
-                
-                $api->resource('states', 'Api\Administrative\StatesController', ['except' => ['edit', 'create']]);
 
-                # Rutas para las ciudades
-                
-                $api->resource('cities', 'Api\Administrative\CitiesController', ['except' => ['edit', 'create']]);
-
-                # Rutas para los organismos
-
-                $api->get('organisms/create', 'Api\Administrative\OrganismsController@create');
-                $api->resource('organisms', 'Api\Administrative\OrganismsController', ['except' => 'edit']);
 
                 # Rutas para los bancos
-                
+
                 $api->resource('banks', 'Api\Administrative\BanksController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los flujo de efectivo
-                
+
                 $api->resource('cashflow', 'Api\Administrative\CashflowController', ['except' => ['edit', 'create']]);
 
                 # Rutas para los flujo de efectivo
-                
+
                 $api->resource('charges', 'Api\Administrative\ChargesController', ['except' => ['edit', 'create']]);
 
-                # Rutas para los asociados
-                
-                $api->get('partner/create', 'Api\Administrative\PartnerController@create');
-                $api->resource('partner', 'Api\Administrative\PartnerController', ['except' => 'edit']);
+
 
                 # Rutas para las dividendos
-                
+
                 $api->resource('dividends', 'Api\Administrative\DividendsController', ['except' => ['edit', 'create']]);
 
                 # Rutas para las direcciones
-                
+
                 $api->group(['prefix' => 'direction'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\DirectionController@index');
@@ -86,7 +103,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
                 # Rutas para detalles bancarios
-                
+
                 $api->group(['prefix' => 'bankdetails'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\BankdetailsController@index');
@@ -97,20 +114,8 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->delete('/{uuid}', 'Api\Administrative\BankdetailsController@destroy');
                 });
 
-                # Rutas para los empleado
-                
-                $api->group(['prefix' => 'employee'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\EmployeeController@index');
-                    $api->post('/', 'Api\Administrative\EmployeeController@store');
-                    $api->get('/{uuid}', 'Api\Administrative\EmployeeController@show');
-                    $api->put('/{uuid}', 'Api\Administrative\EmployeeController@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\EmployeeController@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\EmployeeController@destroy');
-                });
-
                 # Rutas para los directivos
-                
+
                 $api->group(['prefix' => 'managers'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\ManagerController@index');
@@ -122,7 +127,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
                 # Rutas para las cuentas nivel 1
-                
+
                 $api->group(['prefix' => 'accountlvl1'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\Accountlvl1Controller@index');
@@ -134,7 +139,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
                 # Rutas para las cuentas nivel 2
-                
+
                 $api->group(['prefix' => 'accountlvl2'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\Accountlvl2Controller@index');
@@ -146,7 +151,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
                 # Rutas para las cuentas nivel 3
-                
+
                 $api->group(['prefix' => 'accountlvl3'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\Accountlvl3Controller@index');
@@ -158,7 +163,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
                 # Rutas para las cuentas nivel 4
-                
+
                 $api->group(['prefix' => 'accountlvl4'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\Accountlvl4Controller@index');
@@ -174,7 +179,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 $api->resource('accountlvl5', 'Api\Administrative\Accountlvl5Controller', ['except' => ['edit', 'create']]);
 
                 # Rutas para las cuentas nivel 6
-                
+
                 $api->group(['prefix' => 'accountlvl6'], function ($api) {
 
                     $api->get('/', 'Api\Administrative\Accountlvl6Controller@index');
@@ -323,7 +328,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->patch('/{uuid}', 'Api\Operative\LoanmovementsController@update');
                 });
 
-                # Rutas para la emision 
+                # Rutas para la emision
 
                 $api->group(['prefix' => 'issue'], function($api){
 
@@ -347,7 +352,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
 
-                # Rutas para amortizacion 
+                # Rutas para amortizacion
 
                 $api->group(['prefix' => 'amortdef'], function($api){
 
@@ -434,7 +439,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
 
-                # Rutas para movimientos haberes 
+                # Rutas para movimientos haberes
 
                 $api->group(['prefix' => 'assetsmovements'], function($api){
 
@@ -459,7 +464,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@destroy');
                 });
 
-                # Rutas para saldo haberes 
+                # Rutas para saldo haberes
 
                 $api->group(['prefix' => 'Assetsbalance'], function($api){
 
@@ -482,13 +487,13 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 });
 
             });
-            
+
             # Rutas del módulo de usuarios
-             
+
             $api->group(['prefix' => 'users'], function ($api) {
 
                 # Rutas para los usuarios
-                
+
                 $api->group(['prefix' => 'users'], function ($api) {
 
                     $api->get('/', 'Api\Users\UsersController@index');
@@ -498,7 +503,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->patch('/{uuid}', 'Api\Users\UsersController@update');
                     $api->delete('/{uuid}', 'Api\Users\UsersController@destroy');
                 });
-                
+
                 $api->group(['prefix' => 'roles'], function ($api) {
 
                     $api->get('/', 'Api\Users\RolesController@index');

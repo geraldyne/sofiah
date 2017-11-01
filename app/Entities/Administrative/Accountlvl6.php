@@ -82,7 +82,7 @@ class Accountlvl6 extends Model {
 
     public function accountsassociation() {
 
-        return $this->hasMany(Acountassociation::class);
+        return $this->hasMany(Accountassociation::class);
     }
 
     /**

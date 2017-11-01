@@ -102,20 +102,20 @@ class PartnerController extends Controller {
         
             $this->validate($request, [
 
-                'employee_code' => 'required|unique:partners',
-                'names' => 'required',
-                'lastnames' => 'required',
-                'email' => 'required|email|max:120|unique:partners',
-                'title' => 'required',
-                'local_phone' => 'required|numeric',
-                'nationality' => 'required',
-                'status' => 'required',
-                'id_card' => 'required|unique:partners|unique:partners',
-                'phone' => 'required|numeric',
-                'organism_id' => 'required|alpha_dash',
-                'bankuuid' => '',
-                'account_number' => 'unique:bank_details',
-                'account_type' => '',
+                'employee_code'     => 'required|unique:partners',
+                'names'             => 'required',
+                'lastnames'         => 'required',
+                'email'             => 'required|email|max:120|unique:partners',
+                'title'             => 'required',
+                'local_phone'       => 'required|numeric',
+                'nationality'       => 'required',
+                'status'            => 'required',
+                'id_card'           => 'required|unique:partners',
+                'phone'             => 'required|numeric',
+                'organism_id'       => 'required|alpha_dash',
+                'bankuuid'          => 'alpha_dash',
+                'account_number'    => 'unique:bank_details',
+                'account_type'      => '',
             ]);
 
         # Obtiene el organismo mediante el UUID
@@ -192,19 +192,39 @@ class PartnerController extends Controller {
 
         $partner = $this->model->create($request->except(['bankuuid', 'account_number','account_type']));
 
-        $request->merge(array('balance_individual_contribution' => 0));
-        $request->merge(array('balance_employers_contribution' => 0));
-        $request->merge(array('balance_voluntary_contribution' => 0));
-        $request->merge(array('partner_id' => $partner->id));
+        if($partner) {
 
-        $balance = Assetsbalance::create($request->only(['balance_individual_contribution','balance_employers_contribution','balance_voluntary_contribution', 'partner_id']));
+            $request->merge(array('balance_individual_contribution' => 0));
 
-        return response()->json([
+            $request->merge(array('balance_employers_contribution' => 0));
+            
+            $request->merge(array('balance_voluntary_contribution' => 0));
+            
+            $request->merge(array('partner_id' => $partner->id));
 
-            'status'    => true,
-            'message'   => '¡El asociado se ha creado con éxito!',
-            'object'    => $partner
-        ]);
+            $balance = Assetsbalance::create($request->only(['balance_individual_contribution','balance_employers_contribution','balance_voluntary_contribution', 'partner_id']));
+
+            return response()->json([
+
+                'status'    => true,
+                'message'   => '¡El asociado se ha creado con éxito!',
+                'object'    => $partner
+            ]);
+        
+        } else {
+
+            $user->forceDelete();
+
+            $direction->delete();
+
+            $details->delete();
+
+            return response()->json([
+
+                'status'    => false,
+                'message'   => '¡Ha ocurrido un error al registrar el asociado! Por favor verifique los datos he intente nuevamente.'
+            ]);
+        }
     }
 
     public function update(Request $request, $uuid) {
