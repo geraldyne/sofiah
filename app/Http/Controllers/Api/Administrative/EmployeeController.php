@@ -236,13 +236,10 @@ class EmployeeController extends Controller {
 
         $rules = [
 
-            'employee_code'    => 'required|numeric|unique:employee',
             'names'            => 'required',
             'lastnames'        => 'required',
             'email'            => 'required',
             'department'       => 'required',
-            'rif'              => 'required|unique:employee',
-            'id_card'          => 'required|unique:employee',
             'phone'            => 'required|numeric',
             'nationality'      => 'required',
             'status'           => 'required|numeric',
@@ -251,57 +248,86 @@ class EmployeeController extends Controller {
             'retirement_date'  => 'required',
             'user_id'          => 'required',
             'direction_id'     => 'required',
-            'association_id'   => 'required',
-            'bankdetails_id'  => 'required',
-            'updated_at'       =>  getdate()
+            'bankdetails_id'   => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'employee_code'    => 'required|numeric|unique:employee',
-                'names'            => 'required',
-                'lastnames'        => 'required',
-                'email'            => 'required',
-                'department'       => 'required',
-                'rif'              => 'required|unique:employee',
-                'id_card'          => 'required|unique:employee',
-                'phone'            => 'required|numeric',
-                'nationality'      => 'required',
-                'status'           => 'required|numeric',
-                'birthdate'        => 'required',
-                'date_of_admision' => 'required',
-                'retirement_date'  => 'required',
-                'user_id'          => 'required',
-                'direction_id'     => 'required',
-                'association_id'   => 'required',
-                'bankdetails_id'  => 'required',
-                'updated_at'       =>  getdate()
+                'names'            => 'sometimes|required',
+                'lastnames'        => 'sometimes|required',
+                'email'            => 'sometimes|required',
+                'department'       => 'sometimes|required',
+                'phone'            => 'sometimes|required|numeric',
+                'nationality'      => 'sometimes|required',
+                'status'           => 'sometimes|required|numeric',
+                'birthdate'        => 'sometimes|required',
+                'date_of_admision' => 'sometimes|required',
+                'retirement_date'  => 'sometimes|required',
+                'user_id'          => 'sometimes|required',
+                'direction_id'     => 'sometimes|required',
+                'bankdetails_id'   => 'sometimes|required',
             ];
         }
 
-        $user = User::byUuid($request->user_id)->firstOrFail();
+        $user = $employee->user;
 
-        $request->merge(array('user_id' => $user->id));
+        switch($request->status) {
 
-        
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+            case 'A':
 
-        $request->merge(array('direction_id' => $direction->id));
+                $request->merge(array('retirement_date' => null));
 
-        
-        $association = Association::byUuid($request->association_id)->firstOrFail();
+                $request->merge(array('status' => true));
 
-        $request->merge(array('association_id' => $association->id));
+                $user->update($request->only('status'));
 
+                $request->merge(array('status' => 'A'));
 
-        $bankdetails = Bankdetails::byUuid($request->bankdetails_id)->firstOrFail();
+                break;
 
-        $request->merge(array('bankdetails_id' => $bankdetails->id));
+            case 'R':
 
+                $request->merge(array('retirement_last_date' => Carbon::now()));
 
-        $employee = $this->model->create($request->all());
+                $request->merge(array('status' => false));
+
+                $user->update($request->only('status'));
+
+                $request->merge(array('status' => 'R'));
+
+                break;
+
+            case 'F':
+
+                $request->merge(array('retirement_last_date' => Carbon::now()));
+
+                $request->merge(array('status' => false));
+
+                $user->update($request->only('status'));
+
+                $request->merge(array('status' => 'R'));
+
+                break;
+        }
+
+        $this->validate($request, $rules);
+
+        $bank = Bank::byUuid($request->bankuuid)->first();
+
+        if($bank) {
+
+            $request->merge(array('bank_id' => $bank->id));
+
+            $bankdetails = $partner->bankdetails;
+
+            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+
+            $request->merge(array('bankdetails_id' => $bankdetails->id));
+        }
+
+        $employee->update($request->all());
 
         return $this->response->item($employee->fresh(), new EmployeeTransformer());
     }

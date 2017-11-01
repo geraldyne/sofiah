@@ -254,93 +254,97 @@ class PartnerController extends Controller {
             ];
         }
 
-        if($request->status === 'A') {
+        $user = $partner->user;
 
-            $managers = $partner->managers;
+        switch($request->status) {
 
-            if($managers) {
+            case 'A':
 
-                foreach($managers as $manager) {
+                $managers = $partner->managers;
 
-                    $manager->status = false;
+                if($managers) {
 
-                    $manager->save();
+                    foreach($managers as $manager) {
+
+                        $manager->status = false;
+
+                        $manager->save();
+                    }
                 }
-            }
 
-            $request->merge(array('retirement_date' => null));
+                $request->merge(array('retirement_date' => null));
 
-            $user = $partner->user;
+                $request->merge(array('status' => true));
 
-            $request->merge(array('status' => true));
+                $user->update($request->only('status'));
 
-            $user->update($request->only('status'));
+                $request->merge(array('status' => 'A'));
 
-            $request->merge(array('status' => 'A'));
+                break;
 
-        } else if($request->status === 'R') {
+            case 'R':
 
-            $managers = $partner->managers;
+                $managers = $partner->managers;
 
-            if($managers) {
+                if($managers) {
 
-                foreach($managers as $manager) {
+                    foreach($managers as $manager) {
 
-                    $manager->status = false;
+                        $manager->status = false;
 
-                    $manager->save();
+                        $manager->save();
+                    }
                 }
-            }
 
-            if($partner->retirement_date) {
+                if($partner->retirement_date) {
 
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
+                    $request->merge(array('retirement_last_date' => Carbon::now()));
+                
+                } else {
 
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => false));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'R'));
-
-        } else if($request->status === 'F') {
-
-            $managers = $partner->managers;
-
-            if($managers) {
-
-                foreach($managers as $manager) {
-
-                    $manager->status = false;
-
-                    $manager->save();
+                    $request->merge(array('retirement_date' => Carbon::now()));
+                    $request->merge(array('retirement_last_date' => Carbon::now()));                
                 }
-            }
 
-            if($partner->retirement_date) {
+                $request->merge(array('status' => false));
 
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
+                $user->update($request->only('status'));
 
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
+                $request->merge(array('status' => 'R'));
 
-            $user = $partner->user;
+                break;
 
-            $request->merge(array('status' => false));
+            case 'F':
 
-            $user->update($request->only('status'));
+                $managers = $partner->managers;
 
-            $request->merge(array('status' => 'F'));
+                if($managers) {
+
+                    foreach($managers as $manager) {
+
+                        $manager->status = false;
+
+                        $manager->save();
+                    }
+                }
+
+                if($partner->retirement_date) {
+
+                    $request->merge(array('retirement_last_date' => Carbon::now()));
+                
+                } else {
+
+                    $request->merge(array('retirement_date' => Carbon::now()));
+                    $request->merge(array('retirement_last_date' => Carbon::now()));                
+                }
+
+                $request->merge(array('status' => false));
+
+                $user->update($request->only('status'));
+
+                $request->merge(array('status' => 'F'));
+
+                break;
         }
 
         $this->validate($request, $rules);
