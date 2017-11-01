@@ -48,23 +48,9 @@ class OrganismsController extends Controller {
         
         $fractal = new Fractal\Manager();
 
-        if (isset($_GET['include'])) {
-            
-            $fractal->parseIncludes($_GET['include']);
-        }
+        if (isset($_GET['include'])) $fractal->parseIncludes($_GET['include']);
 
-        $organisms = $this->model->with(
-
-            'direction', 
-            'association', 
-            'partners',
-            'assetstypecodes',
-            'loantypecodes',
-            'issues'
-        
-        )->get();
-        
-        return $this->response->collection($organisms, new OrganismTransformer());
+        return $this->response->collection($this->model->get(), new OrganismTransformer());
     }
 
     public function create() {

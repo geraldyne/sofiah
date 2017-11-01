@@ -40,14 +40,15 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                 # RUTAS DE ASOCIACIONES
 
-                  $api->get('associations/create', 'Api\AssociationsController@create');
                   $api->get('associations/edit', 'Api\AssociationsController@edit');
+                  $api->get('associations/create', 'Api\AssociationsController@create');
                   $api->resource('associations', 'Api\AssociationsController', ['except' => ['show']]);
 
                 # RUTAS DE ORGANISMOS
 
+                  $api->get('organisms/edit', 'Api\Administrative\OrganismsController@edit');
                   $api->get('organisms/create', 'Api\Administrative\OrganismsController@create');
-                  $api->resource('organisms', 'Api\Administrative\OrganismsController', ['except' => 'edit']);
+                  $api->resource('organisms', 'Api\Administrative\OrganismsController');
 
                 # RUTAS DE ASOCIADOS
 

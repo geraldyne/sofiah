@@ -49,14 +49,9 @@ class AssociationsController extends Controller {
         
         $fractal = new Fractal\Manager();
 
-        if (isset($_GET['include'])) {
-            
-            $fractal->parseIncludes($_GET['include']);
-        }
+        if (isset($_GET['include'])) $fractal->parseIncludes($_GET['include']);
 
-        $association = $this->model->get();
-
-        return $this->response->collection($association, new AssociationTransformer());
+        return $this->response->collection($this->model->get(), new AssociationTransformer());
     }
 
     public function create() {

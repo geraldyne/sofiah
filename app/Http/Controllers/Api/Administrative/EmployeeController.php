@@ -52,28 +52,16 @@ class EmployeeController extends Controller {
 
         $fractal = new Fractal\Manager();
 
-        if (isset($_GET['include'])) {
-            
-            $fractal->parseIncludes($_GET['include']);
-        }
+        if (isset($_GET['include'])) $fractal->parseIncludes($_GET['include']);
 
-        $employee = $this->model->with(
-
-            'association', 
-            'direction', 
-            'user', 
-            'bankdetails'
-
-        )->get();
-
-        return $this->response->collection($employee, new EmployeeTransformer());
+        return $this->response->collection($this->model->get(), new EmployeeTransformer());
     }
 
     public function create() {
         
-        $associations   = $this->api->get('administrative/associations');
+        $associations = $this->api->get('administrative/associations');
 
-        $banks          = $this->api->get('administrative/banks');
+        $banks        = $this->api->get('administrative/banks');
 
         return response()->json([
 
@@ -187,8 +175,6 @@ class EmployeeController extends Controller {
                 $request->merge(array('user_id' => $user->id));
             }
 
-            $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
-
         # Crea los detalles de bancos
 
             $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
@@ -201,11 +187,14 @@ class EmployeeController extends Controller {
                 
                 $request->merge(array('bankdetails_id' => $details->id));
             
-            } else return response()->json([
+            } else {
+
+                return response()->json([
 
                     'status'    => false,
                     'message'   => 'La cuenta bancaria ingresada ya existe'
                 ]);
+            }
             
         # Crea el empleado
             
