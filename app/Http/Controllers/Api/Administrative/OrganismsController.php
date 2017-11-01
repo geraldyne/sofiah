@@ -158,14 +158,11 @@ class OrganismsController extends Controller {
 
         $rules = [
 
-            'name' => 'required|unique:organisms',
             'alias' => 'required',
-            'email' => 'required|email|unique:users|max:120',
             'web_site' => 'url',
             'zone' => 'required',
             'contact' => 'required',
             'phone' => 'required|numeric',
-            'rif' => 'required|alpha_dash|max:12|unique:organisms',
             'payroll_type' => 'required',
             'status' => 'required|boolean',
             'disponibility' => 'required',
@@ -184,14 +181,11 @@ class OrganismsController extends Controller {
 
             $rules = [
 
-                'name' => 'required|unique:organisms',
                 'alias' => 'required',
-                'email' => 'required|email|unique:users|max:120',
                 'web_site' => 'url',
                 'zone' => 'required',
                 'contact' => 'required',
                 'phone' => 'required|numeric',
-                'rif' => 'required|alpha_dash|max:12|unique:organisms',
                 'payroll_type' => 'required',
                 'status' => 'required|boolean',
                 'disponibility' => 'required',
