@@ -175,6 +175,7 @@ class OrganismsController extends Controller {
 
             'direction' => 'required',
             'city_id' => 'required|alpha_dash',
+            'direction_id' => 'required|alpha_dash',
 
             'association_id' => 'required|alpha_dash'
         ];
@@ -200,6 +201,7 @@ class OrganismsController extends Controller {
 
                 'direction' => 'required',
                 'city_id' => 'required|alpha_dash',
+                'direction_id' => 'required|alpha_dash',
 
                 'association_id' => 'required|alpha_dash'
             ];
