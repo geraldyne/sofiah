@@ -39,6 +39,7 @@ class Accountlvl6Transformer extends TransformerAbstract
             'balance_type' => $model->balance_type,
             'apply_balance' => $model->apply_balance,
             'accountlvl5_id' => $model->accountlvl5_id,
+            'cash_flow' => $model->cash_flow
         ];
     }
 

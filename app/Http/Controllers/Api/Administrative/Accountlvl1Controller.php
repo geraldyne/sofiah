@@ -51,16 +51,9 @@ class Accountlvl1Controller extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
-            'accountslvl2'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
+        $account = $this->model->get();
 
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new Accountlvl1Transformer());
+        return $this->response->collection($account, new Accountlvl1Transformer());
     }
 
     public function show($id) {

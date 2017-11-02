@@ -68,11 +68,6 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                 $api->resource('accountingyear', 'Api\Administrative\AccountingyearController', ['except' => ['edit', 'create']]);
 
-
-
-
-
-
                 # Rutas para los bancos
 
                 $api->resource('banks', 'Api\Administrative\BanksController', ['except' => ['edit', 'create']]);
@@ -84,8 +79,6 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 # Rutas para los flujo de efectivo
 
                 $api->resource('charges', 'Api\Administrative\ChargesController', ['except' => ['edit', 'create']]);
-
-
 
                 # Rutas para las dividendos
 
@@ -129,67 +122,27 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                 # Rutas para las cuentas nivel 1
 
-                $api->group(['prefix' => 'accountlvl1'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\Accountlvl1Controller@index');
-                    $api->post('/', 'Api\Administrative\Accountlvl1Controller@store');
-                    $api->get('/{uuid}', 'Api\Administrative\Accountlvl1Controller@show');
-                    $api->put('/{uuid}', 'Api\Administrative\Accountlvl1Controller@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\Accountlvl1Controller@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\Accountlvl1Controller@destroy');
-                });
+                $api->resource('accountlvl1', 'Api\Administrative\Accountlvl1Controller', ['except' => ['edit', 'create', 'update', 'store', 'destroy']]);
 
                 # Rutas para las cuentas nivel 2
 
-                $api->group(['prefix' => 'accountlvl2'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\Accountlvl2Controller@index');
-                    $api->post('/', 'Api\Administrative\Accountlvl2Controller@store');
-                    $api->get('/{uuid}', 'Api\Administrative\Accountlvl2Controller@show');
-                    $api->put('/{uuid}', 'Api\Administrative\Accountlvl2Controller@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\Accountlvl2Controller@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\Accountlvl2Controller@destroy');
-                });
+                $api->resource('accountlvl2', 'Api\Administrative\Accountlvl2Controller', ['except' => ['edit', 'create', 'update', 'store', 'destroy']]);
 
                 # Rutas para las cuentas nivel 3
 
-                $api->group(['prefix' => 'accountlvl3'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\Accountlvl3Controller@index');
-                    $api->post('/', 'Api\Administrative\Accountlvl3Controller@store');
-                    $api->get('/{uuid}', 'Api\Administrative\Accountlvl3Controller@show');
-                    $api->put('/{uuid}', 'Api\Administrative\Accountlvl3Controller@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\Accountlvl3Controller@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\Accountlvl3Controller@destroy');
-                });
+                $api->resource('accountlvl3', 'Api\Administrative\Accountlvl3Controller', ['except' => ['edit', 'create', 'update', 'store', 'destroy']]);
 
                 # Rutas para las cuentas nivel 4
 
-                $api->group(['prefix' => 'accountlvl4'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\Accountlvl4Controller@index');
-                    $api->post('/', 'Api\Administrative\Accountlvl4Controller@store');
-                    $api->get('/{uuid}', 'Api\Administrative\Accountlvl4Controller@show');
-                    $api->put('/{uuid}', 'Api\Administrative\Accountlvl4Controller@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\Accountlvl4Controller@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\Accountlvl4Controller@destroy');
-                });
+                $api->resource('accountlvl4', 'Api\Administrative\Accountlvl4Controller', ['except' => ['edit', 'create', 'update', 'store', 'destroy']]);
 
                 # Rutas para las cuentas nivel 5
 
-                $api->resource('accountlvl5', 'Api\Administrative\Accountlvl5Controller', ['except' => ['edit', 'create']]);
+                $api->resource('accountlvl5', 'Api\Administrative\Accountlvl5Controller', ['except' => ['edit', 'create', 'update', 'store', 'destroy']]);
 
                 # Rutas para las cuentas nivel 6
 
-                $api->group(['prefix' => 'accountlvl6'], function ($api) {
-
-                    $api->get('/', 'Api\Administrative\Accountlvl6Controller@index');
-                    $api->post('/', 'Api\Administrative\Accountlvl6Controller@store');
-                    $api->get('/{uuid}', 'Api\Administrative\Accountlvl6Controller@show');
-                    $api->put('/{uuid}', 'Api\Administrative\Accountlvl6Controller@update');
-                    $api->patch('/{uuid}', 'Api\Administrative\Accountlvl6Controller@update');
-                    $api->delete('/{uuid}', 'Api\Administrative\Accountlvl6Controller@destroy');
-                });
+                $api->resource('accountlvl6', 'Api\Administrative\Accountlvl6Controller', ['except' => ['edit', 'create']]);
             });
 
             # Rutas del módulo operativo

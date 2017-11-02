@@ -25,6 +25,7 @@ class CreateChartAccountsTable extends Migration
             $table->enum('account_type', ['activo', 'pasivo', 'patrimonio', 'egreso', 'ingreso', 'orden'])->comment('Tipo de cuenta contable');
             $table->enum('balance_type', ['deudor', 'acreedor'])->comment('Tipo de saldo de la cuenta contable');
             $table->boolean('apply_balance')->comment('V: Balance general - F: Ganancias y perdidas');
+            $table->boolean('cash_flow')->comment('V: Permite flujo de efectivo - F: No permite flujo de efectivo');
             $table->timestamps();
         });
 
@@ -40,6 +41,7 @@ class CreateChartAccountsTable extends Migration
             $table->enum('account_type', ['activo', 'pasivo', 'patrimonio', 'egreso', 'ingreso', 'orden'])->comment('Tipo de cuenta contable');
             $table->enum('balance_type', ['deudor', 'acreedor'])->comment('Tipo de saldo de la cuenta contable');
             $table->boolean('apply_balance')->comment('V: Balance general - F: Ganancias y perdidas');
+            $table->boolean('cash_flow')->comment('V: Permite flujo de efectivo - F: No permite flujo de efectivo');
             
             $table->integer('accountlvl1_id')->unsigned()->comment('Cuenta afectada en la integración');
             $table->foreign('accountlvl1_id')->references('id')->on('accounts_lvl1')->onDelete('cascade');
@@ -59,6 +61,7 @@ class CreateChartAccountsTable extends Migration
             $table->enum('account_type', ['activo', 'pasivo', 'patrimonio', 'egreso', 'ingreso', 'orden'])->comment('Tipo de cuenta contable');
             $table->enum('balance_type', ['deudor', 'acreedor'])->comment('Tipo de saldo de la cuenta contable');
             $table->boolean('apply_balance')->comment('V: Balance general - F: Ganancias y perdidas');
+            $table->boolean('cash_flow')->comment('V: Permite flujo de efectivo - F: No permite flujo de efectivo');
             
             $table->integer('accountlvl2_id')->unsigned()->comment('Cuenta afectada en la integración');
             $table->foreign('accountlvl2_id')->references('id')->on('accounts_lvl2')->onDelete('cascade');
@@ -78,6 +81,7 @@ class CreateChartAccountsTable extends Migration
             $table->enum('account_type', ['activo', 'pasivo', 'patrimonio', 'egreso', 'ingreso', 'orden'])->comment('Tipo de cuenta contable');
             $table->enum('balance_type', ['deudor', 'acreedor'])->comment('Tipo de saldo de la cuenta contable');
             $table->boolean('apply_balance')->comment('V: Balance general - F: Ganancias y perdidas');
+            $table->boolean('cash_flow')->comment('V: Permite flujo de efectivo - F: No permite flujo de efectivo');
             
             $table->integer('accountlvl3_id')->unsigned()->comment('Cuenta afectada en la integración');
             $table->foreign('accountlvl3_id')->references('id')->on('accounts_lvl3')->onDelete('cascade');
@@ -97,6 +101,7 @@ class CreateChartAccountsTable extends Migration
             $table->enum('account_type', ['activo', 'pasivo', 'patrimonio', 'egreso', 'ingreso', 'orden'])->comment('Tipo de cuenta contable');
             $table->enum('balance_type', ['deudor', 'acreedor'])->comment('Tipo de saldo de la cuenta contable');
             $table->boolean('apply_balance')->comment('V: Balance general - F: Ganancias y perdidas');
+            $table->boolean('cash_flow')->comment('V: Permite flujo de efectivo - F: No permite flujo de efectivo');
             
             $table->integer('accountlvl4_id')->unsigned()->comment('Cuenta afectada en la integración');
             $table->foreign('accountlvl4_id')->references('id')->on('accounts_lvl4')->onDelete('cascade');
@@ -116,6 +121,7 @@ class CreateChartAccountsTable extends Migration
             $table->enum('account_type', ['activo', 'pasivo', 'patrimonio', 'egreso', 'ingreso', 'orden'])->comment('Tipo de cuenta contable');
             $table->enum('balance_type', ['deudor', 'acreedor'])->comment('Tipo de saldo de la cuenta contable');
             $table->boolean('apply_balance')->comment('V: Balance general - F: Ganancias y perdidas');
+            $table->boolean('cash_flow')->comment('V: Permite flujo de efectivo - F: No permite flujo de efectivo');
             
             $table->integer('accountlvl5_id')->unsigned()->comment('Cuenta afectada en la integración');
             $table->foreign('accountlvl5_id')->references('id')->on('accounts_lvl5')->onDelete('cascade');
