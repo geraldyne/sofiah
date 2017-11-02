@@ -92,6 +92,6 @@ class EmployeeTransformer extends TransformerAbstract
      */
     public function includeBankdetails(Employee $model)
     {
-        return $this->collection($model->bankdetails, new BankdetailsTransformer);
+        return $this->item($model->bankdetails, new BankdetailsTransformer);
     }
 }

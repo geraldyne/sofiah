@@ -71,7 +71,7 @@ class Bankdetails extends Model {
 
     public function partner() {
 
-        return $this->hasMany(Partner::class);
+        return $this->hasOne(Partner::class);
     }
 
     /**
@@ -83,7 +83,7 @@ class Bankdetails extends Model {
     
     public function employee() {
 
-        return $this->hasMany(Employee::class);
+        return $this->hasOne(Employee::class);
     }
 
     /**

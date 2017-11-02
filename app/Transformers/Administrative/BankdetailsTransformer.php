@@ -57,7 +57,7 @@ class BankdetailsTransformer extends TransformerAbstract
      */
     public function includeEmployee(Bankdetails $model)
     {
-        return $this->collection($model->employee, new EmployeeTransformer);
+        return $this->item($model->employee, new EmployeeTransformer);
     }
     
     /**
@@ -67,6 +67,6 @@ class BankdetailsTransformer extends TransformerAbstract
      */
     public function includePartner(Bankdetails $model)
     {
-        return $this->collection($model->partner, new PartnerTransformer);
+        return $this->item($model->partner, new PartnerTransformer);
     }
 }

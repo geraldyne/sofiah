@@ -247,9 +247,14 @@ class EmployeeController extends Controller {
             'birthdate'        => 'required',
             'date_of_admision' => 'required',
             'retirement_date'  => 'required',
-            'user_id'          => 'required',
-            'direction_id'     => 'required',
-            'bankdetails_id'   => 'required'
+
+            'direction' => 'required',
+            'city_id' => 'required|alpha_dash',
+            'direction_id' => 'required|alpha_dash',
+
+            'bankuuid'          => 'alpha_dash',
+            'account_number'    => 'unique:bank_details',
+            'account_type'      => ''
         ];
 
         if ($request->method() == 'PATCH') {
@@ -266,9 +271,14 @@ class EmployeeController extends Controller {
                 'birthdate'        => 'sometimes|required',
                 'date_of_admision' => 'sometimes|required',
                 'retirement_date'  => 'sometimes|required',
-                'user_id'          => 'sometimes|required',
-                'direction_id'     => 'sometimes|required',
-                'bankdetails_id'   => 'sometimes|required',
+                
+                'direction' => 'required',
+                'city_id' => 'required|alpha_dash',
+                'direction_id' => 'required|alpha_dash',
+
+                'bankuuid'          => 'alpha_dash',
+                'account_number'    => 'unique:bank_details',
+                'account_type'      => ''
             ];
         }
 
@@ -321,7 +331,7 @@ class EmployeeController extends Controller {
 
             $request->merge(array('bank_id' => $bank->id));
 
-            $bankdetails = $partner->bankdetails;
+            $bankdetails = $employee->bankdetails;
 
             $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
 
@@ -331,17 +341,5 @@ class EmployeeController extends Controller {
         $employee->update($request->all());
 
         return $this->response->item($employee->fresh(), new EmployeeTransformer());
-    }
-
-    public function destroy(Request $request, $uuid) {
-
-        $employee = $this->model->byUuid($uuid)->firstOrFail();
-        
-        $employee->delete();
-
-        return response()->json([ 
-                                'status' => true, 
-                                'message' => 'Empleado eliminado exitosamente!', 
-                                ]);
     }
 }
