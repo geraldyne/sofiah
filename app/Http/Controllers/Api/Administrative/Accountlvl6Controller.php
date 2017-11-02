@@ -52,16 +52,9 @@ class Accountlvl6Controller extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
-            'accountlvl5', 
-            'accountingintegration', 
-            'cashflow', 
-            'heritagechange',
-            'dailymovementdetails',
-            'accountsassociation'
-        )->get();
+        $accountlvl6 = $this->model->get();
 
-        return $this->response->collection($paginator, new Accountlvl6Transformer());
+        return $this->response->collection($accountlvl6, new Accountlvl6Transformer());
     }
 
     public function show($id) {
@@ -89,7 +82,13 @@ class Accountlvl6Controller extends Controller {
 
         $accountlvl6 = $this->model->create($request->all());
 
-        return response()->json([ 
+        if( ! $accountlvl6) return response()->json([
+
+            'status'  => false, 
+            'message' => '¡Ha ocurrido un error al agregar la cuenta! Por favor verifique los datos he intente nuevamente.'
+        ]);
+        
+        else return response()->json([ 
             'status'  => true, 
             'message' => 'La cuenta se ha registrado exitosamente!', 
             'object'  => $accountlvl6 

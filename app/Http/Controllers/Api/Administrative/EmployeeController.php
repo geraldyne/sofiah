@@ -29,6 +29,7 @@ use App\Entities\Administrative\Bank;
 use App\Entities\Administrative\City;
 use App\Entities\Administrative\Employee;
 use App\Entities\Administrative\Direction;
+use App\Entities\Administrative\Preference;
 use App\Entities\Administrative\Bankdetails;
 use App\Transformers\Administrative\EmployeeTransformer;
 

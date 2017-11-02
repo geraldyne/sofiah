@@ -52,16 +52,9 @@ class AccountingintegrationController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
-            'accountlvl6'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
+        $accountingintegration = $this->model->get();
 
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new AccountingintegrationTransformer());
+        return $this->response->collection($accountingintegration, new AccountingintegrationTransformer());
     }
 
     public function show($id) {
