@@ -25,6 +25,7 @@ use App\Http\Controllers\Controller;
 
 use App\Entities\User;
 use App\Entities\Association;
+use App\Entities\Administrative\Bank;
 use App\Entities\Administrative\City;
 use App\Entities\Administrative\Employee;
 use App\Entities\Administrative\Direction;
@@ -85,19 +86,18 @@ class EmployeeController extends Controller {
          
             $this->validate($request, [
 
-                'employee_code'    => 'required|numeric|unique:employee',
+                'employee_code'    => 'required|numeric|unique:employees',
                 'names'            => 'required',
                 'lastnames'        => 'required',
                 'email'            => 'required',
                 'department'       => 'required',
-                'rif'              => 'required|unique:employee',
-                'id_card'          => 'required|unique:employee',
+                'rif'              => 'required|unique:employees',
+                'id_card'          => 'required|unique:employees',
                 'phone'            => 'required|numeric',
                 'nationality'      => 'required',
                 'status'           => 'required',
-                'birthdate'        => 'required',
-                'date_of_admision' => 'required',
-                'retirement_date'  => 'required',
+                'birthdate'        => 'required|date',
+                'date_of_admission'=> 'required|date',
                 'association_id'   => 'required|alpha_dash',
 
                 'direction'         => 'required',
@@ -121,7 +121,7 @@ class EmployeeController extends Controller {
             $request->merge(array('city_id' => $city->id));
 
         # Crea la dirección
-        
+
             $direction = Direction::create($request->only('city_id','direction'));
 
             if($direction) $request->merge(array('direction_id' => $direction->id));
