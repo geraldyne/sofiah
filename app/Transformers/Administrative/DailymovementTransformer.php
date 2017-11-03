@@ -16,17 +16,17 @@ class DailymovementTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'user_origin',
-        'user_apply',
+        'userorigin',
+        'userapply',
         'details',
-        'accounting_year'
+        'accountingyear'
     ];
 
     /**
      * @param Daily_movement $model
      * @return array
      */
-    public function transform(Daily_movement $model)
+    public function transform(Dailymovement $model)
     {
         return [
 
@@ -51,7 +51,7 @@ class DailymovementTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeUser_origin(User_origin $model)
+    public function includeUserorigin(Dailymovement $model)
     {
         return $this->item($model->user_origin, new UserTransformer);
     }
@@ -61,7 +61,7 @@ class DailymovementTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeUser_apply(User_apply $model)
+    public function includeUserapply(Dailymovement $model)
     {
         return $this->item($model->user_apply, new UserTransformer);
     }
@@ -71,7 +71,7 @@ class DailymovementTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeDetails(Daily_movement $model)
+    public function includeDetails(Dailymovement $model)
     {
         return $this->collection($model->details, new Daily_movement_detailsTransformer);
     }
@@ -81,7 +81,7 @@ class DailymovementTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeAccounting_year(Daily_movement $model)
+    public function includeAccountingyear(Dailymovement $model)
     {
         return $this->item($model->accounting_year, new Accounting_yearTransformer);
     }
