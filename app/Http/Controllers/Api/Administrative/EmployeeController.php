@@ -249,7 +249,6 @@ class EmployeeController extends Controller {
 
             'direction' => 'required',
             'city_id' => 'required|alpha_dash',
-            'direction_id' => 'required|alpha_dash',
 
             'bankuuid'          => 'alpha_dash',
             'account_number'    => 'unique:bank_details',
@@ -272,7 +271,6 @@ class EmployeeController extends Controller {
                 
                 'direction' => 'required',
                 'city_id' => 'required|alpha_dash',
-                'direction_id' => 'required|alpha_dash',
 
                 'bankuuid'          => 'alpha_dash',
                 'account_number'    => 'unique:bank_details',
@@ -323,18 +321,37 @@ class EmployeeController extends Controller {
 
         $this->validate($request, $rules);
 
-        $bank = Bank::byUuid($request->bankuuid)->first();
+        # Actualiza la dirección
 
-        if($bank) {
+            $city = City::byUuid($request->city_id)->firstOrFail();
 
-            $request->merge(array('bank_id' => $bank->id));
+            if($city) {
 
-            $bankdetails = $employee->bankdetails;
+                $request->merge(array('city_id' => $city->id));
 
-            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+                $direction = $employee->direction;
 
-            $request->merge(array('bankdetails_id' => $bankdetails->id));
-        }
+                $direction->update($request->only(['direction', 'city_id']));
+
+                $request->merge(array('direction_id' => $direction->id));
+            }
+
+        # Actualiza el banco
+
+            $bank = Bank::byUuid($request->bankuuid)->first();
+
+            if($bank) {
+
+                $request->merge(array('bank_id' => $bank->id));
+
+                $bankdetails = $employee->bankdetails;
+
+                $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+
+                $request->merge(array('bankdetails_id' => $bankdetails->id));
+            }
+
+        # Guarda los valores actualizados
 
         $employee->update($request->all());
 

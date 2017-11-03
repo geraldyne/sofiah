@@ -2,13 +2,13 @@
 
 namespace App\Transformers\Administrative;
 
-use App\Entities\Administrative\Daily_movement;
+use App\Entities\Administrative\Dailymovement;
 use League\Fractal\TransformerAbstract;
 
 /**
  * Class UserTransformer.
  */
-class Daily_movementTransformer extends TransformerAbstract
+class DailymovementTransformer extends TransformerAbstract
 {
     /**
      * List of resources possible to include

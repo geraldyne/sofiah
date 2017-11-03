@@ -40,29 +40,35 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                 # RUTAS DE ASOCIACIONES
 
-                  $api->get('associations/edit', 'Api\AssociationsController@edit');
-                  $api->get('associations/create', 'Api\AssociationsController@create');
-                  $api->resource('associations', 'Api\AssociationsController', ['except' => ['show']]);
+                    $api->get('associations/edit', 'Api\AssociationsController@edit');
+                    $api->get('associations/create', 'Api\AssociationsController@create');
+                    $api->resource('associations', 'Api\AssociationsController', ['except' => ['show']]);
 
                 # RUTAS DE ORGANISMOS
 
-                  $api->get('organisms/edit', 'Api\Administrative\OrganismsController@edit');
-                  $api->get('organisms/create', 'Api\Administrative\OrganismsController@create');
-                  $api->resource('organisms', 'Api\Administrative\OrganismsController');
+                    $api->get('organisms/edit', 'Api\Administrative\OrganismsController@edit');
+                    $api->get('organisms/create', 'Api\Administrative\OrganismsController@create');
+                    $api->resource('organisms', 'Api\Administrative\OrganismsController');
 
                 # RUTAS DE ASOCIADOS
 
-                  $api->get('partner/create', 'Api\Administrative\PartnerController@create');
-                  $api->resource('partner', 'Api\Administrative\PartnerController', ['except' => 'edit']);
+                    $api->get('partner/create', 'Api\Administrative\PartnerController@create');
+                    $api->resource('partner', 'Api\Administrative\PartnerController', ['except' => 'edit']);
 
                 # RUTAS DE EMPLEADOS
                  
-                $api->get('employee/create', 'Api\Administrative\EmployeeController@create');
-                $api->resource('employee', 'Api\Administrative\EmployeeController', ['except' => 'edit']);
+                    $api->get('employee/create', 'Api\Administrative\EmployeeController@create');
+                    $api->resource('employee', 'Api\Administrative\EmployeeController', ['except' => 'edit']);
 
-                # Rutas para las cuentas de integración
+                # RUTAS DE INTEGRACIÓN CONTABLE
 
-                $api->resource('accountingintegration', 'Api\Administrative\AccountingintegrationController', ['except' => ['edit', 'create']]);
+                    $api->resource('accountingintegration', 'Api\Administrative\AccountingintegrationController', ['except' => ['edit', 'create']]);
+
+                # RUTAS PARA MOVIMIENTOS DIARIOS
+                 
+                    $api->get('dailymovement/create', 'Api\Administrative\DailymovementsController@create');
+                    $api->resource('dailymovement', 'Api\Administrative\DailymovementsController');
+
 
                 # Rutas para las cuentas de integración
 

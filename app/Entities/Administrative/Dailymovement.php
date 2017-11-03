@@ -70,7 +70,7 @@ class Dailymovement extends Model {
      * @return type
      */
 
-    public function user_origin() {
+    public function userorigin() {
 
         return $this->belongsToMany(
         	User::class, 
@@ -86,7 +86,7 @@ class Dailymovement extends Model {
      * @return type
      */
 
-    public function user_apply() {
+    public function userapply() {
 
         return $this->belongsToMany(
         	User::class, 
