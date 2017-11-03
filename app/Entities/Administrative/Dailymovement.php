@@ -75,7 +75,7 @@ class Dailymovement extends Model {
         return $this->belongsToMany(
         	User::class, 
         	'daily_movements_origin', 
-        	'daily_movement_id',
+        	'dailymovement_id',
         	'user_id' 
         );
     }
@@ -91,7 +91,7 @@ class Dailymovement extends Model {
         return $this->belongsToMany(
         	User::class, 
         	'daily_movements_apply', 
-            'daily_movement_id',
+            'dailymovement_id',
             'user_id' 
         );
     }
