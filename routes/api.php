@@ -67,7 +67,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 # RUTAS PARA MOVIMIENTOS DIARIOS
                  
                     $api->get('dailymovement/create', 'Api\Administrative\DailymovementsController@create');
-                    $api->resource('dailymovement', 'Api\Administrative\DailymovementsController');
+                    $api->resource('dailymovement', 'Api\Administrative\DailymovementsController', ['except' => ['create']]);
 
 
                 # Rutas para las cuentas de integración

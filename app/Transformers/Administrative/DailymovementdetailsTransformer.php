@@ -32,7 +32,7 @@ class DailymovementdetailsTransformer extends TransformerAbstract
             'description' => $model->description,
             'debit' => $model->debit,
             'asset' => $model->asset,
-            'daily_movement_id' => $model->daily_movement_id,
+            'dailymovement_id' => $model->dailymovement_id,
             'accountlvl6_id' => $model->accountlvl6_id,
             'created_at' => $model->created_at->toIso8601String(),
             'updated_at' => $model->updated_at->toIso8601String()
