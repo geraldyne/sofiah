@@ -24,9 +24,9 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\User;
 use App\Entities\Association;
+use App\Entities\Administrative\Accountlvl6;
 use App\Entities\Administrative\Dailymovement;
 use App\Entities\Administrative\Dailymovementdetails;
-use App\Entities\Administrative\Accountlvl6;
 use App\Transformers\Administrative\DailymovementTransformer;
 
 use Carbon\Carbon;
@@ -63,7 +63,7 @@ class DailymovementsController extends Controller {
 
     public function create() {
 
-        $movements = $this->api->get('administrative/dailymovement');
+        $movements = Dailymovement::get();
 
         $number = count($movements) + 1;
 
@@ -301,34 +301,5 @@ class DailymovementsController extends Controller {
         $partner->update($request->all());
 
         return $this->response->item($partner->fresh(), new PartnerTransformer());
-    }
-
-    public function destroy(Request $request, $uuid) {
-
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
-
-        if($partner->managers->count() > 0) 
-
-            return response()->json([
-
-                'status'    => false,
-                'message'   => 'El asociado posee un cargo de directivo, no se puede eliminar.'
-            ]);
-
-        $user = $partner->user;
-
-        $bankdetails = $partner->bankdetails;
-
-        $user->delete();
-        
-        $bankdetails->delete();
-
-        $partner->delete();
-
-        return response()->json([
-
-            'status'    => true,
-            'message'   => 'El asociado ha sido eliminado con éxito.'
-        ]);
     }
 }

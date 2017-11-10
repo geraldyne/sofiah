@@ -231,14 +231,23 @@ class PartnerController extends Controller {
 
         $partner = $this->model->byUuid($uuid)->firstOrFail();
 
+        $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
+
+        if($bankd->count() > 0)
+
+            return response()->json([
+
+                'status'    => false,
+                'message'   => '¡El número de cuenta ingresado ya existe! Por favor verifique he intente nuevamente.'
+            ]);
+
         $rules = [
 
             'title' => 'required',
             'local_phone' => 'required|numeric',
             'nationality' => 'required',
             'status' => 'required',
-            'phone' => 'required|numeric',
-            'account_number' => 'unique:bank_details',
+            'phone' => 'required|numeric'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -250,7 +259,6 @@ class PartnerController extends Controller {
                 'nationality' => 'sometimes|required',
                 'status' => 'sometimes|required',
                 'phone' => 'sometimes|required|numeric',
-                'account_number' => 'sometimes|unique:bank_details',
             ];
         }
 

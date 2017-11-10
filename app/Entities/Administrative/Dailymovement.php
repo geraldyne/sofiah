@@ -26,7 +26,7 @@ use Webpatser\Uuid\Uuid;
 use App\Entities\User;
 
 use App\Entities\Administrative\Accountingyear;
-use App\Entities\Administrative\Dailymovement_details;
+use App\Entities\Administrative\Dailymovementdetails;
 
 class Dailymovement extends Model {
         
@@ -104,7 +104,7 @@ class Dailymovement extends Model {
 
     public function details() {
 
-        return $this->hasMany(Dailymovement_details::class);
+        return $this->hasMany(Dailymovementdetails::class);
     }
 
     /**

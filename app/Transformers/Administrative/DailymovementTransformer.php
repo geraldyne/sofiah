@@ -73,7 +73,7 @@ class DailymovementTransformer extends TransformerAbstract
      */
     public function includeDetails(Dailymovement $model)
     {
-        return $this->collection($model->details, new Daily_movement_detailsTransformer);
+        return $this->collection($model->details, new DailymovementdetailsTransformer);
     }
 
     /**
@@ -83,6 +83,6 @@ class DailymovementTransformer extends TransformerAbstract
      */
     public function includeAccountingyear(Dailymovement $model)
     {
-        return $this->item($model->accounting_year, new Accounting_yearTransformer);
+        return $this->item($model->accounting_year, new AccountingyearTransformer);
     }
 }

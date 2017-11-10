@@ -32,7 +32,7 @@ use League\Fractal;
  *  Controlador Empleados
  */
 
-class ManagersController extends Controller {
+class ManagerController extends Controller {
 
     use Helpers;
 
@@ -45,8 +45,6 @@ class ManagersController extends Controller {
 
 	public function index(Request $request) {
 
-        dd('hola');
-
         $fractal = new Fractal\Manager();
 
         if (isset($_GET['include'])) {
@@ -54,16 +52,9 @@ class ManagersController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        dd('hola');
+        $managers = $this->model->with('partner', 'charge')->get();
 
-        $paginator = $this->model->with('partner', 'charge')->paginate($request->get('limit', config('app.pagination_limit')));
-
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new ManagerTransformer());
+        return $this->response->collection($managers, new ManagerTransformer());
     }
 
     public function create($idcard) {

@@ -17,7 +17,7 @@ class DailymovementdetailsTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'dailymovement',
-        'account'
+        'accountlvl6'
     ];
 
     /**
@@ -56,8 +56,8 @@ class DailymovementdetailsTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeAccount(Dailymovementdetails $model)
+    public function includeAccountlvl6(Dailymovementdetails $model)
     {
-        return $this->item($model->account, new Accountlvl6Transformer);
+        return $this->item($model->accountlvl6, new Accountlvl6Transformer);
     }
 }
