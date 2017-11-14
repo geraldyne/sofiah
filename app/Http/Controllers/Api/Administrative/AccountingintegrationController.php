@@ -91,14 +91,14 @@ class AccountingintegrationController extends Controller {
 
         $rules = [
 
-            'accounting_integration_name'   => 'required|unique:accounting_integrations'
+            'accounting_integration_name'   => 'required|unique:accounting_integrations,accounting_integration_name,'.$accountingintegration->id
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'accounting_integration_name'   => 'required|unique:accounting_integrations'
+                'accounting_integration_name'   => 'required|unique:accounting_integrations,accounting_integration_name,'.$accountingintegration->id
             ];
         }
 

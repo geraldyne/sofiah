@@ -131,34 +131,32 @@ class Accountlvl6Controller extends Controller {
         ]);
     }
 
-    public function update(Request $request, $uuid) {
+    public function update(Request $request, $id) {
 
-        $accountlvl6 = $this->model->byUuid($uuid)->firstOrFail();
+        $accountlvl6 = $this->model->byUuid($id)->firstOrFail();
 
         $rules = [
 
-            'account_code'   => 'required|numeric|unique:accounts_lvl6',
-            'account_name'   => 'required|unique:accounts_lvl6',
+            'account_code'   => 'required|numeric|unique:accounts_lvl6,account_code,'.$accountlvl6->id,
+            'account_name'   => 'required',
             'account_type'   => 'required',
             'balance_type'   => 'required',
-            'apply_balance'  => 'required|boolean',
-            'accountlvl5_id' => 'required'
+            'apply_balance'  => 'required|boolean'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'account_code'   => 'required|numeric|unique:accounts_lvl6',
-                'account_name'   => 'required|unique:accounts_lvl6',
+                'account_code'   => 'required|numeric|unique:accounts_lvl6,account_code,'.$accountlvl6->id,
+                'account_name'   => 'required',
                 'account_type'   => 'required',
                 'balance_type'   => 'required',
-                'apply_balance'  => 'required|boolean',
-                'accountlvl5_id' => 'required'
+                'apply_balance'  => 'required|boolean'
             ];
         }
 
-        $accountlvl5 = Accountlvl5::byUuid($request->accountlvl5_id)->firstOrFail();
+        $accountlvl5 = Accountlvl5::find($accountlvl6->accountlvl5_id);
 
         $request->merge(array('accountlvl5_id' => $accountlvl5->id));
         
@@ -173,7 +171,7 @@ class Accountlvl6Controller extends Controller {
 
         $accountlvl6 = $this->model->byUuid($uuid)->firstOrFail();
         
-        if($accountlvl6->dailymovementdetails->count() > 0) 
+        if($accountlvl6->dailymovementdetails()->count() > 0) 
 
             return response()->json([
 

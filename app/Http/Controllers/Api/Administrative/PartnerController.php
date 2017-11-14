@@ -231,16 +231,6 @@ class PartnerController extends Controller {
 
         $partner = $this->model->byUuid($uuid)->firstOrFail();
 
-        $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
-
-        if($bankd->count() > 0)
-
-            return response()->json([
-
-                'status'    => false,
-                'message'   => '¡El número de cuenta ingresado ya existe! Por favor verifique he intente nuevamente.'
-            ]);
-
         $rules = [
 
             'title' => 'required',
@@ -357,10 +347,29 @@ class PartnerController extends Controller {
 
         $this->validate($request, $rules);
 
+        $partner->update($request->all());
+
+        return $this->response->item($partner->fresh(), new PartnerTransformer());
+    }
+
+    public function updateDataBank(Request $request, $uuid) {
+
+        $partner = $this->model->byUuid($uuid)->firstOrFail();
+
         $bank = Bank::byUuid($request->bankuuid)->first();
 
         if($bank) {
 
+            $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
+
+            if($bankd->count() > 0)
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡El número de cuenta ingresado ya existe! Por favor verifique he intente nuevamente.'
+                ]);
+        
             $request->merge(array('bank_id' => $bank->id));
 
             $bankdetails = $partner->bankdetails;
@@ -369,10 +378,6 @@ class PartnerController extends Controller {
 
             $request->merge(array('bankdetails_id' => $bankdetails->id));
         }
-
-        $partner->update($request->all());
-
-        return $this->response->item($partner->fresh(), new PartnerTransformer());
     }
 
     public function destroy(Request $request, $uuid) {

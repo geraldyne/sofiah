@@ -57,17 +57,17 @@ class ManagerController extends Controller {
         return $this->response->collection($managers, new ManagerTransformer());
     }
 
-    public function create($idcard) {
+    public function create($uuid) {
         
         $associations = $this->api->get('administrative/associations?include=organisms');
-        $partner      = $this->api->get('administrative/partners/'.$idcard);
+        $partner      = $this->api->get('administrative/partners/'.$uuid);
         $charges      = $this->api->get('administrative/charges');
 
         return response()->json([
 
             'status'       => true,
             'associations' => $associations,
-            'partner'      => $partners,
+            'partner'      => $partner,
             'charges'      => $charges
         ]);
     }

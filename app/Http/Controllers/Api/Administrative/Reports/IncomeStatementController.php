@@ -225,6 +225,7 @@ class IncomeStatementController extends Controller {
 
                         $accountslvl6[$account->account_code] = [
 
+                            'code'      => $account->account_code,
                             'name'      => $account->account_name,
                             'before'    => $before,
                             'actual'    => $actual,
@@ -246,7 +247,8 @@ class IncomeStatementController extends Controller {
 
                         $accountslvl5[$account->accountlvl5->account_code] = [
 
-                            'name'   => $account->accountlvl5->account_name,
+                            'code'      => $account->accountlvl5->account_code,
+                            'name'      => $account->accountlvl5->account_name,
                             'before'    => $before,
                             'actual'    => $actual,
                             'variation' => $variation
@@ -266,7 +268,8 @@ class IncomeStatementController extends Controller {
 
                         $accountslvl4[$account->accountlvl5->accountlvl4->account_code] = [
 
-                            'name'   => $account->accountlvl5->accountlvl4->account_name,
+                            'code'      => $account->accountlvl5->accountlvl4->account_code,
+                            'name'      => $account->accountlvl5->accountlvl4->account_name,
                             'before'    => $before,
                             'actual'    => $actual,
                             'variation' => $variation
@@ -286,7 +289,8 @@ class IncomeStatementController extends Controller {
 
                         $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code] = [
 
-                            'name'   => $account->accountlvl5->accountlvl4->accountlvl3->account_name,
+                            'code'      => $account->accountlvl5->accountlvl4->accountlvl3->account_code,
+                            'name'      => $account->accountlvl5->accountlvl4->accountlvl3->account_name,
                             'before'    => $before,
                             'actual'    => $actual,
                             'variation' => $variation
@@ -306,7 +310,8 @@ class IncomeStatementController extends Controller {
 
                         $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code] = [
 
-                            'name'   => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_name,
+                            'code'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code,
+                            'name'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_name,
                             'before'    => $before,
                             'actual'    => $actual,
                             'variation' => $variation
@@ -326,7 +331,8 @@ class IncomeStatementController extends Controller {
 
                         $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code] = [
 
-                            'name'   => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_name,
+                            'code'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code,
+                            'name'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_name,
                             'before'    => $before,
                             'actual'    => $actual,
                             'variation' => $variation

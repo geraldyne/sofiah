@@ -248,11 +248,7 @@ class EmployeeController extends Controller {
             'date_of_admission'=> 'required',
 
             'direction' => 'required',
-            'city_id' => 'required|alpha_dash',
-
-            'bankuuid'          => 'alpha_dash',
-            'account_number'    => 'unique:bank_details',
-            'account_type'      => ''
+            'city_id' => 'required|alpha_dash'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -270,11 +266,7 @@ class EmployeeController extends Controller {
                 'date_of_admission'=> 'sometimes|required',
                 
                 'direction' => 'required',
-                'city_id' => 'required|alpha_dash',
-
-                'bankuuid'          => 'alpha_dash',
-                'account_number'    => 'unique:bank_details',
-                'account_type'      => ''
+                'city_id' => 'required|alpha_dash'
             ];
         }
 
@@ -336,25 +328,36 @@ class EmployeeController extends Controller {
                 $request->merge(array('direction_id' => $direction->id));
             }
 
-        # Actualiza el banco
-
-            $bank = Bank::byUuid($request->bankuuid)->first();
-
-            if($bank) {
-
-                $request->merge(array('bank_id' => $bank->id));
-
-                $bankdetails = $employee->bankdetails;
-
-                $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
-
-                $request->merge(array('bankdetails_id' => $bankdetails->id));
-            }
-
         # Guarda los valores actualizados
 
         $employee->update($request->all());
 
         return $this->response->item($employee->fresh(), new EmployeeTransformer());
+    }
+
+    public function updateDataBank(Request $request, $uuid) {
+
+        $employee = $this->model->byUuid($uuid)->firstOrFail();
+
+        $bank = Bank::byUuid($request->bankuuid)->first();
+
+        if($bank) {
+
+            $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
+
+            if($bankd->count() > 0)
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡El número de cuenta ingresado ya existe! Por favor verifique he intente nuevamente.'
+                ]);
+        
+            $request->merge(array('bank_id' => $bank->id));
+
+            $bankdetails = $employee->bankdetails;
+
+            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+        }
     }
 }

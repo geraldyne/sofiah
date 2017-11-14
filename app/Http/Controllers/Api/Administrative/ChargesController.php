@@ -51,16 +51,11 @@ class ChargesController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
         
-        $paginator = $this->model->with('managers')->paginate($request->get('limit', config('app.pagination_limit')));
+        $charges = $this->model->get();
         
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new ChargeTransformer());
+        return $this->response->collection($charges, new ChargeTransformer());
     }
-
+/*
     public function show($id) {
         
         $charge = $this->model->byUuid($id)->firstOrFail();
@@ -128,4 +123,5 @@ class ChargesController extends Controller {
 
         return $this->response->noContent();
     }
+    */
 }

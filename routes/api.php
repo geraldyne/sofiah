@@ -57,10 +57,13 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     # RUTAS DE ASOCIADOS
 
                         $api->get('partners/create', 'Api\Administrative\PartnerController@create');
+                        $api->get('partners/updatedatabank', 'Api\Administrative\PartnerController@updateDataBank');
                         $api->resource('partners', 'Api\Administrative\PartnerController', ['except' => 'destroy']);
 
-                        $api->get('managers/create', 'Api\Administrative\ManagerController@create');
+                        $api->get('managers/create/{uuid}', 'Api\Administrative\ManagerController@create');
                         $api->resource('managers', 'Api\Administrative\ManagerController', ['except' => 'destroy']);
+
+                        $api->get('charges', 'Api\Administrative\ChargesController@index');  
 
                     # RUTAS DE EMPLEADOS
                      
@@ -90,7 +93,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                         # Rutas para los flujo de efectivo
 
-                        $api->resource('charges', 'Api\Administrative\ChargesController', ['except' => ['edit', 'create']]);
+                        
 
                         # Rutas para las dividendos
 
@@ -106,19 +109,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                             $api->put('/{uuid}', 'Api\Administrative\BankdetailsController@update');
                             $api->patch('/{uuid}', 'Api\Administrative\BankdetailsController@update');
                             $api->delete('/{uuid}', 'Api\Administrative\BankdetailsController@destroy');
-                        });
-
-                        # Rutas para los directivos
-
-                        $api->group(['prefix' => 'managers'], function ($api) {
-
-                            $api->get('/', 'Api\Administrative\ManagerController@index');
-                            $api->post('/', 'Api\Administrative\ManagerController@store');
-                            $api->get('/{uuid}', 'Api\Administrative\ManagerController@show');
-                            $api->put('/{uuid}', 'Api\Administrative\ManagerController@update');
-                            $api->patch('/{uuid}', 'Api\Administrative\ManagerController@update');
-                            $api->delete('/{uuid}', 'Api\Administrative\ManagerController@destroy');
-                        });
+                        });                        
                     
                     # RUTAS PARA LAS CUENTAS Y SUS NIVELES
                     
