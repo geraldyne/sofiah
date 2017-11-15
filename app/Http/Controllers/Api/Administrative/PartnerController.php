@@ -379,33 +379,4 @@ class PartnerController extends Controller {
             $request->merge(array('bankdetails_id' => $bankdetails->id));
         }
     }
-
-    public function destroy(Request $request, $uuid) {
-
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
-
-        if($partner->managers->count() > 0) 
-
-            return response()->json([
-
-                'status'    => false,
-                'message'   => 'El asociado posee un cargo de directivo, no se puede eliminar.'
-            ]);
-
-        $user = $partner->user;
-
-        $bankdetails = $partner->bankdetails;
-
-        $user->forceDelete();
-        
-        $bankdetails->delete();
-
-        $partner->delete();
-
-        return response()->json([
-
-            'status'    => true,
-            'message'   => 'El asociado ha sido eliminado con éxito.'
-        ]);
-    }
 }

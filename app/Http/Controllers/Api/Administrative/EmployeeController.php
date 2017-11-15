@@ -140,13 +140,13 @@ class EmployeeController extends Controller {
 
             if( ! User::where('name','=',$username)->exists()) {
 
-                $request->merge(array('name'        => $username));
+                $request->merge(array('name'     => $username));
 
-                $request->merge(array('email'       => $request->email));
+                $request->merge(array('email'    => $request->email));
 
-                $request->merge(array('password'    => $username)); # ALMACENA LA CLAVE COMO EL NOMBRE DE USUARIO, DEBE ACTUALIZAR EN SU PRIMER INICIO DE SESIÓN
+                $request->merge(array('password' => $username)); # ALMACENA LA CLAVE COMO EL NOMBRE DE USUARIO, DEBE ACTUALIZAR EN SU PRIMER INICIO DE SESIÓN
 
-                $request->merge(array('status'      => true));
+                $request->merge(array('status'   => true));
 
                 $user = User::create($request->only(['name', 'email', 'password', 'status']));
 
@@ -199,6 +199,8 @@ class EmployeeController extends Controller {
             }
             
         # Crea el empleado
+         
+            $request->merge(array('status' => 'A'));
             
             $employee = $this->model->create($request->except([
 
