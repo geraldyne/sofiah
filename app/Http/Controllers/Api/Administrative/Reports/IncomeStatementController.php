@@ -220,18 +220,19 @@ class IncomeStatementController extends Controller {
                     $variation = $actual - $before;
 
                 # Para las cuentas de NIVEL 6
+                
+                    $data = [   
+                                'code'      => $account->account_code,
+                                'name'      => $account->account_name,
+                                'before'    => $before,
+                                'actual'    => $actual,
+                                'variation' => $variation
+                            ];
 
-                    if( ! array_key_exists($account->account_code, $accountslvl6)) {
+                    if(array_search($data['code'], array_column($accountslvl6, 'code')) === false) {
 
-                        $accountslvl6[$account->account_code] = [
+                        array_push($accountslvl6, $data);
 
-                            'code'      => $account->account_code,
-                            'name'      => $account->account_name,
-                            'before'    => $before,
-                            'actual'    => $actual,
-                            'variation' => $variation
-                        ];
-                    
                     } else {
 
                         return response()->json([
@@ -243,107 +244,125 @@ class IncomeStatementController extends Controller {
 
                 # Para las cuentas de NIVEL 5
                         
-                    if( ! array_key_exists($account->accountlvl5->account_code, $accountslvl5)) {
+                    $data = [   
+                                'code'      => $account->accountlvl5->account_code,
+                                'name'      => $account->accountlvl5->account_name,
+                                'before'    => $before,
+                                'actual'    => $actual,
+                                'variation' => $variation
+                            ];
 
-                        $accountslvl5[$account->accountlvl5->account_code] = [
+                    if(array_search($data['code'], array_column($accountslvl5, 'code')) === false) {
 
-                            'code'      => $account->accountlvl5->account_code,
-                            'name'      => $account->accountlvl5->account_name,
-                            'before'    => $before,
-                            'actual'    => $actual,
-                            'variation' => $variation
-                        ];
-                    
+                        array_push($accountslvl5, $data);
+
                     } else {
 
-                        $accountslvl5[$account->accountlvl5->account_code]['before'] += $before;
-                        $accountslvl5[$account->accountlvl5->account_code]['actual'] += $actual;
-                        $accountslvl5[$account->accountlvl5->account_code]['variation'] = $accountslvl5[$account->accountlvl5->account_code]['actual'] - 
-                                                                                          $accountslvl5[$account->accountlvl5->account_code]['before'];
-                    }
+                        $key = array_search($data['code'], array_column($accountslvl5, 'code'));
+
+                        $accountslvl5[$key]['before'] += $before;
+                        $accountslvl5[$key]['actual'] += $actual;
+                        $accountslvl5[$key]['variation'] = $accountslvl5[$key]['actual'] - 
+                                                           $accountslvl5[$key]['before'];
+                    }                        
 
                 # Para las cuentas de NIVEL 4
                         
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->account_code, $accountslvl4)) {
+                    $data = [   
+                                'code'      => $account->accountlvl5->accountlvl4->account_code,
+                                'name'      => $account->accountlvl5->accountlvl4->account_name,
+                                'before'    => $before,
+                                'actual'    => $actual,
+                                'variation' => $variation
+                            ];
 
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code] = [
+                    if(array_search($data['code'], array_column($accountslvl4, 'code')) === false) {
 
-                            'code'      => $account->accountlvl5->accountlvl4->account_code,
-                            'name'      => $account->accountlvl5->accountlvl4->account_name,
-                            'before'    => $before,
-                            'actual'    => $actual,
-                            'variation' => $variation
-                        ];
-                    
+                        array_push($accountslvl4, $data);
+
                     } else {
 
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['before'] += $before;
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['actual'] += $actual;
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['variation'] = $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['actual'] - 
-                                                                                                       $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['before'];
+                        $key = array_search($data['code'], array_column($accountslvl4, 'code'));
+
+                        $accountslvl4[$key]['before'] += $before;
+                        $accountslvl4[$key]['actual'] += $actual;
+                        $accountslvl4[$key]['variation'] = $accountslvl4[$key]['actual'] - 
+                                                           $accountslvl4[$key]['before'];
                     }
 
                 # Para las cuentas de NIVEL 3
                         
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->accountlvl3->account_code, $accountslvl3)) {
+                    $data = [   
+                                'code'      => $account->accountlvl5->accountlvl4->accountlvl3->account_code,
+                                'name'      => $account->accountlvl5->accountlvl4->accountlvl3->account_name,
+                                'before'    => $before,
+                                'actual'    => $actual,
+                                'variation' => $variation
+                            ];
 
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code] = [
+                    if(array_search($data['code'], array_column($accountslvl3, 'code')) === false) {
 
-                            'code'      => $account->accountlvl5->accountlvl4->accountlvl3->account_code,
-                            'name'      => $account->accountlvl5->accountlvl4->accountlvl3->account_name,
-                            'before'    => $before,
-                            'actual'    => $actual,
-                            'variation' => $variation
-                        ];
-                    
+                        array_push($accountslvl3, $data);
+
                     } else {
 
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['before'] += $before;
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['actual'] += $actual;
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['variation'] = $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['actual'] - 
-                                                                                                                    $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['before'];
+                        $key = array_search($data['code'], array_column($accountslvl3, 'code'));
+
+                        $accountslvl3[$key]['before'] += $before;
+                        $accountslvl3[$key]['actual'] += $actual;
+                        $accountslvl3[$key]['variation'] = $accountslvl3[$key]['actual'] - 
+                                                           $accountslvl3[$key]['before'];
+                        
                     }
 
                 # Para las cuentas de NIVEL 2
-                        
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code, $accountslvl2)) {
-
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code] = [
-
-                            'code'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code,
-                            'name'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_name,
-                            'before'    => $before,
-                            'actual'    => $actual,
-                            'variation' => $variation
-                        ];
                     
+                    $data = [   
+                                'code'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code,
+                                'name'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_name,
+                                'before'    => $before,
+                                'actual'    => $actual,
+                                'variation' => $variation
+                            ];
+
+                    if(array_search($data['code'], array_column($accountslvl2, 'code')) === false) {
+
+                        array_push($accountslvl2, $data);
+
                     } else {
 
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['before'] += $before;
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['actual'] += $actual;
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['variation'] = $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['actual'] - 
-                                                                                                                                 $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['before'];
+                        $key = array_search($data['code'], array_column($accountslvl2, 'code'));
+
+                        $accountslvl2[$key]['before'] += $before;
+                        $accountslvl2[$key]['actual'] += $actual;
+                        $accountslvl2[$key]['variation'] = $accountslvl2[$key]['actual'] - 
+                                                           $accountslvl2[$key]['before'];
+                        
                     }
 
                 # Para las cuentas de NIVEL 1
-                        
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code, $accountslvl1)) {
-
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code] = [
-
-                            'code'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code,
-                            'name'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_name,
-                            'before'    => $before,
-                            'actual'    => $actual,
-                            'variation' => $variation
-                        ];
                     
+                    $data = [   
+                                'code'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code,
+                                'name'      => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_name,
+                                'before'    => $before,
+                                'actual'    => $actual,
+                                'variation' => $variation
+                            ];
+
+                    if(array_search($data['code'], array_column($accountslvl1, 'code')) === false) {
+
+                        array_push($accountslvl1, $data);
+
                     } else {
 
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['before'] += $before;
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['actual'] += $actual;
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['variation'] = $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['actual'] - 
-                                                                                                                                              $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['before'];
+                        $key = array_search($data['code'], array_column($accountslvl1, 'code'));
+
+                        $accountslvl1[$key]['before'] += $before;
+                        $accountslvl1[$key]['actual'] += $actual;
+                        $accountslvl1[$key]['variation'] = $accountslvl1[$key]['actual'] - 
+                                                           $accountslvl1[$key]['before'];
+                        
                     }
 
                 # Fin del calculo
@@ -353,22 +372,22 @@ class IncomeStatementController extends Controller {
 
             switch ($request->level) {
 
-                case 1: $merge = $accountslvl1; break;
+                case 1: $accounts = $accountslvl1; break;
 
-                case 2: $merge = $accountslvl1 + $accountslvl2; break;
+                case 2: $accounts = array_merge($accountslvl1, $accountslvl2); break;
 
-                case 3: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3; break;
+                case 3: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3); break;
 
-                case 4: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3 + $accountslvl4; break;
+                case 4: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3, $accountslvl4); break;
 
-                case 5: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3 + $accountslvl4 + $accountslvl5; break;
+                case 5: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3, $accountslvl4, $accountslvl5); break;
 
-                case 6: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3 + $accountslvl4 + $accountslvl5 + $accountslvl6; break;
+                case 6: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3, $accountslvl4, $accountslvl5, $accountslvl6); break;
             }
 
-        # Agrega las cuentas al arreglo que va a retornar
-
-            array_push($accounts, $merge);
+        # Ordena el arreglo por código
+        
+            sort($accounts);
 
         return $accounts;
     }

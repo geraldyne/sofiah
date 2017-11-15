@@ -24,6 +24,8 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Association;
 use App\Entities\Administrative\Manager;
+use App\Entities\Administrative\Partner;
+use App\Entities\Administrative\Charge;
 use App\Transformers\Administrative\ManagerTransformer;
 
 use League\Fractal;
@@ -79,54 +81,49 @@ class ManagerController extends Controller {
         return $this->response->item($Manager, new ManagerTransformer());  
     }
 
-    public function store(Request $request) {
+    public function store(Request $request, $uuid) {
         
         $this->validate($request, [
 
-            'Manager_code'    => 'required|numeric|unique:Manager',
-            'names'            => 'required',
-            'lastnames'        => 'required',
-            'email'            => 'required',
-            'department'       => 'required',
-            'rif'              => 'required|unique:Manager',
-            'id_card'          => 'required|unique:Manager',
-            'phone'            => 'required|numeric',
-            'nationality'      => 'required',
-            'status'           => 'required|numeric',
-            'birthdate'        => 'required',
-            'date_of_admision' => 'required',
-            'retirement_date'  => 'required',
-            'user_id'          => 'required',
-            'direction_id'     => 'required',
-            'association_id'   => 'required',
-            'bank_details_id'  => 'required'
+            'partner_id' => 'required|alpha_dash',
+            'charge_id'  => 'required|alpha_dash'
         ]);
-
-        $user = User::byUuid($request->user_id)->firstOrFail();
-
-        $request->merge(array('user_id' => $user->id));
-
         
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+        # Obtiene el asociado mediante el UUID
 
-        $request->merge(array('direction_id' => $direction->id));
+            $partner = Partner::byUuid($request->partner_id)->firstOrFail();
 
+            $request->merge(array('partner_id' => $partner->id));
+
+        # Obtiene el cargo mediante el UUID
+
+            $charge = Charge::byUuid($request->charge_id)->firstOrFail();
+
+            $request->merge(array('charge_id' => $charge->id));
+
+        # Verifica que ese cargo no esté activo
         
-        $association = Association::byUuid($request->association_id)->firstOrFail();
+            $m = Manager::where('status',   '=', true)->
+                          where('charge_id','=', $charge->id)->
+                          first();
 
-        $request->merge(array('association_id' => $association->id));
+            if($m) return response()->json([ 
+                
+                'status'  => false, 
+                'message' => '¡El cargo ya está ocupado! Por favor verifique he intente nuevamente.'
+            ]);
 
+        # Verifica que el asociado no tenga un cargo activo
+         
+            $c = $partner->managers;
 
-        $bank_details = Bank_details::byUuid($request->bank_details_id)->firstOrFail();
+            dd();
 
-        $request->merge(array('bank_details_id' => $bank_details->id));
-
-
-        $Manager = $this->model->create($request->all());
+        $manager = $this->model->create($request->all());
 
         return response()->json([ 
                                 'status'  => true, 
-                                'message' => 'El Empleado se ha registrado exitosamente!', 
+                                'message' => 'El cargo ya está ocupado!', 
                                 'object'  => $Manager 
                                 ]);
     }

@@ -141,17 +141,20 @@ class CheckingBalanceController extends Controller {
 
                 # Para las cuentas de NIVEL 6
 
-                    if( ! array_key_exists($account->account_code, $accountslvl6)) {
+                    $data = [
 
-                        $accountslvl6[$account->account_code] = [
-
-                            'name'      => $account->account_name,
+                            'code'   => $account->account_code,
+                            'name'   => $account->account_name,
                             'before' => $before,
                             'debit'  => $detail_debit,
                             'asset'  => $detail_asset,
                             'actual' => $actual
                         ];
                     
+                    if(array_search($data['code'], array_column($accountslvl6, 'code')) === false) {
+
+                        array_push($accountslvl6, $data);
+
                     } else {
 
                         return response()->json([
@@ -163,10 +166,9 @@ class CheckingBalanceController extends Controller {
 
                 # Para las cuentas de NIVEL 5
                         
-                    if( ! array_key_exists($account->accountlvl5->account_code, $accountslvl5)) {
+                    $data = [
 
-                        $accountslvl5[$account->accountlvl5->account_code] = [
-
+                            'code'   => $account->accountlvl5->account_code,
                             'name'   => $account->accountlvl5->account_name,
                             'before' => $before,
                             'debit'  => $detail_debit,
@@ -174,22 +176,27 @@ class CheckingBalanceController extends Controller {
                             'actual' => $actual
                         ];
                     
+                    if(array_search($data['code'], array_column($accountslvl5, 'code')) === false) {
+
+                        array_push($accountslvl5, $data);
+
                     } else {
 
-                        $accountslvl5[$account->accountlvl5->account_code]['before'] += $before;
-                        $accountslvl5[$account->accountlvl5->account_code]['debit'] += $detail_debit;
-                        $accountslvl5[$account->accountlvl5->account_code]['asset'] += $detail_asset;
-                        $accountslvl5[$account->accountlvl5->account_code]['actual'] = $accountslvl5[$account->accountlvl5->account_code]['before'] + 
-                                                                                       $accountslvl5[$account->accountlvl5->account_code]['debit'] - 
-                                                                                       $accountslvl5[$account->accountlvl5->account_code]['asset'];
+                        $key = array_search($data['code'], array_column($accountslvl5, 'code'));
+
+                        $accountslvl5[$key]['before'] += $before;
+                        $accountslvl5[$key]['debit']  += $detail_debit;
+                        $accountslvl5[$key]['asset']  += $detail_asset;
+                        $accountslvl5[$key]['actual']  = $accountslvl5[$key]['before'] + 
+                                                         $accountslvl5[$key]['debit'] - 
+                                                         $accountslvl5[$key]['asset'];
                     }
 
                 # Para las cuentas de NIVEL 4
                         
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->account_code, $accountslvl4)) {
+                    $data = [
 
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code] = [
-
+                            'code'   => $account->accountlvl5->accountlvl4->account_code,
                             'name'   => $account->accountlvl5->accountlvl4->account_name,
                             'before' => $before,
                             'debit'  => $detail_debit,
@@ -197,22 +204,27 @@ class CheckingBalanceController extends Controller {
                             'actual' => $actual
                         ];
                     
+                    if(array_search($data['code'], array_column($accountslvl4, 'code')) === false) {
+
+                        array_push($accountslvl4, $data);
+
                     } else {
 
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['before'] += $before;
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['debit'] += $detail_debit;
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['asset'] += $detail_asset;
-                        $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['actual'] = $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['before'] + 
-                                                                                                    $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['debit'] - 
-                                                                                                    $accountslvl4[$account->accountlvl5->accountlvl4->account_code]['asset'];
+                        $key = array_search($data['code'], array_column($accountslvl4, 'code'));
+
+                        $accountslvl4[$key]['before'] += $before;
+                        $accountslvl4[$key]['debit']  += $detail_debit;
+                        $accountslvl4[$key]['asset']  += $detail_asset;
+                        $accountslvl4[$key]['actual']  = $accountslvl4[$key]['before'] + 
+                                                         $accountslvl4[$key]['debit'] - 
+                                                         $accountslvl4[$key]['asset'];
                     }
 
                 # Para las cuentas de NIVEL 3
                         
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->accountlvl3->account_code, $accountslvl3)) {
+                    $data = [
 
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code] = [
-
+                            'code'   => $account->accountlvl5->accountlvl4->accountlvl3->account_code,
                             'name'   => $account->accountlvl5->accountlvl4->accountlvl3->account_name,
                             'before' => $before,
                             'debit'  => $detail_debit,
@@ -220,22 +232,27 @@ class CheckingBalanceController extends Controller {
                             'actual' => $actual
                         ];
                     
+                    if(array_search($data['code'], array_column($accountslvl3, 'code')) === false) {
+
+                        array_push($accountslvl3, $data);
+
                     } else {
 
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['before'] += $before;
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['debit'] += $detail_debit;
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['asset'] += $detail_asset;
-                        $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['actual'] = $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['before'] + 
-                                                                                                                 $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['debit'] - 
-                                                                                                                 $accountslvl3[$account->accountlvl5->accountlvl4->accountlvl3->account_code]['asset'];
+                        $key = array_search($data['code'], array_column($accountslvl3, 'code'));
+
+                        $accountslvl3[$key]['before'] += $before;
+                        $accountslvl3[$key]['debit']  += $detail_debit;
+                        $accountslvl3[$key]['asset']  += $detail_asset;
+                        $accountslvl3[$key]['actual']  = $accountslvl3[$key]['before'] + 
+                                                         $accountslvl3[$key]['debit'] - 
+                                                         $accountslvl3[$key]['asset'];
                     }
 
                 # Para las cuentas de NIVEL 2
                         
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code, $accountslvl2)) {
+                    $data = [
 
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code] = [
-
+                            'code'   => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code,
                             'name'   => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_name,
                             'before' => $before,
                             'debit'  => $detail_debit,
@@ -243,22 +260,27 @@ class CheckingBalanceController extends Controller {
                             'actual' => $actual
                         ];
                     
+                    if(array_search($data['code'], array_column($accountslvl2, 'code')) === false) {
+
+                        array_push($accountslvl2, $data);
+
                     } else {
 
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['before'] += $before;
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['debit'] += $detail_debit;
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['asset'] += $detail_asset;
-                        $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['actual'] = $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['before'] + 
-                                                                                                                              $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['debit'] - 
-                                                                                                                              $accountslvl2[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->account_code]['asset'];
+                        $key = array_search($data['code'], array_column($accountslvl2, 'code'));
+
+                        $accountslvl2[$key]['before'] += $before;
+                        $accountslvl2[$key]['debit']  += $detail_debit;
+                        $accountslvl2[$key]['asset']  += $detail_asset;
+                        $accountslvl2[$key]['actual']  = $accountslvl2[$key]['before'] + 
+                                                         $accountslvl2[$key]['debit'] - 
+                                                         $accountslvl2[$key]['asset'];
                     }
 
                 # Para las cuentas de NIVEL 1
                         
-                    if( ! array_key_exists($account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code, $accountslvl1)) {
+                    $data = [
 
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code] = [
-
+                            'code'   => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code,
                             'name'   => $account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_name,
                             'before' => $before,
                             'debit'  => $detail_debit,
@@ -266,14 +288,20 @@ class CheckingBalanceController extends Controller {
                             'actual' => $actual
                         ];
                     
+                    if(array_search($data['code'], array_column($accountslvl1, 'code')) === false) {
+
+                        array_push($accountslvl1, $data);
+
                     } else {
 
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['before'] += $before;
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['debit'] += $detail_debit;
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['asset'] += $detail_asset;
-                        $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['actual'] = $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['before'] + 
-                                                                                                                                           $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['debit'] - 
-                                                                                                                                           $accountslvl1[$account->accountlvl5->accountlvl4->accountlvl3->accountlvl2->accountlvl1->account_code]['asset'];
+                        $key = array_search($data['code'], array_column($accountslvl1, 'code'));
+
+                        $accountslvl1[$key]['before'] += $before;
+                        $accountslvl1[$key]['debit']  += $detail_debit;
+                        $accountslvl1[$key]['asset']  += $detail_asset;
+                        $accountslvl1[$key]['actual']  = $accountslvl1[$key]['before'] + 
+                                                         $accountslvl1[$key]['debit'] - 
+                                                         $accountslvl1[$key]['asset'];
                     }
 
                 # Fin del calculo
@@ -283,22 +311,22 @@ class CheckingBalanceController extends Controller {
 
             switch ($request->level) {
 
-                case 1: $merge = $accountslvl1; break;
+                case 1: $accounts = $accountslvl1; break;
 
-                case 2: $merge = $accountslvl1 + $accountslvl2; break;
+                case 2: $accounts = array_merge($accountslvl1, $accountslvl2); break;
 
-                case 3: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3; break;
+                case 3: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3); break;
 
-                case 4: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3 + $accountslvl4; break;
+                case 4: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3, $accountslvl4); break;
 
-                case 5: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3 + $accountslvl4 + $accountslvl5; break;
+                case 5: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3, $accountslvl4, $accountslvl5); break;
 
-                case 6: $merge = $accountslvl1 + $accountslvl2 + $accountslvl3 + $accountslvl4 + $accountslvl5 + $accountslvl6; break;
+                case 6: $accounts = array_merge($accountslvl1, $accountslvl2, $accountslvl3, $accountslvl4, $accountslvl5, $accountslvl6); break;
             }
 
-        # Agrega las cuentas al arreglo que va a retornar
-
-            array_push($accounts, $merge);
+        # Ordena el arreglo por código
+        
+            sort($accounts);
 
         return $accounts;
     }
