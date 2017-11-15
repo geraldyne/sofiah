@@ -117,7 +117,7 @@ class ManagerController extends Controller {
 
         # Verifica que el asociado no tenga un cargo activo
          
-            $active_manager = $partner->managers->where('status', 1)->get();
+            $active_manager = $partner->managers->where('status','=', 1)->first);
 
             if(count($active_manager) > 0) 
 
