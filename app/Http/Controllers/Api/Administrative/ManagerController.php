@@ -117,15 +117,18 @@ class ManagerController extends Controller {
 
         # Verifica que el asociado no tenga un cargo activo
          
-            $active_manager = $partner->managers->where('status','=', 1)->first();
+            $active_manager = $partner->managers;
 
-            if(count($active_manager) > 0) 
-
-                return response()->json([ 
+            foreach ($active_manager as $manager) {
                 
-                    'status'  => false, 
-                    'message' => '¡El asociado ya tiene un cargo activo! Por favor verifique he intente nuevamente.'
-                ]);
+                if($manager->status) 
+
+                    return response()->json([ 
+                    
+                        'status'  => false, 
+                        'message' => '¡El asociado ya tiene un cargo activo! Por favor verifique he intente nuevamente.'
+                    ]);
+            }
 
         # Guarda el estatus activo del directivo
          
