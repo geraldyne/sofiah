@@ -81,7 +81,7 @@ class ManagerController extends Controller {
         return $this->response->item($Manager, new ManagerTransformer());  
     }
 
-    public function store(Request $request, $uuid) {
+    public function store(Request $request) {
         
         $this->validate($request, [
 
