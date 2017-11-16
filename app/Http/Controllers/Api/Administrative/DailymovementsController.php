@@ -181,125 +181,98 @@ class DailymovementsController extends Controller {
 
     public function update(Request $request, $uuid) {
 
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
+        $movement = $this->model->byUuid($uuid)->firstOrFail();
+
+        if($movement->status == 'A')
+
+            return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡El movimiento ya está aplicado! No se puede modificar.'
+                ]);
 
         $rules = [
 
-            'title' => 'required',
-            'local_phone' => 'required|numeric',
-            'nationality' => 'required',
-            'status' => 'required',
-            'phone' => 'required|numeric',
-            'account_number' => 'unique:bank_details',
+            'description'   => 'required',
+            'status'        => 'required',
+            'debit'         => 'required|numeric',
+            'asset'         => 'required|numeric'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'title' => 'sometimes|required',
-                'local_phone' => 'sometimes|required|numeric',
-                'nationality' => 'sometimes|required',
-                'status' => 'sometimes|required',
-                'phone' => 'sometimes|required|numeric',
-                'account_number' => 'sometimes|unique:bank_details',
+                'description'   => 'sometimes|required',
+                'status'        => 'sometimes|required',
+                'debit'         => 'sometimes|required|numeric',
+                'asset'         => 'sometimes|required|numeric'
+
             ];
         }
 
-        if($request->status === 'A') {
+        if($request->status == 'A') {
 
-            $managers = $partner->managers;
+            $debit = $request->debit;
+            $asset = $request->asset;
 
-            foreach($managers as $manager) {
+            if($debit != $asset) {
 
-                $manager->status = false;
+                return response()->json([
 
-                $manager->save();
+                    'status'    => false,
+                    'message'   => '¡La suma total del debe debe coincidir con la suma total del haber! Por favor verifique e intente nuevamente.'
+                ]);
             }
-
-            $request->merge(array('retirement_date' => null));
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => true));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'A'));
-
-        } else if($request->status === 'R') {
-
-            $managers = $partner->managers;
-
-            foreach($managers as $manager) {
-
-                $manager->status = false;
-
-                $manager->save();
-            }
-
-            if($partner->retirement_date) {
-
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
-
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => false));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'R'));
-
-        } else if($request->status === 'F') {
-
-            $managers = $partner->managers;
-
-            foreach($managers as $manager) {
-
-                $manager->status = false;
-
-                $manager->save();
-            }
-
-            if($partner->retirement_date) {
-
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
-
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => false));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'F'));
         }
 
         $this->validate($request, $rules);
 
-        $bank = Bank::byUuid($request->bankuuid)->first();
+        if($movement->update($request->only([
 
-        $request->merge(array('bank_id' => $bank->id));
+            'description',
+            'status',
+            'debit',
+            'asset'
 
-        $bankdetails = $partner->bankdetails;
+        ]))) {
 
-        $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+            $movement = Dailymovement::all(); 
 
-        $request->merge(array('bankdetails_id' => $bankdetails->id));
+            foreach ($request->new_account as $detail) {
+                
+                $movementdetail = new Dailymovementdetails();
 
-        $partner->update($request->all());
+                $movementdetail->description = $detail['description'];
 
-        return $this->response->item($partner->fresh(), new PartnerTransformer());
+                $movementdetail->debit = $detail['debit'];
+
+                $movementdetail->asset = $detail['asset'];
+
+                $movementdetail->dailymovement_id = $movement->last()->id;
+
+                $account = Accountlvl6::byUuid($detail['accountlvl6_id'])->firstOrFail();
+
+                $movementdetail->accountlvl6_id = $account->id;
+
+                $movementdetail->save();
+            }
+
+            $user = User::byUuid($request->user)->firstOrFail();
+
+            # Guarda el usuario que aplicó el comprobante
+
+            if($request->status == 'A') {
+
+                DB::table('daily_movements_apply')->insert(
+                    [
+                        'dailymovement_id' => $movement->last()->id,
+                        'user_id'          => $user->id
+                    ]
+                );
+            }
+
+            return $this->response->item($movement->last(), new DailymovementTransformer());
+        }
     }
 }

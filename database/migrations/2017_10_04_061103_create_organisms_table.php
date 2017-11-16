@@ -99,6 +99,7 @@ class CreateOrganismsTable extends Migration
         Schema::create('managers', function (Blueprint $table) {
 
             $table->increments('id');
+            $table->uuid('uuid')->index()->unique();
             $table->boolean('status')->comment('V: Activo - F: Inactivo');
             $table->integer('partner_id')->unsigned()->comment('Asociado que pertenece a la junta directiva');
             $table->integer('charge_id')->unsigned()->comment('Cargo que posee el asociado en la junta directiva');

@@ -76,9 +76,9 @@ class ManagerController extends Controller {
 
     public function show($id) {
         
-        $Manager = $this->model->byUuid($id)->firstOrFail();
+        $manager = $this->model->byUuid($id)->firstOrFail();
 
-        return $this->response->item($Manager, new ManagerTransformer());  
+        return $this->response->item($manager, new ManagerTransformer());  
     }
 
     public function store(Request $request) {
@@ -88,7 +88,6 @@ class ManagerController extends Controller {
             'partner_id' => 'required|alpha_dash',
             'charge_id'  => 'required|alpha_dash'
         ]);
-        
         # Obtiene el asociado mediante el UUID
 
             $partner = Partner::byUuid($request->partner_id)->firstOrFail();
@@ -119,16 +118,18 @@ class ManagerController extends Controller {
          
             $active_manager = $partner->managers;
 
-            foreach ($active_manager as $manager) {
-                
-                if($manager->status) 
+            if(count($active_manager) > 0)
 
-                    return response()->json([ 
+                foreach ($active_manager as $manager) {
                     
-                        'status'  => false, 
-                        'message' => '¡El asociado ya tiene un cargo activo! Por favor verifique he intente nuevamente.'
-                    ]);
-            }
+                    if($manager->status) 
+
+                        return response()->json([ 
+                        
+                            'status'  => false, 
+                            'message' => '¡El asociado ya tiene un cargo activo! Por favor verifique he intente nuevamente.'
+                        ]);
+                }
 
         # Guarda el estatus activo del directivo
          
