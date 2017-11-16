@@ -17,7 +17,7 @@ class DailymovementdetailsTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'dailymovement',
-        'account'
+        'accountlvl6'
     ];
 
     /**
@@ -32,7 +32,7 @@ class DailymovementdetailsTransformer extends TransformerAbstract
             'description' => $model->description,
             'debit' => $model->debit,
             'asset' => $model->asset,
-            'daily_movement_id' => $model->daily_movement_id,
+            'dailymovement_id' => $model->dailymovement_id,
             'accountlvl6_id' => $model->accountlvl6_id,
             'created_at' => $model->created_at->toIso8601String(),
             'updated_at' => $model->updated_at->toIso8601String()
@@ -56,8 +56,8 @@ class DailymovementdetailsTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeAccount(Dailymovementdetails $model)
+    public function includeAccountlvl6(Dailymovementdetails $model)
     {
-        return $this->item($model->account, new Accountlvl6Transformer);
+        return $this->item($model->accountlvl6, new Accountlvl6Transformer);
     }
 }

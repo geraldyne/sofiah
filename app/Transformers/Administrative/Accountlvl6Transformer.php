@@ -20,7 +20,8 @@ class Accountlvl6Transformer extends TransformerAbstract
         'accountingintegration',
         'cashflow',
         'heritagechange',
-        'dailymovementdetails'
+        'dailymovementdetails',
+        'accountsassociation'
     ];
 
     /**
@@ -38,6 +39,7 @@ class Accountlvl6Transformer extends TransformerAbstract
             'balance_type' => $model->balance_type,
             'apply_balance' => $model->apply_balance,
             'accountlvl5_id' => $model->accountlvl5_id,
+            'cash_flow' => $model->cash_flow
         ];
     }
 
@@ -91,5 +93,15 @@ class Accountlvl6Transformer extends TransformerAbstract
     public function includeDailymovementdetails(Accountlvl6 $model)
     {
         return $this->collection($model->dailymovementdetails, new DailymovementdetailsTransformer);
+    }
+
+    /**
+     * Include Accountsassociation
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAccountsassociation(Accountlvl6 $model)
+    {
+        return $this->collection($model->accountsassociation, new AccountassociationTransformer);
     }
 }

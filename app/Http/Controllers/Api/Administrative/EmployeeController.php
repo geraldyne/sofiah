@@ -22,13 +22,18 @@ namespace App\Http\Controllers\Api\Administrative;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+
 use App\Entities\User;
 use App\Entities\Association;
+use App\Entities\Administrative\Bank;
+use App\Entities\Administrative\City;
 use App\Entities\Administrative\Employee;
 use App\Entities\Administrative\Direction;
+use App\Entities\Administrative\Preference;
 use App\Entities\Administrative\Bankdetails;
 use App\Transformers\Administrative\EmployeeTransformer;
 
+use Carbon\Carbon;
 use League\Fractal;
 
 /**
@@ -50,19 +55,24 @@ class EmployeeController extends Controller {
 
         $fractal = new Fractal\Manager();
 
-        if (isset($_GET['include'])) {
-            
-            $fractal->parseIncludes($_GET['include']);
-        }
+        if (isset($_GET['include'])) $fractal->parseIncludes($_GET['include']);
 
-        $paginator = $this->model->with('association', 'direction', 'user', 'bankdetails')->paginate($request->get('limit', config('app.pagination_limit')));
+        return $this->response->collection($this->model->get(), new EmployeeTransformer());
+    }
 
-        if ($request->has('limit')) {
+    public function create() {
         
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        $associations = $this->api->get('administrative/associations');
 
-        return $this->response->paginator($paginator, new EmployeeTransformer());
+        $banks        = $this->api->get('administrative/banks');
+
+        return response()->json([
+
+            'status'        => true,
+            'associations'  => $associations,
+            'banks'         => $banks
+
+        ]);
     }
 
     public function show($id) {
@@ -73,55 +83,155 @@ class EmployeeController extends Controller {
     }
 
     public function store(Request $request) {
+
+        # Evalúa cada dato recibido
+         
+            $this->validate($request, [
+
+                'employee_code'    => 'required|numeric|unique:employees',
+                'names'            => 'required',
+                'lastnames'        => 'required',
+                'email'            => 'required',
+                'department'       => 'required',
+                'rif'              => 'required|unique:employees',
+                'id_card'          => 'required|unique:employees',
+                'phone'            => 'required|numeric',
+                'nationality'      => 'required',
+                'status'           => 'required',
+                'birthdate'        => 'required|date',
+                'date_of_admission'=> 'required|date',
+                'association_id'   => 'required|alpha_dash',
+
+                'direction'         => 'required',
+                'city_id'           => 'required|alpha_dash',
+
+                'bankuuid'          => 'alpha_dash',
+                'account_number'    => 'unique:bank_details',
+                'account_type'      => '',
+            ]);
+
+        # Obtiene la asocición mediante el UUID
+
+            $association = Association::byUuid($request->association_id)->firstOrFail();
+
+            $request->merge(array('association_id' => $association->id));
+
+        # Obtiene la ciudad mediante el UUID
         
-        $this->validate($request, [
+            $city = City::byUuid($request->city_id)->firstOrFail();
 
-            'employee_code'    => 'required|numeric|unique:employee',
-            'names'            => 'required',
-            'lastnames'        => 'required',
-            'email'            => 'required',
-            'department'       => 'required',
-            'rif'              => 'required|unique:employee',
-            'id_card'          => 'required|unique:employee',
-            'phone'            => 'required|numeric',
-            'nationality'      => 'required',
-            'status'           => 'required|numeric',
-            'birthdate'        => 'required',
-            'date_of_admision' => 'required',
-            'retirement_date'  => 'required',
-            'user_id'          => 'required',
-            'direction_id'     => 'required',
-            'association_id'   => 'required',
-            'bankdetails_id'   => 'required'
-        ]);
+            $request->merge(array('city_id' => $city->id));
 
-        $user = User::byUuid($request->user_id)->firstOrFail();
+        # Crea la dirección
 
-        $request->merge(array('user_id' => $user->id));
+            $direction = Direction::create($request->only('city_id','direction'));
 
+            if($direction) $request->merge(array('direction_id' => $direction->id));
+
+            else return response()->json([
+
+                'status'    => false,
+                'message'   => '¡No se ha podido almacenar la dirección de la asociación! Por favor verifique los datos he intente nuevamente.'
+            ]);
+
+        # Crea el nombre de usuario y luego el usuario si no existe
         
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+            $username = substr(strtolower($request->names), 0, 3).explode(' ', strtolower($request->lastnames.''))[0].substr($request->id_card, -3);
 
-        $request->merge(array('direction_id' => $direction->id));
+            if( ! User::where('name','=',$username)->exists()) {
 
-        
-        $association = Association::byUuid($request->association_id)->firstOrFail();
+                $request->merge(array('name'     => $username));
 
-        $request->merge(array('association_id' => $association->id));
+                $request->merge(array('email'    => $request->email));
 
+                $request->merge(array('password' => $username)); # ALMACENA LA CLAVE COMO EL NOMBRE DE USUARIO, DEBE ACTUALIZAR EN SU PRIMER INICIO DE SESIÓN
 
-        $bankdetails = Bankdetails::byUuid($request->bankdetails_id)->firstOrFail();
+                $request->merge(array('status'   => true));
 
-        $request->merge(array('bankdetails_id' => $bankdetails->id));
+                $user = User::create($request->only(['name', 'email', 'password', 'status']));
 
+                if( ! $user) return response()->json([
 
-        $employee = $this->model->create($request->all());
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar el usuario! Por favor verifique los datos he intente nuevamente.'
+                ]);
 
-        return response()->json([ 
-                                'status'  => true, 
-                                'message' => 'El Empleado se ha registrado exitosamente!', 
-                                'object'  => $employee 
-                                ]);
+                $user->assignRole('employee');
+
+                if( $user->roles->count() == 0) { $user->forceDelete(); }
+
+                $request->merge(array('user_id' => $user->id));
+
+                $preference = Preference::create($request->only(['user_id']));
+
+                if( ! $preference) return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar las preferencias de usuario! Por favor verifique los datos he intente nuevamente.'
+                ]);
+            
+            } else {
+
+                $user = User::where('name','=',$username)->firstOrFail();
+
+                $request->merge(array('user_id' => $user->id));
+            }
+
+        # Crea los detalles de bancos
+
+            $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
+            
+            if(! Bankdetails::where('account_number','=',$request->account_number)->exists()) {
+
+                $request->merge(array('bank_id' => $bank->id));
+
+                $details = Bankdetails::create($request->only(['bank_id','account_number','account_type']));
+                
+                $request->merge(array('bankdetails_id' => $details->id));
+            
+            } else {
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => 'La cuenta bancaria ingresada ya existe'
+                ]);
+            }
+            
+        # Crea el empleado
+         
+            $request->merge(array('status' => 'A'));
+            
+            $employee = $this->model->create($request->except([
+
+                'direction', 
+                'city_id',
+                'bankuuid',
+                'account_number',
+                'account_type'
+
+            ]));
+
+            if( ! $employee) {
+
+                $user->forceDelete();
+
+                $direction->delete();
+
+                $details->delete();
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar el empleado! Por favor verifique los datos he intente nuevamente.'
+                ]);
+
+            } else return response()->json([ 
+                
+                    'status'  => true, 
+                    'message' => '¡El empleado se ha registrado exitosamente!', 
+                    'object'  => $employee 
+                ]);
     }
 
     public function update(Request $request, $uuid) {
@@ -130,85 +240,127 @@ class EmployeeController extends Controller {
 
         $rules = [
 
-            'employee_code'    => 'required|numeric|unique:employee',
             'names'            => 'required',
             'lastnames'        => 'required',
             'email'            => 'required',
             'department'       => 'required',
-            'rif'              => 'required|unique:employee',
-            'id_card'          => 'required|unique:employee',
             'phone'            => 'required|numeric',
             'nationality'      => 'required',
-            'status'           => 'required|numeric',
+            'status'           => 'required',
             'birthdate'        => 'required',
-            'date_of_admision' => 'required',
-            'retirement_date'  => 'required',
-            'user_id'          => 'required',
-            'direction_id'     => 'required',
-            'association_id'   => 'required',
-            'bankdetails_id'  => 'required',
-            'updated_at'       =>  getdate()
+            'date_of_admission'=> 'required',
+
+            'direction' => 'required',
+            'city_id' => 'required|alpha_dash'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'employee_code'    => 'required|numeric|unique:employee',
-                'names'            => 'required',
-                'lastnames'        => 'required',
-                'email'            => 'required',
-                'department'       => 'required',
-                'rif'              => 'required|unique:employee',
-                'id_card'          => 'required|unique:employee',
-                'phone'            => 'required|numeric',
-                'nationality'      => 'required',
-                'status'           => 'required|numeric',
-                'birthdate'        => 'required',
-                'date_of_admision' => 'required',
-                'retirement_date'  => 'required',
-                'user_id'          => 'required',
-                'direction_id'     => 'required',
-                'association_id'   => 'required',
-                'bankdetails_id'  => 'required',
-                'updated_at'       =>  getdate()
+                'names'            => 'sometimes|required',
+                'lastnames'        => 'sometimes|required',
+                'email'            => 'sometimes|required',
+                'department'       => 'sometimes|required',
+                'phone'            => 'sometimes|required|numeric',
+                'nationality'      => 'sometimes|required',
+                'status'           => 'sometimes|required',
+                'birthdate'        => 'sometimes|required',
+                'date_of_admission'=> 'sometimes|required',
+                
+                'direction' => 'required',
+                'city_id' => 'required|alpha_dash'
             ];
         }
 
-        $user = User::byUuid($request->user_id)->firstOrFail();
+        $user = $employee->user;
 
-        $request->merge(array('user_id' => $user->id));
+        switch($request->status) {
 
-        
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+            case 'A':
 
-        $request->merge(array('direction_id' => $direction->id));
+                $request->merge(array('retirement_date' => null));
 
-        
-        $association = Association::byUuid($request->association_id)->firstOrFail();
+                $request->merge(array('status' => true));
 
-        $request->merge(array('association_id' => $association->id));
+                $user->update($request->only('status'));
 
+                $request->merge(array('status' => 'A'));
 
-        $bankdetails = Bankdetails::byUuid($request->bankdetails_id)->firstOrFail();
+                break;
 
-        $request->merge(array('bankdetails_id' => $bankdetails->id));
+            case 'R':
 
+                $request->merge(array('retirement_last_date' => Carbon::now()));
 
-        $employee = $this->model->create($request->all());
+                $request->merge(array('status' => false));
+
+                $user->update($request->only('status'));
+
+                $request->merge(array('status' => 'R'));
+
+                break;
+
+            case 'F':
+
+                $request->merge(array('retirement_last_date' => Carbon::now()));
+
+                $request->merge(array('status' => false));
+
+                $user->update($request->only('status'));
+
+                $request->merge(array('status' => 'R'));
+
+                break;
+        }
+
+        $this->validate($request, $rules);
+
+        # Actualiza la dirección
+
+            $city = City::byUuid($request->city_id)->firstOrFail();
+
+            if($city) {
+
+                $request->merge(array('city_id' => $city->id));
+
+                $direction = $employee->direction;
+
+                $direction->update($request->only(['direction', 'city_id']));
+
+                $request->merge(array('direction_id' => $direction->id));
+            }
+
+        # Guarda los valores actualizados
+
+        $employee->update($request->all());
 
         return $this->response->item($employee->fresh(), new EmployeeTransformer());
     }
 
-    public function destroy(Request $request, $uuid) {
+    public function updateDataBank(Request $request, $uuid) {
 
         $employee = $this->model->byUuid($uuid)->firstOrFail();
-        
-        $employee->delete();
 
-        return response()->json([ 
-                                'status' => true, 
-                                'message' => 'Empleado eliminado exitosamente!', 
-                                ]);
+        $bank = Bank::byUuid($request->bankuuid)->first();
+
+        if($bank) {
+
+            $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
+
+            if($bankd->count() > 0)
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡El número de cuenta ingresado ya existe! Por favor verifique he intente nuevamente.'
+                ]);
+        
+            $request->merge(array('bank_id' => $bank->id));
+
+            $bankdetails = $employee->bankdetails;
+
+            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+        }
     }
 }

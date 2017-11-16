@@ -24,6 +24,8 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Association;
 use App\Entities\Administrative\Manager;
+use App\Entities\Administrative\Partner;
+use App\Entities\Administrative\Charge;
 use App\Transformers\Administrative\ManagerTransformer;
 
 use League\Fractal;
@@ -32,7 +34,7 @@ use League\Fractal;
  *  Controlador Empleados
  */
 
-class ManagersController extends Controller {
+class ManagerController extends Controller {
 
     use Helpers;
 
@@ -45,8 +47,6 @@ class ManagersController extends Controller {
 
 	public function index(Request $request) {
 
-        dd('hola');
-
         $fractal = new Fractal\Manager();
 
         if (isset($_GET['include'])) {
@@ -54,177 +54,118 @@ class ManagersController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        dd('hola');
+        $managers = $this->model->with('partner', 'charge')->get();
 
-        $paginator = $this->model->with('partner', 'charge')->paginate($request->get('limit', config('app.pagination_limit')));
-
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
-
-        return $this->response->paginator($paginator, new ManagerTransformer());
+        return $this->response->collection($managers, new ManagerTransformer());
     }
 
-    public function create($idcard) {
+    public function create($uuid) {
         
         $associations = $this->api->get('administrative/associations?include=organisms');
-        $partner      = $this->api->get('administrative/partners/'.$idcard);
+        $partner      = $this->api->get('administrative/partners/'.$uuid);
         $charges      = $this->api->get('administrative/charges');
 
         return response()->json([
 
             'status'       => true,
             'associations' => $associations,
-            'partner'      => $partners,
+            'partner'      => $partner,
             'charges'      => $charges
         ]);
     }
 
     public function show($id) {
         
-        $Manager = $this->model->byUuid($id)->firstOrFail();
+        $manager = $this->model->byUuid($id)->firstOrFail();
 
-        return $this->response->item($Manager, new ManagerTransformer());  
+        return $this->response->item($manager, new ManagerTransformer());  
     }
 
     public function store(Request $request) {
         
         $this->validate($request, [
 
-            'Manager_code'    => 'required|numeric|unique:Manager',
-            'names'            => 'required',
-            'lastnames'        => 'required',
-            'email'            => 'required',
-            'department'       => 'required',
-            'rif'              => 'required|unique:Manager',
-            'id_card'          => 'required|unique:Manager',
-            'phone'            => 'required|numeric',
-            'nationality'      => 'required',
-            'status'           => 'required|numeric',
-            'birthdate'        => 'required',
-            'date_of_admision' => 'required',
-            'retirement_date'  => 'required',
-            'user_id'          => 'required',
-            'direction_id'     => 'required',
-            'association_id'   => 'required',
-            'bank_details_id'  => 'required'
+            'partner_id' => 'required|alpha_dash',
+            'charge_id'  => 'required|alpha_dash'
         ]);
+        # Obtiene el asociado mediante el UUID
 
-        $user = User::byUuid($request->user_id)->firstOrFail();
+            $partner = Partner::byUuid($request->partner_id)->firstOrFail();
 
-        $request->merge(array('user_id' => $user->id));
+            $request->merge(array('partner_id' => $partner->id));
 
+        # Obtiene el cargo mediante el UUID
+
+            $charge = Charge::byUuid($request->charge_id)->firstOrFail();
+
+            $request->merge(array('charge_id' => $charge->id));
+
+        # Verifica que ese cargo no esté activo
         
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+            $manager_active = Manager::where('status',   '=', true)->
+                                       where('charge_id','=', $charge->id)->
+                                       first();
 
-        $request->merge(array('direction_id' => $direction->id));
+            if(count($manager_active) > 0) 
 
-        
-        $association = Association::byUuid($request->association_id)->firstOrFail();
+                return response()->json([ 
+                
+                    'status'  => false, 
+                    'message' => '¡El cargo ya está ocupado! Por favor verifique he intente nuevamente.'
+                ]);
 
-        $request->merge(array('association_id' => $association->id));
+        # Verifica que el asociado no tenga un cargo activo
+         
+            $active_manager = $partner->managers;
 
+            if(count($active_manager) > 0)
 
-        $bank_details = Bank_details::byUuid($request->bank_details_id)->firstOrFail();
+                foreach ($active_manager as $manager) {
+                    
+                    if($manager->status) 
 
-        $request->merge(array('bank_details_id' => $bank_details->id));
+                        return response()->json([ 
+                        
+                            'status'  => false, 
+                            'message' => '¡El asociado ya tiene un cargo activo! Por favor verifique he intente nuevamente.'
+                        ]);
+                }
 
+        # Guarda el estatus activo del directivo
+         
+            $request->merge(array('status' => true));
 
-        $Manager = $this->model->create($request->all());
+        $manager = $this->model->create($request->all());
 
         return response()->json([ 
-                                'status'  => true, 
-                                'message' => 'El Empleado se ha registrado exitosamente!', 
-                                'object'  => $Manager 
-                                ]);
+                                
+            'status'  => true, 
+            'message' => '¡El directivo se ha registrado exitosamente!', 
+            'object'  => $manager 
+        ]);
     }
 
     public function update(Request $request, $uuid) {
 
-        $Manager = $this->model->byUuid($uuid)->firstOrFail();
+        $manager = $this->model->byUuid($uuid)->firstOrFail();
 
         $rules = [
 
-            'Manager_code'    => 'required|numeric|unique:Manager',
-            'names'            => 'required',
-            'lastnames'        => 'required',
-            'email'            => 'required',
-            'department'       => 'required',
-            'rif'              => 'required|unique:Manager',
-            'id_card'          => 'required|unique:Manager',
-            'phone'            => 'required|numeric',
-            'nationality'      => 'required',
-            'status'           => 'required|numeric',
-            'birthdate'        => 'required',
-            'date_of_admision' => 'required',
-            'retirement_date'  => 'required',
-            'user_id'          => 'required',
-            'direction_id'     => 'required',
-            'association_id'   => 'required',
-            'bank_details_id'  => 'required',
-            'updated_at'       =>  getdate()
+            'status'    => 'required|boolean'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'Manager_code'    => 'required|numeric|unique:Manager',
-                'names'            => 'required',
-                'lastnames'        => 'required',
-                'email'            => 'required',
-                'department'       => 'required',
-                'rif'              => 'required|unique:Manager',
-                'id_card'          => 'required|unique:Manager',
-                'phone'            => 'required|numeric',
-                'nationality'      => 'required',
-                'status'           => 'required|numeric',
-                'birthdate'        => 'required',
-                'date_of_admision' => 'required',
-                'retirement_date'  => 'required',
-                'user_id'          => 'required',
-                'direction_id'     => 'required',
-                'association_id'   => 'required',
-                'bank_details_id'  => 'required',
-                'updated_at'       =>  getdate()
+                'status'    => 'required|boolean'
             ];
         }
 
-        $user = User::byUuid($request->user_id)->firstOrFail();
+        $manager->status = $request->status;
 
-        $request->merge(array('user_id' => $user->id));
+        $manager->save();
 
-        
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
-
-        $request->merge(array('direction_id' => $direction->id));
-
-        
-        $association = Association::byUuid($request->association_id)->firstOrFail();
-
-        $request->merge(array('association_id' => $association->id));
-
-
-        $bank_details = Bank_details::byUuid($request->bank_details_id)->firstOrFail();
-
-        $request->merge(array('bank_details_id' => $bank_details->id));
-
-
-        $Manager = $this->model->create($request->all());
-
-        return $this->response->item($Manager->fresh(), new ManagerTransformer());
-    }
-
-    public function destroy(Request $request, $uuid) {
-
-        $Manager = $this->model->byUuid($uuid)->firstOrFail();
-        
-        $Manager->delete();
-
-        return response()->json([ 
-                                'status' => true, 
-                                'message' => 'Empleado eliminado exitosamente!', 
-                                ]);
+        return $this->response->item($manager->fresh(), new ManagerTransformer());
     }
 }

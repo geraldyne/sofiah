@@ -32,7 +32,8 @@ class Accountlvl1Transformer extends TransformerAbstract
             'account_name' => $model->account_name,
             'account_type' => $model->account_type,
             'balance_type' => $model->balance_type,
-            'apply_balance' => $model->apply_balance
+            'apply_balance' => $model->apply_balance,
+            'cash_flow' => $model->cash_flow
         ];
     }
 

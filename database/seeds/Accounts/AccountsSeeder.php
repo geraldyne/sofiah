@@ -1059,6 +1059,7 @@ class AccountsSeeder extends Seeder
                             'account_name' => $cuenta['nombre'],
                             'account_type' => $cuenta['tipo'],
                             'balance_type' => $cuenta['saldo'],
+                            'cash_flow'    => $cuenta['efectivo'],
                             'apply_balance' => $cuenta['balance']
                         ]);
 
@@ -1092,6 +1093,7 @@ class AccountsSeeder extends Seeder
                                   'account_type' => $cuenta['tipo'],
                                   'balance_type' => $cuenta['saldo'],
                                   'apply_balance' => $cuenta['balance'],
+                                  'cash_flow'    => $cuenta['efectivo'],
                                   'accountlvl1_id' => $padre->id
                               ]);
                         }
@@ -1126,6 +1128,7 @@ class AccountsSeeder extends Seeder
                                   'account_type' => $cuenta['tipo'],
                                   'balance_type' => $cuenta['saldo'],
                                   'apply_balance' => $cuenta['balance'],
+                                  'cash_flow'    => $cuenta['efectivo'],
                                   'accountlvl2_id' => $padre->id
                               ]);
                         }
@@ -1160,6 +1163,7 @@ class AccountsSeeder extends Seeder
                                   'account_type' => $cuenta['tipo'],
                                   'balance_type' => $cuenta['saldo'],
                                   'apply_balance' => $cuenta['balance'],
+                                  'cash_flow'    => $cuenta['efectivo'],
                                   'accountlvl3_id' => $padre->id
                               ]);
                         }
@@ -1196,6 +1200,7 @@ class AccountsSeeder extends Seeder
                                   'account_type' => $cuenta['tipo'],
                                   'balance_type' => $cuenta['saldo'],
                                   'apply_balance' => $cuenta['balance'],
+                                  'cash_flow'    => $cuenta['efectivo'],
                                   'accountlvl4_id' => $padre->id
                               ]);
                         }
@@ -1234,6 +1239,7 @@ class AccountsSeeder extends Seeder
                                   'account_type' => $cuenta['tipo'],
                                   'balance_type' => $cuenta['saldo'],
                                   'apply_balance' => $cuenta['balance'],
+                                  'cash_flow'    => $cuenta['efectivo'],
                                   'accountlvl5_id' => $padre->id
                               ]);
                         }

@@ -26,7 +26,7 @@ use Webpatser\Uuid\Uuid;
 use App\Entities\User;
 
 use App\Entities\Administrative\Accountingyear;
-use App\Entities\Administrative\Dailymovement_details;
+use App\Entities\Administrative\Dailymovementdetails;
 
 class Dailymovement extends Model {
         
@@ -70,12 +70,12 @@ class Dailymovement extends Model {
      * @return type
      */
 
-    public function user_origin() {
+    public function userorigin() {
 
         return $this->belongsToMany(
         	User::class, 
         	'daily_movements_origin', 
-        	'daily_movement_id',
+        	'dailymovement_id',
         	'user_id' 
         );
     }
@@ -86,12 +86,12 @@ class Dailymovement extends Model {
      * @return type
      */
 
-    public function user_apply() {
+    public function userapply() {
 
         return $this->belongsToMany(
         	User::class, 
         	'daily_movements_apply', 
-            'daily_movement_id',
+            'dailymovement_id',
             'user_id' 
         );
     }
@@ -104,7 +104,7 @@ class Dailymovement extends Model {
 
     public function details() {
 
-        return $this->hasMany(Dailymovement_details::class);
+        return $this->hasMany(Dailymovementdetails::class);
     }
 
     /**

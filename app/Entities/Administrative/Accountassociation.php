@@ -23,34 +23,29 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
-use App\Entities\Administrative\Accountlvl2;
+use App\Entities\Association;
+use App\Entities\Administrative\Accountlvl6;
 
-class Accountlvl1 extends Model {
+class Accountassociation extends Model {
         
     use Notifiable, UuidScopeTrait;
 
     # Nombre de la tabla a la que pertenece el modelo
 
-    protected $table = "accounts_lvl1";
-
+    protected $table = "accountsassociation";
+    
     /**
      * The attributes that are mass assignable.
      *
-     * @var Integer codigoCuenta
-     * @var String nombreCuenta
-     * @var Enum tipoCuenta
-     * @var Enum tipoSaldo
-     * @var Boolean aplicaBalance
+     * @var String  nombreCuentaIntegracion
+     * @var integer cuenta_id
      */
 
     protected $fillable = [
-        'uuid',
-        'account_code', 
-    	'account_name',
-    	'account_type',
-    	'balance_type',
-    	'apply_balance',
-        'cash_flow'
+        'uuid', 
+        'description', 
+        'accountlvl6_id',
+        'association_id'
     ];
 
     /* 
@@ -58,35 +53,25 @@ class Accountlvl1 extends Model {
      */
 
     /**
-     * Una cuenta de nivel 1 tiene muchas cuentas de nivel
+     * Una cuenta de integracion contable pertenece a una cuenta del plan de cuentas
      * 
      * @return type
      */
 
-    public function accountslvl2() {
+    public function accountlvl6() {
 
-        return $this->hasMany(Accountlvl2::class);
+        return $this->belongsTo(Accountlvl6::class);
     }
 
     /**
-     *  Setup model event hooks UUID
+     * Una cuenta de integracion contable pertenece a una cuenta del plan de cuentas
+     * 
+     * @return type
      */
-    public static function boot()
-    {
-        parent::boot();
-        self::creating(function ($model) {
-            $model->uuid = (string) Uuid::generate(4);
-        });
-    }
 
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'uuid';
+    public function association() {
+
+        return $this->belongsTo(Association::class);
     }
 
     /**

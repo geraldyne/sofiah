@@ -42,7 +42,7 @@ class EmployeeTransformer extends TransformerAbstract
             'nationality' => $model->nationality,
             'status' => $model->status,
             'birthdate' => $model->birthdate,
-            'date_of_admision' => $model->date_of_admision,
+            'date_of_admission' => $model->date_of_admission,
             'retirement_date' => $model->retirement_date,
             'user_id' => $model->user_id,
             'direction_id' => $model->direction_id,
@@ -92,6 +92,6 @@ class EmployeeTransformer extends TransformerAbstract
      */
     public function includeBankdetails(Employee $model)
     {
-        return $this->collection($model->bankdetails, new BankdetailsTransformer);
+        return $this->item($model->bankdetails, new BankdetailsTransformer);
     }
 }

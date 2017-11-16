@@ -51,7 +51,8 @@ class Accountlvl5 extends Model {
     	'account_type',
     	'balance_type',
     	'apply_balance',
-        'accountlvl4_id'
+        'accountlvl4_id',
+        'cash_flow'
     ];
 
     /* 

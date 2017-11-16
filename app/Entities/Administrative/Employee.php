@@ -25,7 +25,7 @@ use Webpatser\Uuid\Uuid;
 
 use App\Entities\Administrative\Association;
 use App\Entities\Administrative\Direction;
-use App\Entities\Administrative\User;
+use App\Entities\User;
 use App\Entities\Administrative\Bankdetails;
 
 class Employee extends Model {

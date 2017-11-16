@@ -17,19 +17,16 @@
 
 namespace App\Http\Controllers\Api\Administrative;
 
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
-use App\Entities\Association;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\User;
 use App\Entities\Association;
+use App\Entities\Administrative\Accountlvl6;
 use App\Entities\Administrative\Dailymovement;
 use App\Entities\Administrative\Dailymovementdetails;
-use App\Entities\Administrative\Accountlvl6;
-use App\Entities\Administrative\Direction;
-use App\Entities\Administrative\Employee;
-use App\Entities\Administrative\Bank;
 use App\Transformers\Administrative\DailymovementTransformer;
 
 use Carbon\Carbon;
@@ -45,7 +42,7 @@ class DailymovementsController extends Controller {
 
     protected $model;
 
-    public function __construct(Partner $model) {
+    public function __construct(Dailymovement $model) {
 
         $this->model = $model;
     }
@@ -59,26 +56,32 @@ class DailymovementsController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
-            'user_origin',
-            'user_apply',
-            'details',
-            'accounting_year'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
+        $dailymovement = $this->model->get();
         
-        if ($request->has('limit')) {
-        
-            $paginator->appends('limit', $request->get('limit'));
-        }
+        return $this->response->collection($dailymovement, new DailymovementTransformer());
+    }
 
-        return $this->response->paginator($paginator, new PartnerTransformer());
+    public function create() {
+
+        $movements = Dailymovement::get();
+
+        $number = count($movements) + 1;
+
+        $accounts = $this->api->get('administrative/accountlvl6');
+
+        return response()->json([
+
+            'status'    => true,
+            'number' => $number,
+            'accounts'  => $accounts
+        ]);
     }
 
     public function show($id) {
         
         $dailymovements = $this->model->byUuid($id)->firstOrFail();
 
-        return $this->response->item($dailymovements, new DailymovementsTransformer());
+        return $this->response->item($dailymovements, new DailymovementTransformer());
     }
     
     public function store(Request $request) {
@@ -105,227 +108,171 @@ class DailymovementsController extends Controller {
                 return response()->json([
 
                     'status'    => false,
-                    'message'   => 'Los montos debe y haber deben ser iguales. Por favor verifique e intente nuevamente.'
+                    'message'   => '¡La suma total del debe debe coincidir con la suma total del haber! Por favor verifique e intente nuevamente.'
                 ]);
             }
         }
 
-        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
+        $movement = $this->model->create($request->only([
 
-        $request->merge(array('organism_id' => $organism->id));
+            'date',
+            'description',
+            'status',
+            'debit',
+            'asset',
+            'number',
+            'origin',
+            'type'
 
-        # crea el usuario
-        
-        $username = substr(strtolower($request->names), 0, 3).explode(' ', strtolower($request->lastnames.''))[0].substr($request->id_card, -3);
+        ]));
 
-        if( ! User::where('name','=',$username)->exists()) {
+        if($movement) {
 
-            $request->merge(array('name' => $username));
-            $request->merge(array('password' => $username));
+            $movement = Dailymovement::all(); 
 
-            $request->merge(array('status' => true));
+            foreach ($request->new_account as $detail) {
+                
+                $movementdetail = new Dailymovementdetails();
 
-            $user = User::create($request->all());
+                $movementdetail->description = $detail['description'];
 
-            $user->assignRole('associate');
+                $movementdetail->debit = $detail['debit'];
 
-            $request->merge(array('style'     => 'bg-blue'));
-            $request->merge(array('ĺang'      => 'es'));
-            $request->merge(array('zoom'      => '80'));
-            $request->merge(array('user_id'   => $user->id));
+                $movementdetail->asset = $detail['asset'];
 
-            $preference = Preference::create($request->all());
-        
-        } else {
+                $movementdetail->dailymovement_id = $movement->last()->id;
 
-            $user = User::where('name','=',$username)->first();
+                $account = Accountlvl6::byUuid($detail['accountlvl6_id'])->firstOrFail();
 
-            $request->merge(array('user_id' => $user->id));
-        }
+                $movementdetail->accountlvl6_id = $account->id;
 
-        $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
+                $movementdetail->save();
+            }
 
-        # crea los detalles de bancos
+            $user = User::byUuid($request->user)->firstOrFail();
 
-        $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
-        
-        if(! Bankdetails::where('account_number','=',$request->account_number)->exists()) {
+            # Guarda el usuario que originó el comprobante
+             
+            DB::table('daily_movements_origin')->insert(
+                [
+                    'dailymovement_id' => $movement->last()->id,
+                    'user_id'          => $user->id
+                ]
+            );
 
-            $request->merge(array('bank_id' => $bank->id));
+            if($request->status == 'A') {
 
-            $details = Bankdetails::create($request->only(['bank_id','account_number','account_type']));
-            
-            $request->merge(array('bankdetails_id' => $details->id));
-        
-        } else {
+                DB::table('daily_movements_apply')->insert(
+                    [
+                        'dailymovement_id' => $movement->last()->id,
+                        'user_id'          => $user->id
+                    ]
+                );
+            } 
 
             return response()->json([
 
-                'status'    => false,
-                'message'   => 'La cuenta bancaria ingresada ya existe'
+                'status'    => true,
+                'message'   => '¡El comprobante contable se ha creado con éxito!',
+                'object'    => $movement
             ]);
         }
-
-        $partner = $this->model->create($request->except(['bankuuid', 'account_number','account_type']));
-
-        return response()->json([
-
-            'status'    => true,
-            'message'   => '¡El asociado se ha creado con éxito!',
-            'object'    => $partner
-        ]);
     }
 
     public function update(Request $request, $uuid) {
 
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
+        $movement = $this->model->byUuid($uuid)->firstOrFail();
+
+        if($movement->status == 'A')
+
+            return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡El movimiento ya está aplicado! No se puede modificar.'
+                ]);
 
         $rules = [
 
-            'title' => 'required',
-            'local_phone' => 'required|numeric',
-            'nationality' => 'required',
-            'status' => 'required',
-            'phone' => 'required|numeric',
-            'account_number' => 'unique:bank_details',
+            'description'   => 'required',
+            'status'        => 'required',
+            'debit'         => 'required|numeric',
+            'asset'         => 'required|numeric'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'title' => 'sometimes|required',
-                'local_phone' => 'sometimes|required|numeric',
-                'nationality' => 'sometimes|required',
-                'status' => 'sometimes|required',
-                'phone' => 'sometimes|required|numeric',
-                'account_number' => 'sometimes|unique:bank_details',
+                'description'   => 'sometimes|required',
+                'status'        => 'sometimes|required',
+                'debit'         => 'sometimes|required|numeric',
+                'asset'         => 'sometimes|required|numeric'
+
             ];
         }
 
-        if($request->status === 'A') {
+        if($request->status == 'A') {
 
-            $managers = $partner->managers;
+            $debit = $request->debit;
+            $asset = $request->asset;
 
-            foreach($managers as $manager) {
+            if($debit != $asset) {
 
-                $manager->status = false;
+                return response()->json([
 
-                $manager->save();
+                    'status'    => false,
+                    'message'   => '¡La suma total del debe debe coincidir con la suma total del haber! Por favor verifique e intente nuevamente.'
+                ]);
             }
-
-            $request->merge(array('retirement_date' => null));
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => true));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'A'));
-
-        } else if($request->status === 'R') {
-
-            $managers = $partner->managers;
-
-            foreach($managers as $manager) {
-
-                $manager->status = false;
-
-                $manager->save();
-            }
-
-            if($partner->retirement_date) {
-
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
-
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => false));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'R'));
-
-        } else if($request->status === 'F') {
-
-            $managers = $partner->managers;
-
-            foreach($managers as $manager) {
-
-                $manager->status = false;
-
-                $manager->save();
-            }
-
-            if($partner->retirement_date) {
-
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
-
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => false));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'F'));
         }
 
         $this->validate($request, $rules);
 
-        $bank = Bank::byUuid($request->bankuuid)->first();
+        if($movement->update($request->only([
 
-        $request->merge(array('bank_id' => $bank->id));
+            'description',
+            'status',
+            'debit',
+            'asset'
 
-        $bankdetails = $partner->bankdetails;
+        ]))) {
 
-        $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+            $movement = Dailymovement::all(); 
 
-        $request->merge(array('bankdetails_id' => $bankdetails->id));
+            foreach ($request->new_account as $detail) {
+                
+                $movementdetail = new Dailymovementdetails();
 
-        $partner->update($request->all());
+                $movementdetail->description = $detail['description'];
 
-        return $this->response->item($partner->fresh(), new PartnerTransformer());
-    }
+                $movementdetail->debit = $detail['debit'];
 
-    public function destroy(Request $request, $uuid) {
+                $movementdetail->asset = $detail['asset'];
 
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
+                $movementdetail->dailymovement_id = $movement->last()->id;
 
-        if($partner->managers->count() > 0) 
+                $account = Accountlvl6::byUuid($detail['accountlvl6_id'])->firstOrFail();
 
-            return response()->json([
+                $movementdetail->accountlvl6_id = $account->id;
 
-                'status'    => false,
-                'message'   => 'El asociado posee un cargo de directivo, no se puede eliminar.'
-            ]);
+                $movementdetail->save();
+            }
 
-        $user = $partner->user;
+            $user = User::byUuid($request->user)->firstOrFail();
 
-        $bankdetails = $partner->bankdetails;
+            # Guarda el usuario que aplicó el comprobante
 
-        $user->delete();
-        
-        $bankdetails->delete();
+            if($request->status == 'A') {
 
-        $partner->delete();
+                DB::table('daily_movements_apply')->insert(
+                    [
+                        'dailymovement_id' => $movement->last()->id,
+                        'user_id'          => $user->id
+                    ]
+                );
+            }
 
-        return response()->json([
-
-            'status'    => true,
-            'message'   => 'El asociado ha sido eliminado con éxito.'
-        ]);
+            return $this->response->item($movement->last(), new DailymovementTransformer());
+        }
     }
 }

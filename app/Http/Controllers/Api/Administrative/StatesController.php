@@ -110,13 +110,4 @@ class StatesController extends Controller {
 
         return $this->response->item($state->fresh(), new StateTransformer());
     }
-
-    public function destroy(Request $request, $uuid) {
-
-        $state = $this->model->byUuid($uuid)->firstOrFail();
-        
-        $state->delete();
-
-        return $this->response->noContent();
-    }
 }

@@ -30,9 +30,7 @@ class ManagerTransformer extends TransformerAbstract
 
             'id' => $model->uuid,
             'partner_id' => $model->partner_id,
-            'charge_id' => $model->charge_id,
-            //'created_at' => $model->created_at->toIso8601String(),
-            //'updated_at' => $model->updated_at->toIso8601String()
+            'charge_id' => $model->charge_id
         ];
     }
 

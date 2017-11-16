@@ -18,7 +18,8 @@ class AssociationTransformer extends TransformerAbstract
     protected $availableIncludes = [
         'organisms',
         'direction',
-        'employees'
+        'employees',
+        'accountsassociation'
     ];
 
     /**
@@ -43,13 +44,6 @@ class AssociationTransformer extends TransformerAbstract
             'time_to_reincorporate' => $model->time_to_reincorporate,
             'loan_time' => $model->loan_time,
             'percent_legal_reserve' => $model->percent_legal_reserve,
-            'employers_contribution_account_id' => $model->employers_contribution_account_id,
-            'deferred_employer_contribution_account_id' => $model->deferred_employer_contribution_account_id,
-            'individual_contribution_account_id' => $model->individual_contribution_account_id,
-            'deferred_individual_contribution_account_id' => $model->deferred_individual_contribution_account_id,
-            'voluntary_contribution_account_id' => $model->voluntary_contribution_account_id,
-            'deferred_voluntary_contribution_account_id' => $model->deferred_voluntary_contribution_account_id,
-            'legal_reserve_account_id' => $model->legal_reserve_account_id,
             'created_at' => $model->created_at->toIso8601String(),
             'updated_at' => $model->updated_at->toIso8601String()
         ];
@@ -85,5 +79,15 @@ class AssociationTransformer extends TransformerAbstract
     public function includeEmployees(Association $model)
     {
         return $this->collection($model->employees, new Administrative\EmployeeTransformer);
+    }
+
+    /**
+     * Include Accountsassociation
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAccountsassociation(Association $model)
+    {
+        return $this->collection($model->accountsassociation, new Administrative\AccountassociationTransformer);
     }
 }

@@ -28,6 +28,7 @@ use App\Entities\Administrative\Accountingintegration;
 use App\Entities\Administrative\Cashflow;
 use App\Entities\Administrative\Heritagechange;
 use App\Entities\Administrative\Dailymovementdetails;
+use App\Entities\Administrative\Accountassociation;
 
 class Accountlvl6 extends Model {
         
@@ -59,7 +60,8 @@ class Accountlvl6 extends Model {
     	'account_type',
     	'balance_type',
     	'apply_balance',
-        'accountlvl5_id'
+        'accountlvl5_id',
+        'cash_flow'
     ];
 
     /* 
@@ -75,6 +77,13 @@ class Accountlvl6 extends Model {
     public function accountlvl5() {
 
         return $this->belongsTo(Accountlvl5::class);
+    }
+
+    // Una asociacion tiene muchos organismos
+
+    public function accountsassociation() {
+
+        return $this->hasMany(Accountassociation::class);
     }
 
     /**

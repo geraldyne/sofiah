@@ -21,6 +21,7 @@ namespace App\Http\Controllers\Api\Administrative;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+
 use App\Entities\User;
 use App\Entities\Association;
 use App\Entities\Administrative\Bank;
@@ -60,7 +61,8 @@ class PartnerController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with(
+        $partner = $this->model->with(
+            
             'organism',
             'user',
             'bankdetails',
@@ -70,14 +72,16 @@ class PartnerController extends Controller {
             'loans',
             'assetsmovements',
             'assetsbalance'
+
         )->get();
 
-        return $this->response->collection($paginator, new PartnerTransformer());
+        return $this->response->collection($partner, new PartnerTransformer());
     }
 
     public function create() {
         
         $associations   = $this->api->get('administrative/associations?include=organisms');
+
         $banks          = $this->api->get('administrative/banks');
 
         return response()->json([
@@ -98,95 +102,133 @@ class PartnerController extends Controller {
     
     public function store(Request $request) {
 
-        $this->validate($request, [
-
-            'employee_code' => 'required|unique:partners',
-            'names' => 'required',
-            'lastnames' => 'required',
-            'email' => 'required|email|max:120|unique:partners',
-            'title' => 'required',
-            'local_phone' => 'required|numeric',
-            'nationality' => 'required',
-            'status' => 'required',
-            'id_card' => 'required|unique:partners|unique:partners',
-            'phone' => 'required|numeric',
-            'organism_id' => 'required|alpha_dash',
-            'bankuuid' => '',
-            'account_number' => 'unique:bank_details',
-            'account_type' => '',
-        ]);
-
-        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
-
-        $request->merge(array('organism_id' => $organism->id));
-
-        # crea el usuario
+        # Evalúa cada dato recibido
         
-        $username = substr(strtolower($request->names), 0, 3).explode(' ', strtolower($request->lastnames.''))[0].substr($request->id_card, -3);
+            $this->validate($request, [
 
-        if( ! User::where('name','=',$username)->exists()) {
+                'employee_code'     => 'required|unique:partners',
+                'names'             => 'required',
+                'lastnames'         => 'required',
+                'email'             => 'required|email|max:120|unique:partners',
+                'title'             => 'required',
+                'local_phone'       => 'required|numeric',
+                'nationality'       => 'required',
+                'status'            => 'required',
+                'id_card'           => 'required|unique:partners',
+                'phone'             => 'required|numeric',
+                'organism_id'       => 'required|alpha_dash',
+                'bankuuid'          => 'alpha_dash',
+                'account_number'    => 'unique:bank_details',
+                'account_type'      => '',
+            ]);
 
-            $request->merge(array('name' => $username));
-            $request->merge(array('password' => $username));
+        # Obtiene el organismo mediante el UUID
 
-            $request->merge(array('status' => true));
+            $organism = Organism::byUuid($request->organism_id)->firstOrFail();
 
-            $user = User::create($request->all());
+            $request->merge(array('organism_id' => $organism->id));
 
-            $user->assignRole('partner');
-
-            $request->merge(array('style'     => 'bg-blue'));
-            $request->merge(array('ĺang'      => 'es'));
-            $request->merge(array('zoom'      => '80'));
-            $request->merge(array('user_id'   => $user->id));
-
-            $preference = Preference::create($request->all());
+        # Crea el nombre de usuario y luego el usuario si no existe
         
-        } else {
+            $username = substr(strtolower($request->names), 0, 3).explode(' ', strtolower($request->lastnames.''))[0].substr($request->id_card, -3);
 
-            $user = User::where('name','=',$username)->first();
+            if( ! User::where('name','=',$username)->exists()) {
 
-            $request->merge(array('user_id' => $user->id));
-        }
+                $request->merge(array('name'        => $username));
 
-        $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
+                $request->merge(array('email'       => $request->email));
 
-        # crea los detalles de bancos
+                $request->merge(array('password'    => $username)); # ALMACENA LA CLAVE COMO EL NOMBRE DE USUARIO, DEBE ACTUALIZAR EN SU PRIMER INICIO DE SESIÓN
 
-        $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
-        
-        if(! Bankdetails::where('account_number','=',$request->account_number)->exists()) {
+                $request->merge(array('status'      => true));
 
-            $request->merge(array('bank_id' => $bank->id));
+                $user = User::create($request->only(['name', 'email', 'password', 'status']));
 
-            $details = Bankdetails::create($request->only(['bank_id','account_number','account_type']));
+                if( ! $user) return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar el usuario! Por favor verifique los datos he intente nuevamente.'
+                ]);
+
+                $user->assignRole('partner');
+
+                if( $user->roles->count() == 0) { $user->forceDelete(); }
+
+                $request->merge(array('user_id' => $user->id));
+
+                $preference = Preference::create($request->only(['user_id']));
+
+                if( ! $preference) return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡Ha ocurrido un error al registrar las preferencias de usuario! Por favor verifique los datos he intente nuevamente.'
+                ]);
             
-            $request->merge(array('bankdetails_id' => $details->id));
+            } else {
+
+                $user = User::where('name','=',$username)->firstOrFail();
+
+                $request->merge(array('user_id' => $user->id));
+            }
+
+            $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
+
+        # Crea los detalles de bancos
+
+            $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
+            
+            if(! Bankdetails::where('account_number','=',$request->account_number)->exists()) {
+
+                $request->merge(array('bank_id' => $bank->id));
+
+                $details = Bankdetails::create($request->only(['bank_id','account_number','account_type']));
+                
+                $request->merge(array('bankdetails_id' => $details->id));
+            
+            } else {
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => 'La cuenta bancaria ingresada ya existe'
+                ]);
+            }
+
+        $partner = $this->model->create($request->except(['bankuuid', 'account_number','account_type']));
+
+        if($partner) {
+
+            $request->merge(array('balance_individual_contribution' => 0));
+
+            $request->merge(array('balance_employers_contribution' => 0));
+            
+            $request->merge(array('balance_voluntary_contribution' => 0));
+            
+            $request->merge(array('partner_id' => $partner->id));
+
+            $balance = Assetsbalance::create($request->only(['balance_individual_contribution','balance_employers_contribution','balance_voluntary_contribution', 'partner_id']));
+
+            return response()->json([
+
+                'status'    => true,
+                'message'   => '¡El asociado se ha creado con éxito!',
+                'object'    => $partner
+            ]);
         
         } else {
+
+            $user->forceDelete();
+
+            $direction->delete();
+
+            $details->delete();
 
             return response()->json([
 
                 'status'    => false,
-                'message'   => 'La cuenta bancaria ingresada ya existe'
+                'message'   => '¡Ha ocurrido un error al registrar el asociado! Por favor verifique los datos he intente nuevamente.'
             ]);
         }
-
-        $partner = $this->model->create($request->except(['bankuuid', 'account_number','account_type']));
-
-        $request->merge(array('balance_individual_contribution' => 0));
-        $request->merge(array('balance_employers_contribution' => 0));
-        $request->merge(array('balance_voluntary_contribution' => 0));
-        $request->merge(array('partner_id' => $partner->id));
-
-        $balance = Assetsbalance::create($request->only(['balance_individual_contribution','balance_employers_contribution','balance_voluntary_contribution', 'partner_id']));
-
-        return response()->json([
-
-            'status'    => true,
-            'message'   => '¡El asociado se ha creado con éxito!',
-            'object'    => $partner
-        ]);
     }
 
     public function update(Request $request, $uuid) {
@@ -199,8 +241,7 @@ class PartnerController extends Controller {
             'local_phone' => 'required|numeric',
             'nationality' => 'required',
             'status' => 'required',
-            'phone' => 'required|numeric',
-            'account_number' => 'unique:bank_details',
+            'phone' => 'required|numeric'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -212,105 +253,127 @@ class PartnerController extends Controller {
                 'nationality' => 'sometimes|required',
                 'status' => 'sometimes|required',
                 'phone' => 'sometimes|required|numeric',
-                'account_number' => 'sometimes|unique:bank_details',
             ];
         }
 
-        if($request->status === 'A') {
+        $user = $partner->user;
 
-            $managers = $partner->managers;
+        switch($request->status) {
 
-            if($managers) {
+            case 'A':
 
-                foreach($managers as $manager) {
+                $managers = $partner->managers;
 
-                    $manager->status = false;
+                if($managers) {
 
-                    $manager->save();
+                    foreach($managers as $manager) {
+
+                        $manager->status = false;
+
+                        $manager->save();
+                    }
                 }
-            }
 
-            $request->merge(array('retirement_date' => null));
+                $request->merge(array('retirement_date' => null));
 
-            $user = $partner->user;
+                $request->merge(array('status' => true));
 
-            $request->merge(array('status' => true));
+                $user->update($request->only('status'));
 
-            $user->update($request->only('status'));
+                $request->merge(array('status' => 'A'));
 
-            $request->merge(array('status' => 'A'));
+                break;
 
-        } else if($request->status === 'R') {
+            case 'R':
 
-            $managers = $partner->managers;
+                $managers = $partner->managers;
 
-            if($managers) {
+                if($managers) {
 
-                foreach($managers as $manager) {
+                    foreach($managers as $manager) {
 
-                    $manager->status = false;
+                        $manager->status = false;
 
-                    $manager->save();
+                        $manager->save();
+                    }
                 }
-            }
 
-            if($partner->retirement_date) {
+                if($partner->retirement_date) {
 
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
+                    $request->merge(array('retirement_last_date' => Carbon::now()));
+                
+                } else {
 
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
-
-            $user = $partner->user;
-
-            $request->merge(array('status' => false));
-
-            $user->update($request->only('status'));
-
-            $request->merge(array('status' => 'R'));
-
-        } else if($request->status === 'F') {
-
-            $managers = $partner->managers;
-
-            if($managers) {
-
-                foreach($managers as $manager) {
-
-                    $manager->status = false;
-
-                    $manager->save();
+                    $request->merge(array('retirement_date' => Carbon::now()));
+                    $request->merge(array('retirement_last_date' => Carbon::now()));                
                 }
-            }
 
-            if($partner->retirement_date) {
+                $request->merge(array('status' => false));
 
-                $request->merge(array('retirement_last_date' => Carbon::now()));
-            
-            } else {
+                $user->update($request->only('status'));
 
-                $request->merge(array('retirement_date' => Carbon::now()));
-                $request->merge(array('retirement_last_date' => Carbon::now()));                
-            }
+                $request->merge(array('status' => 'R'));
 
-            $user = $partner->user;
+                break;
 
-            $request->merge(array('status' => false));
+            case 'F':
 
-            $user->update($request->only('status'));
+                $managers = $partner->managers;
 
-            $request->merge(array('status' => 'F'));
+                if($managers) {
+
+                    foreach($managers as $manager) {
+
+                        $manager->status = false;
+
+                        $manager->save();
+                    }
+                }
+
+                if($partner->retirement_date) {
+
+                    $request->merge(array('retirement_last_date' => Carbon::now()));
+                
+                } else {
+
+                    $request->merge(array('retirement_date' => Carbon::now()));
+                    $request->merge(array('retirement_last_date' => Carbon::now()));                
+                }
+
+                $request->merge(array('status' => false));
+
+                $user->update($request->only('status'));
+
+                $request->merge(array('status' => 'F'));
+
+                break;
         }
 
         $this->validate($request, $rules);
+
+        $partner->update($request->all());
+
+        return $this->response->item($partner->fresh(), new PartnerTransformer());
+    }
+
+    public function updateDataBank(Request $request, $uuid) {
+
+        $partner = $this->model->byUuid($uuid)->firstOrFail();
 
         $bank = Bank::byUuid($request->bankuuid)->first();
 
         if($bank) {
 
+            $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
+
+            if($bankd->count() > 0)
+
+                return response()->json([
+
+                    'status'    => false,
+                    'message'   => '¡El número de cuenta ingresado ya existe! Por favor verifique he intente nuevamente.'
+                ]);
+        
             $request->merge(array('bank_id' => $bank->id));
 
             $bankdetails = $partner->bankdetails;
@@ -319,38 +382,6 @@ class PartnerController extends Controller {
 
             $request->merge(array('bankdetails_id' => $bankdetails->id));
         }
-
-        $partner->update($request->all());
-
-        return $this->response->item($partner->fresh(), new PartnerTransformer());
-    }
-
-    public function destroy(Request $request, $uuid) {
-
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
-
-        if($partner->managers->count() > 0) 
-
-            return response()->json([
-
-                'status'    => false,
-                'message'   => 'El asociado posee un cargo de directivo, no se puede eliminar.'
-            ]);
-
-        $user = $partner->user;
-
-        $bankdetails = $partner->bankdetails;
-
-        $user->forceDelete();
-        
-        $bankdetails->delete();
-
-        $partner->delete();
-
-        return response()->json([
-
-            'status'    => true,
-            'message'   => 'El asociado ha sido eliminado con éxito.'
-        ]);
     }
 }
+
