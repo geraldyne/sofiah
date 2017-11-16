@@ -24,6 +24,9 @@ use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Issue;
+use App\Entities\Operative\Amortdefloans;
+use App\Entities\Operative\Loantypecodes;
+use App\Entities\Operative\Amortdefdetails;
 
 /**
  *  Modelo de detalle de la emisión
@@ -63,11 +66,35 @@ class Issuedetails extends Model {
                            'type',
                            'quota_number',
                            'days',
+                           'amortdefloan_id',
+                           'loantypecode_id',
                            'issue_id'];
 
     /* 
      * RELACIONES 
      */
+
+    /**
+      * Un detalle de emision pertenece a una amortizacion prestamo
+      * 
+      * @return type
+      */ 
+
+    public function amortdefloans() {
+
+        return $this->belongsTo(Amortdefloans::class);
+    }
+
+    /**
+      * Un detalle de emision pertenece a un codigo de tipo de prestamo
+      * 
+      * @return type
+      */ 
+
+    public function loantypecodes() {
+
+        return $this->belongsTo(Loantypecodes::class);
+    }
 
     /**
       * Un detalle de emision pertenece a una emisión
@@ -79,6 +106,19 @@ class Issuedetails extends Model {
 
         return $this->belongsTo(Issue::class);
     }
+
+
+    /**
+      * Un detalle de emision pertenece a una amortizacion prestamos
+      * 
+      * @return type
+      */ 
+
+    public function amortdefdetails() {
+
+        return $this->hasOne(Amortdefdetails::class);
+    }
+
 
     /**
      *  Setup model event hooks UUID

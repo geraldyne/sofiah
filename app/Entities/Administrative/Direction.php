@@ -27,6 +27,7 @@ use App\Entities\Association;
 use App\Entities\Administrative\City;
 use App\Entities\Administrative\Organism;
 use App\Entities\Administrative\Employee;
+use App\Entities\Operative\Provider;
 
 class Direction extends Model {
 
@@ -93,6 +94,11 @@ class Direction extends Model {
     public function employees() {
 
         return $this->hasMany(Employee::class);
+    }
+
+    public function providers() {
+
+        return $this->hasMany(Provider::class);
     }
 /*
     /**

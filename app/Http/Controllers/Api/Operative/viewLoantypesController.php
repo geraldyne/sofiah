@@ -73,22 +73,6 @@ class viewLoantypesController extends Controller {
         return $this->response->paginator($paginator, new LoantypesTransformer());
     }
 
-    public function create()
-    {
-
-        $organisms = Organism::all();
-
-        $loansgroups = Loansgroups::all();
-
-        $accountingintegration = Accountingintegration::all();
-
-        return response()->json([ 
-            'organisms'              => $organisms, 
-            'loansgroups'            => $loansgroups, 
-            'accountingintegration'  => $accountingintegration
-        ]);
-
-    }
 
     public function show($id) {
         
@@ -101,7 +85,7 @@ class viewLoantypesController extends Controller {
 
         $this->validate($request, [
 
-            'name'                                => 'required|unique:loan_types',
+            //'name'                                => 'required|unique:loan_types',
             'guarantor'                           => 'required|boolean',
             'guarantee'                           => 'required|boolean',
             'guarantee_comision'                  => 'required|boolean',
@@ -128,15 +112,13 @@ class viewLoantypesController extends Controller {
             'incomeaccount_id'                    => 'required',
             'max_amount'                          => 'required|numeric',
             'operatingexpenseaccount_id'          => 'required',
-            //'organismList'                        => 'required',
-            'loan_code'                           => 'required|numeric',
-            'organism_id'                         => 'required',
-            //'specialfeeList'                      => 'required',
-            'month_specialfee'                    => 'required'
+            #Organismo
+            'organismList'                        => 'required',
+            #Cuota Especial
+            'specialfeeList'                      => ''
         ]);
 
         // Registramos un tipo de prestamo
-
 
         $receivable = Accountingintegration::byUuid($request->receivable_id)->firstOrFail();
 
@@ -158,101 +140,69 @@ class viewLoantypesController extends Controller {
         $request->merge(array('operatingexpenseaccount_id' => $operatingexpenseaccount->id));
 
 
-        $loantypes = $this->model->create($request->all());
+        $loantypes = $this->model->create($request->except([ 'organismList', 'specialfeeList']));
+        
+        
 
+        # Registramos un codigo de tipo de prestamo
 
-        // Registramos un codigo de tipo de prestamo
-
-        /*
-
-        foreach ($organismList as $organisms) 
+        foreach ($request->organismList as $organisms) 
         {
-            $organism = Organism::byUuid($organisms->organism_id)->firstOrFail();
+            $organism = Organism::byUuid($organisms['organism_id'])->firstOrFail();
 
-            $request->merge(array('organism_id' => $organism->id));
 
             $loantypecodes =  new Loantypecodes();
 
-            $loantypecodes->loan_code = $organisms->loan_code;
+            $loantypecodes->loan_code = $organisms['loan_code'];
 
             $loantypecodes->loantypes_id = $loantypes->id;
 
             $loantypecodes->organism_id = $organism->id;
 
             $loantypecodes->save();
+
         }
 
-        */
+        # Si existe cuotas especiales
 
-        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
-
-        $request->merge(array('organism_id' => $organism->id));
-
-        $loantypecodes =  new Loantypecodes();
-
-        $loantypecodes->loan_code = $request->loan_code;
-
-        $loantypecodes->loantypes_id = $loantypes->id;
-
-        $loantypecodes->organism_id = $organism->id;
-
-        $loantypecodes->save();
-
-        /*
-
-        foreach ($specialfeeList as $month) 
+        if ($request->special_fees === true) 
         {
-            // Registramos el detalle de la cuota especial
+            # Guardamos las cuotas especiales
 
-            $specialfeedetails = new Specialfeedetails();
+            foreach ($request->specialfeeList as $item) 
+            {
+                // Registramos el detalle de la cuota especial
 
-            $specialfeedetails->month = $month;
-
-            $specialfeedetails->save();
+                $specialfeedetails = new Specialfeedetails();
 
 
-            // Registramos la cuota especial
+                $specialfeedetails->month = $item['month'];
 
-            $specialfee = new Specialfee();
 
-            $specialfee->loantypes_id = $loantypes->id;
+                $specialfeedetails->save();
 
-            $specialfee->specialfeedetails_id = $specialfeedetails->id;
 
-            $specialfee->save();
+                // Registramos la cuota especial
+
+                $specialfee = new Specialfee();
+
+
+                $specialfee->loantypes_id = $loantypes->id;
+
+                $specialfee->specialfeedetails_id = $specialfeedetails->id;
+
+
+                $specialfee->save();
+            }
+        
         }
 
-
-        */
-
-        // Registramos el detalle de la cuota especial
-
-        $specialfeedetails = new Specialfeedetails();
-
-        $specialfeedetails->month = $request->month_specialfee;
-
-        $specialfeedetails->save();
-
-
-        // Registramos la cuota especial
-
-        $specialfee = new Specialfee();
-
-        $specialfee->loantypes_id = $loantypes->id;
-
-        $specialfee->specialfeedetails_id = $specialfeedetails->id;
-
-        $specialfee->save();
-
-
+        
 
         return response()->json([ 
             'status'             => true, 
             'message'            => 'El tipo de prestamo se ha registrado exitosamente!', 
-            'loantypes'          => $loantypes,
-            'loantypecodes'      => $loantypecodes,
-            'specialfeedetails'  => $specialfeedetails,
-            'specialfee'         => $specialfee 
+            'loantypes'          => $loantypes
         ]);
     }
 
@@ -289,11 +239,10 @@ class viewLoantypesController extends Controller {
             'incomeaccount_id'                    => 'required',
             'max_amount'                          => 'required|numeric',
             'operatingexpenseaccount_id'          => 'required',
-            //'organismList'                        => 'required',
-            'loan_code'                           => 'required|numeric',
-            'organism_id'                         => 'required',
-            //'specialfeeList'                      => 'required',
-            'month_specialfee'                    => 'required'
+            #Organismo
+            'organismList'                        => 'required',
+            #Cuota Especial
+            'specialfeeList'                      => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -327,11 +276,10 @@ class viewLoantypesController extends Controller {
                 'incomeaccount_id'                    => 'required',
                 'max_amount'                          => 'required|numeric',
                 'operatingexpenseaccount_id'          => 'required',
-                //'organismList'                        => 'required',
-                'loan_code'                           => 'required|numeric',
-                'organism_id'                         => 'required',
-                //'specialfeeList'                      => 'required',
-                'month_specialfee'                    => 'required'
+                #Organismo
+                'organismList'                        => 'required',
+                #Cuota Especial
+                'specialfeeList'                      => 'required'
             ];
         }
 
@@ -358,95 +306,63 @@ class viewLoantypesController extends Controller {
         $request->merge(array('operatingexpenseaccount_id' => $operatingexpenseaccount->id));
 
 
-        $this->validate($request, $rules);
+        $loantypes = $this->model->create($request->except([ 'organismList', 'specialfeeList']));
+        
+        
 
-        $loantypes->update($request->all());
+        # Registramos un codigo de tipo de prestamo
 
-
-        // Registramos un codigo de tipo de prestamo
-
-        /*
-
-        foreach ($organismList as $organisms) 
+        foreach ($request->organismList as $organisms) 
         {
-            $organism = Organism::byUuid($organisms->organism_id)->firstOrFail();
+            $organism = Organism::byUuid($organisms['organism_id'])->firstOrFail();
 
-            $request->merge(array('organism_id' => $organism->id));
-
-            // Registramos un codigo de tipo de prestamo asociado a ese organismo
 
             $loantypecodes =  new Loantypecodes();
 
-            $loantypecodes->loan_code = $organisms->loan_code;
+            $loantypecodes->loan_code = $organisms['loan_code'];
 
             $loantypecodes->loantypes_id = $loantypes->id;
 
             $loantypecodes->organism_id = $organism->id;
 
             $loantypecodes->save();
+
         }
 
-        */
+        # Si existe cuotas especiales
 
-        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
-
-        $request->merge(array('organism_id' => $organism->id));
-
-        $loantypecodes =  new Loantypecodes();
-
-        $loantypecodes->loan_code = $request->loan_code;
-
-        $loantypecodes->loantypes_id = $loantypes->id;
-
-        $loantypecodes->organism_id = $organism->id;
-
-        $loantypecodes->save();
-
-        /*
-
-        foreach ($specialfeeList as $month) 
+        if ($request->special_fees === true) 
         {
-            // Registramos el detalle de la cuota especial
+            # Guardamos las cuotas especiales
 
-            $specialfeedetails = new Specialfeedetails();
+            foreach ($request->specialfeeList as $item) 
+            {
+                // Registramos el detalle de la cuota especial
 
-            $specialfeedetails->month = $month;
-
-            $specialfeedetails->save();
+                $specialfeedetails = new Specialfeedetails();
 
 
-            // Registramos la cuota especial
+                $specialfeedetails->month = $item['month'];
 
-            $specialfee = new Specialfee();
 
-            $specialfee->loantypes_id = $loantypes->id;
+                $specialfeedetails->save();
 
-            $specialfee->specialfeedetails_id = $specialfeedetails->id;
 
-            $specialfee->save();
+                // Registramos la cuota especial
+
+                $specialfee = new Specialfee();
+
+
+                $specialfee->loantypes_id = $loantypes->id;
+
+                $specialfee->specialfeedetails_id = $specialfeedetails->id;
+
+
+                $specialfee->save();
+            }
+        
         }
 
-
-        */
-
-        // Registramos el detalle de la cuota especial
-
-        $specialfeedetails = new Specialfeedetails();
-
-        $specialfeedetails->month = $request->month_specialfee;
-
-        $specialfeedetails->save();
-
-
-        // Registramos la cuota especial
-
-        $specialfee = new Specialfee();
-
-        $specialfee->loantypes_id = $loantypes->id;
-
-        $specialfee->specialfeedetails_id = $specialfeedetails->id;
-
-        $specialfee->save();
 
 
         return $this->response->item($loantypes->fresh(), new LoantypesTransformer());

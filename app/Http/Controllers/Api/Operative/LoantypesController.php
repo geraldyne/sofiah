@@ -122,6 +122,9 @@ class LoantypesController extends Controller {
 
         $request->merge(array('incomeaccount_id' => $incomeaccount->id));
 
+        $operatingexpenseaccount = Accountingintegration::byUuid($request->operatingexpenseaccount_id)->firstOrFail();
+
+        $request->merge(array('operatingexpenseaccount_id' => $operatingexpenseaccount->id));
 
         $operatingexpenseaccount = Accountingintegration::byUuid($request->operatingexpenseaccount_id)->firstOrFail();
 

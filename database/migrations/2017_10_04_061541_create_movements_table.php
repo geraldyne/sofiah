@@ -123,8 +123,10 @@ class CreateMovementsTable extends Migration
     public function down() {
 
         Schema::dropIfExists('assets_type_codes');
+        Schema::dropIfExists('assets_balance');
         Schema::dropIfExists('assets_movements_details');
         Schema::dropIfExists('assets_movements');
+        Schema::dropIfExists('loan_amort_movements');
         Schema::dropIfExists('loan_movements');
     }
 }

@@ -64,7 +64,8 @@ class Provider extends Model {
                            'rif_type',
                            'rif',
                            'phone',
-                           'direction_id'];
+                           'direction_id',
+                           'status'];
 
     /* 
      * RELACIONES 

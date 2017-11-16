@@ -2,6 +2,7 @@
 
 $api = app('Dingo\Api\Routing\Router');
 
+
 $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
     $api->group(['middleware' => 'api'], function($api) {
@@ -189,296 +190,131 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
             $api->group(['prefix' => 'operative'], function($api){
 
-                # Rutas para los tipos de préstamos
-
-                $api->group(['prefix' => 'loantypes'], function($api){
-
-                    $api->get('/', 'Api\Operative\LoantypesController@index');
-                    $api->post('/', 'Api\Operative\LoantypesController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoantypesController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoantypesController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoantypesController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\LoantypesController@destroy');
-                });
-
+                # Index
+                # Store
+                # Show
+                # Update (put, patch)
+                # Destroy
 
                 # Rutas para los tipos de préstamos
 
-                $api->group(['prefix' => 'view/loantypes'], function($api){
+                $api->resource('loantypes', 'Api\Operative\LoantypesController', ['except' => ['edit', 'create']]);
 
-                    $api->get('/', 'Api\Operative\viewLoantypesController@index');
-                    $api->get('/create', 'Api\Operative\viewLoantypesController@create');
-                    $api->post('/', 'Api\Operative\viewLoantypesController@store');
-                    $api->get('/{uuid}', 'Api\Operative\viewLoantypesController@show');
-                    $api->put('/{uuid}', 'Api\Operative\viewLoantypesController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\viewLoantypesController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\viewLoantypesController@destroy');
-                });
+
+                # Rutas para los tipos de préstamos
+
+                $api->resource('view/loantypes', 'Api\Operative\viewLoantypesController');
+
 
                 # Rutas para los grupos de tipo de préstamos
 
-                $api->group(['prefix' => 'loantypegroups'], function($api){
+                $api->resource('loantypegroups', 'Api\Operative\LoantypegroupsController', ['except' => ['edit', 'create']]);
 
-                    $api->get('/', 'Api\Operative\LoantypegroupsController@index');
-                    $api->post('/', 'Api\Operative\LoantypegroupsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoantypegroupsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoantypegroupsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoantypegroupsController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\LoantypegroupsController@destroy');
-                });
 
                 # Rutas para los grupos de préstamos
 
-                $api->group(['prefix' => 'loansgroups'], function($api){
-
-                    $api->get('/', 'Api\Operative\LoansgroupsController@index');
-                    $api->post('/', 'Api\Operative\LoansgroupsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoansgroupsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoansgroupsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoansgroupsController@update');
-                });
+                $api->resource('loansgroups', 'Api\Operative\LoansgroupsController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para cuota especial
 
-                $api->group(['prefix' => 'specialfee'], function($api){
-
-                    $api->get('/', 'Api\Operative\SpecialfeeController@index');
-                    $api->post('/', 'Api\Operative\SpecialfeeController@store');
-                    $api->get('/{uuid}', 'Api\Operative\SpecialfeeController@show');
-                    $api->put('/{uuid}', 'Api\Operative\SpecialfeeController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\SpecialfeeController@update');
-                });
+                $api->resource('specialfee', 'Api\Operative\SpecialfeeController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para cuota especial detalles
 
-                $api->group(['prefix' => 'specialfeedetails'], function($api){
-
-                    $api->get('/', 'Api\Operative\SpecialfeedetailsController@index');
-                    $api->post('/', 'Api\Operative\SpecialfeedetailsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\SpecialfeedetailsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\SpecialfeedetailsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\SpecialfeedetailsController@update');
-                });
-
-                # Rutas para prestamos
-
-                $api->group(['prefix' => 'loan'], function($api){
-
-                    $api->get('/', 'Api\Operative\LoanController@index');
-                    $api->post('/', 'Api\Operative\LoanController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoanController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoanController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoanController@update');
-                });
+                $api->resource('specialfeedetails', 'Api\Operative\SpecialfeedetailsController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para prestamos
 
-                $api->group(['prefix' => 'view/loan'], function($api){
+                $api->resource('loan', 'Api\Operative\LoanController', ['except' => ['edit', 'create']]);
 
-                    $api->get('/', 'Api\Operative\viewLoanController@index');
-                    $api->post('/create', 'Api\Operative\viewLoanController@create');
-                    $api->post('/', 'Api\Operative\viewLoanController@store');
-                    $api->get('/{uuid}', 'Api\Operative\viewLoanController@show');
-                    $api->put('/{uuid}', 'Api\Operative\viewLoanController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\viewLoanController@update');
-                });
+
+                # Rutas para prestamos
+
+                $api->post('view/loan/disponibility', 'Api\Operative\viewLoanController@disponibility');
+
+                $api->resource('view/loan', 'Api\Operative\viewLoanController', ['except' => ['edit', 'create', 'disponibility']]);
 
 
                 # Rutas para codigos de tipo de prestamos
 
-                $api->group(['prefix' => 'loantypecodes'], function($api){
-
-                    $api->get('/', 'Api\Operative\LoantypecodesController@index');
-                    $api->post('/', 'Api\Operative\LoantypecodesController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoantypecodesController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoantypecodesController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoantypecodesController@update');
-                });
+                $api->resource('loantypecodes', 'Api\Operative\LoantypecodesController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para amortizacion prestamos
 
-                $api->group(['prefix' => 'amortdefloans'], function($api){
-
-                    $api->get('/', 'Api\Operative\AmortdefloansController@index');
-                    $api->post('/', 'Api\Operative\AmortdefloansController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AmortdefloansController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AmortdefloansController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AmortdefloansController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\AmortdefloansController@destroy');
-                });
+                $api->resource('amortdefloans', 'Api\Operative\AmortdefloansController', ['except' => ['edit', 'create']]);
 
                 # Rutas para amortizacion detalles
 
-                $api->group(['prefix' => 'loanmovements'], function($api){
-
-                    $api->get('/', 'Api\Operative\LoanmovementsController@index');
-                    $api->post('/', 'Api\Operative\LoanmovementsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoanmovementsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoanmovementsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoanmovementsController@update');
-                });
+                $api->resource('loanmovements', 'Api\Operative\LoanmovementsController', ['except' => ['edit', 'create']]);
 
                 # Rutas para la emision 
 
-                $api->group(['prefix' => 'issue'], function($api){
-
-                    $api->get('/', 'Api\Operative\IssueController@index');
-                    $api->post('/', 'Api\Operative\IssueController@store');
-                    $api->get('/{uuid}', 'Api\Operative\IssueController@show');
-                    $api->put('/{uuid}', 'Api\Operative\IssueController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\IssueController@update');
-                });
+                $api->resource('issue', 'Api\Operative\IssueController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para emision detalles
 
-                $api->group(['prefix' => 'issuedetails'], function($api){
-
-                    $api->get('/', 'Api\Operative\IssuedetailsController@index');
-                    $api->post('/', 'Api\Operative\IssuedetailsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\IssuedetailsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\IssuedetailsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\IssuedetailsController@update');
-                });
+                $api->resource('issuedetails', 'Api\Operative\IssuedetailsController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para amortizacion 
 
-                $api->group(['prefix' => 'amortdef'], function($api){
+                $api->resource('amortdef', 'Api\Operative\AmortdefController', ['except' => ['edit', 'create']]);
 
-                    $api->get('/', 'Api\Operative\AmortdefController@index');
-                    $api->post('/', 'Api\Operative\AmortdefController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AmortdefController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AmortdefController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AmortdefController@update');
-                });
+                # Rutas para amortizacion 
+
+                $api->resource('amortdef', 'Api\Operative\viewAmortdefController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para amortizacion detalles
 
-                $api->group(['prefix' => 'amortdefdetails'], function($api){
-
-                    $api->get('/', 'Api\Operative\AmortdefdetailsController@index');
-                    $api->post('/', 'Api\Operative\AmortdefdetailsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AmortdefdetailsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AmortdefdetailsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AmortdefdetailsController@update');
-                });
+                $api->resource('amortdefdetails', 'Api\Operative\AmortdefdetailsController', ['except' => ['edit', 'create']]);
 
                 # Rutas para codigo tipo haberes
 
-                $api->group(['prefix' => 'assetstypecodes'], function($api){
-
-                    $api->get('/', 'Api\Operative\AssetstypecodesController@index');
-                    $api->post('/', 'Api\Operative\AssetstypecodesController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AssetstypecodesController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AssetstypecodesController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AssetstypecodesController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\AssetstypecodesController@destroy');
-                });
+                $api->resource('assetstypecodes', 'Api\Operative\AssetstypecodesController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para proveedores
 
-                $api->group(['prefix' => 'provider'], function($api){
-
-                    $api->get('/', 'Api\Operative\ProviderController@index');
-                    $api->post('/', 'Api\Operative\ProviderController@store');
-                    $api->get('/{uuid}', 'Api\Operative\ProviderController@show');
-                    $api->put('/{uuid}', 'Api\Operative\ProviderController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\ProviderController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\ProviderController@destroy');
-                });
+                $api->resource('provider', 'Api\Operative\ProviderController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para fianzas
 
-                $api->group(['prefix' => 'bond'], function($api){
-
-                    $api->get('/', 'Api\Operative\BondController@index');
-                    $api->post('/', 'Api\Operative\BondController@store');
-                    $api->get('/{uuid}', 'Api\Operative\BondController@show');
-                    $api->put('/{uuid}', 'Api\Operative\BondController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\BondController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\BondController@destroy');
-                });
-
-                # Rutas para polizas
-
-                $api->group(['prefix' => 'policie'], function($api){
-
-                    $api->get('/', 'Api\Operative\PolicieController@index');
-                    $api->post('/', 'Api\Operative\PolicieController@store');
-                    $api->get('/{uuid}', 'Api\Operative\PolicieController@show');
-                    $api->put('/{uuid}', 'Api\Operative\PolicieController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\PolicieController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\PolicieController@destroy');
-                });
+                $api->resource('bond', 'Api\Operative\BondController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para polizas
 
-                $api->group(['prefix' => 'guarantor'], function($api){
+                $api->resource('policie', 'Api\Operative\PolicieController', ['except' => ['edit', 'create']]);
 
-                    $api->get('/', 'Api\Operative\GuarantorController@index');
-                    $api->post('/', 'Api\Operative\GuarantorController@store');
-                    $api->get('/{uuid}', 'Api\Operative\GuarantorController@show');
-                    $api->put('/{uuid}', 'Api\Operative\GuarantorController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\GuarantorController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\GuarantorController@destroy');
-                });
+
+                # Rutas para Fiadores
+
+                $api->resource('guarantor', 'Api\Operative\GuarantorController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para movimientos haberes 
 
-                $api->group(['prefix' => 'assetsmovements'], function($api){
-
-                    $api->get('/', 'Api\Operative\AssetsmovementsController@index');
-                    $api->post('/', 'Api\Operative\AssetsmovementsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AssetsmovementsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AssetsmovementsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AssetsmovementsController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsController@destroy');
-                });
+                $api->resource('assetsmovements', 'Api\Operative\AssetsmovementsController', ['except' => ['edit', 'create']]);
 
 
                 # Rutas para movimientos haberes detalles
 
-                $api->group(['prefix' => 'assetsmovementsdetails'], function($api){
-
-                    $api->get('/', 'Api\Operative\AssetsmovementsdetailsController@index');
-                    $api->post('/', 'Api\Operative\AssetsmovementsdetailsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@update');
-                    $api->delete('/{uuid}', 'Api\Operative\AssetsmovementsdetailsController@destroy');
-                });
+                $api->resource('assetsmovementsdetails', 'Api\Operative\AssetsmovementsdetailsController', ['except' => ['edit', 'create']]);
 
                 # Rutas para saldo haberes 
 
-                $api->group(['prefix' => 'Assetsbalance'], function($api){
-
-                    $api->get('/', 'Api\Operative\AssetsbalanceController@index');
-                    $api->post('/', 'Api\Operative\AssetsbalanceController@store');
-                    $api->get('/{uuid}', 'Api\Operative\AssetsbalanceController@show');
-                    $api->put('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\AssetsbalanceController@update');
-                });
+                $api->resource('assetsbalance', 'Api\Operative\AssetsbalanceController', ['except' => ['edit', 'create']]);
 
                 # Rutas para Movimientos Amortizacion Prestamos
 
-                $api->group(['prefix' => 'loanamortmovements'], function($api){
-
-                    $api->get('/', 'Api\Operative\LoanamortmovementsController@index');
-                    $api->post('/', 'Api\Operative\LoanamortmovementsController@store');
-                    $api->get('/{uuid}', 'Api\Operative\LoanamortmovementsController@show');
-                    $api->put('/{uuid}', 'Api\Operative\LoanamortmovementsController@update');
-                    $api->patch('/{uuid}', 'Api\Operative\LoanamortmovementsController@update');
-                });
+                $api->resource('loanamortmovements', 'Api\Operative\LoanamortmovementsController', ['except' => ['edit', 'create']]);
 
             });
             
@@ -526,6 +362,15 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                 $api->group(['prefix' => 'assets'], function($api) {
 
                     $api->post('/', 'Api\Assets\UploadFileController@store');
+                });
+
+                # Ruta para importar/exportar archivos 
+
+                $api->group(['prefix' => 'files'], function($api) {
+
+                    $api->post('exportPartners', 'Api\FilesController@exportPartners');
+
+                    $api->post('importPartners', 'Api\FilesController@importPartners');
                 });
 
             });

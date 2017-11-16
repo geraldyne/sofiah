@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Provider;
+use App\Entities\Administrative\City;
 use App\Entities\Administrative\Direction;
 use App\Transformers\Operative\ProviderTransformer;
 
@@ -66,6 +67,17 @@ class ProviderController extends Controller {
         return $this->response->paginator($paginator, new ProviderTransformer());
     }
 
+    public function create() {
+        
+        $countries = $this->api->get('administrative/countries?include=states.cities');
+
+        return response()->json([
+
+            'status'    => true,
+            'countries' => $countries
+        ]);
+    }
+
     public function show($id) {
         
         $provider = $this->model->byUuid($id)->firstOrFail();
@@ -96,14 +108,28 @@ class ProviderController extends Controller {
             'rif_type'        => 'required',
             'rif'             => 'required',
             'phone'           => 'required',
-            'direction_id'    => 'required'
+            'direction'       => 'required',
+            'city_id'         => 'required'
             
         ]);
 
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+        # Obtiene la ciudad mediante el UUID
+        
+        $city = City::byUuid($request->city_id)->firstOrFail();
 
-        $request->merge(array('direction_id' => $direction->id));
+        $request->merge(array('city_id' => $city->id));
 
+
+         # Crea la dirección
+
+        $direction = Direction::create($request->only('city_id','direction'));
+
+        if($direction) $request->merge(array('direction_id' => $direction->id));
+
+        else return response()->json([
+                                      'status'    => false,
+                                      'message'   => '¡No se ha podido almacenar la dirección de la asociación! Por favor verifique los datos he intente nuevamente.'
+                                    ]);
 
         $provider = $this->model->create($request->all());
 
@@ -172,21 +198,13 @@ class ProviderController extends Controller {
 
         $provider = $this->model->byUuid($uuid)->firstOrFail();
 
-        if($provider->providers->count() > 0) {
-
-            return response()->json([ 
-                'status' => false, 
-                'message' => 'El tipo de prestamo posee prestamos asociados, no se puede eliminar.', 
-            ]);
-        }
-
-        $provider->status= 0;
+        $provider->status= 'S';
 
         $provider->update();
 
         return response()->json([ 
             'status' => true, 
-            'message' => '¡El tipo de prestamo se ha suspendido exitosamente!', 
+            'message' => '¡El proveedor se ha suspendido exitosamente!', 
         ]);
     }
 }

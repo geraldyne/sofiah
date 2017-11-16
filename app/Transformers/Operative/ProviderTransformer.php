@@ -18,6 +18,7 @@
 
 namespace App\Transformers\Operative;
 
+use App\Transformers\Administrative\DirectionTransformer;
 use App\Entities\Operative\Provider;
 use League\Fractal\TransformerAbstract;
 
@@ -47,7 +48,7 @@ class ProviderTransformer extends TransformerAbstract
     public function transform(Provider $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'name'           => $model->name,
             'email'          => $model->email,
             'web_site'       => $model->web_site,
@@ -57,6 +58,7 @@ class ProviderTransformer extends TransformerAbstract
             'rif'            => $model->rif,
             'phone'          => $model->phone,
             'direction_id'   => $model->direction_id,
+            'status'         => $model->status,
             'created_at'     => $model->created_at->toIso8601String(),
             'updated_at'     => $model->updated_at->toIso8601String()
         ];

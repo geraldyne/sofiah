@@ -19,7 +19,8 @@ class DirectionTransformer extends TransformerAbstract
         'city',
         'associations',
         'organisms',
-        'employee'
+        'employee',
+        'providers'
     ];
 
     /**
@@ -76,5 +77,15 @@ class DirectionTransformer extends TransformerAbstract
     public function includeEmployees(Direction $model)
     {
         return $this->item($model->employees, new EmployeeTransformer);
+    }
+
+    /**
+     * Include Employee
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeProviders(Direction $model)
+    {
+        return $this->collection($model->providers, new ProviderTransformer);
     }
 }

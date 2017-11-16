@@ -44,7 +44,7 @@ class LoantypegroupsTransformer extends TransformerAbstract
     public function transform(Loantypegroups $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'name'           => $model->name,
             'max_amount'     => $model->max_amount,
             'status'         => $model->status,

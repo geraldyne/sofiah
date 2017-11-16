@@ -21,7 +21,8 @@ class OrganismTransformer extends TransformerAbstract
         'partners',
         'assetstypecodes',
         'loantypecodes',
-        'issues'
+        'issues',
+        'amortdefloans'
     ];
 
     /**
@@ -115,5 +116,15 @@ class OrganismTransformer extends TransformerAbstract
     public function includeIssues(Organism $model)
     {
         return $this->collection($model->issues, new IssueTransformer);
+    }
+
+    /**
+     * Include Amortdefloans
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAmortdefloans(Organism $model)
+    {
+        return $this->collection($model->amortdefloans, new AmortdefloansTransformer);
     }
 }

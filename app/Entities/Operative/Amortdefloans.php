@@ -24,6 +24,9 @@ use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Loan;
+use App\Entities\Operative\Issuedetails;
+use App\Entities\Administrative\Organism;
+
 
 /**
  *  Modelo de Amortizacion Prestamo
@@ -54,8 +57,12 @@ class Amortdefloans extends Model {
      */
 
     protected $fillable = ['uuid',
+                           'quota_number',
                            'quota_amount',
                            'quota_date',
+                           'status',
+                           'payroll_type',
+                           'issue_date',
                            'quota_amount_ordinary',
                            'capital_quota_ordinary',          
                            'interests_quota_ordinary',       
@@ -78,6 +85,29 @@ class Amortdefloans extends Model {
     public function loan() {
 
         return $this->belongsTo(Loan::class);
+    }
+
+
+    /**
+      * Una amortizacion préstamo pertenece a un préstamo
+      * 
+      * @return type
+      */ 
+
+    public function issuedetails() {
+
+        return $this->hasMany(Issuedetails::class);
+    }
+
+    /**
+      * Una amortizacion préstamo pertenece a un préstamo
+      * 
+      * @return type
+      */ 
+
+    public function organism() {
+
+        return $this->belongsTo(Organism::class);
     }
 
 

@@ -24,6 +24,7 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Loan;
 use App\Entities\Operative\Amortdefloans;
+use App\Entities\Administrative\Organism;
 use App\Transformers\Operative\AmortdefloansTransformer;
 
 use League\Fractal;
@@ -53,7 +54,9 @@ class AmortdefloansController extends Controller {
         }
 
         $paginator = $this->model->with(
-            'loan'
+            'loan',
+            'issuedetails',
+            'organism'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {
@@ -76,7 +79,11 @@ class AmortdefloansController extends Controller {
         $this->validate($request, [
 
             'quota_amount'              => 'required',
+            'quota_number'              => 'required',
             'quota_date'                => 'required',
+            'status'                    => 'required',
+            'payroll_type'              => 'required',
+            'issue_date'                => 'required',
             'quota_amount_ordinary'     => 'required',
             'capital_quota_ordinary'    => 'required',
             'interests_quota_ordinary'  => 'required',
@@ -84,12 +91,18 @@ class AmortdefloansController extends Controller {
             'amount_quota_special'      => 'required',
             'balance_quota_ordinary'    => 'required',
             'balance_quota_special'     => 'required',
+            'organism_id'               => 'required',
             'loan_id'                   => 'required'
         ]);
 
         $loan = Loan::byUuid($request->loan_id)->firstOrFail();
 
         $request->merge(array('loan_id' => $loan->id));
+
+
+        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
+
+        $request->merge(array('organism_id' => $organism->id));
 
 
         $amortdefloans = $this->model->create($request->all());
@@ -108,7 +121,11 @@ class AmortdefloansController extends Controller {
         $rules = [
 
             'quota_amount'              => 'required',
+            'quota_number'              => 'required',
             'quota_date'                => 'required',
+            'status'                    => 'required',
+            'payroll_type'              => 'required',
+            'issue_date'                => 'required',
             'quota_amount_ordinary'     => 'required',
             'capital_quota_ordinary'    => 'required',
             'interests_quota_ordinary'  => 'required',
@@ -116,6 +133,7 @@ class AmortdefloansController extends Controller {
             'amount_quota_special'      => 'required',
             'balance_quota_ordinary'    => 'required',
             'balance_quota_special'     => 'required',
+            'organism_id'               => 'required',
             'loan_id'                   => 'required'
         ];
 
@@ -124,7 +142,11 @@ class AmortdefloansController extends Controller {
             $rules = [
 
                 'quota_amount'              => 'required',
+                'quota_number'              => 'required',
                 'quota_date'                => 'required',
+                'status'                    => 'required',
+                'payroll_type'              => 'required',
+                'issue_date'                => 'required',
                 'quota_amount_ordinary'     => 'required',
                 'capital_quota_ordinary'    => 'required',
                 'interests_quota_ordinary'  => 'required',
@@ -132,6 +154,7 @@ class AmortdefloansController extends Controller {
                 'amount_quota_special'      => 'required',
                 'balance_quota_ordinary'    => 'required',
                 'balance_quota_special'     => 'required',
+                'organism_id'               => 'required',
                 'loan_id'                   => 'required'
             ];
         }
@@ -139,6 +162,10 @@ class AmortdefloansController extends Controller {
         $loan = Loan::byUuid($request->loan_id)->firstOrFail();
 
         $request->merge(array('loan_id' => $loan->id));
+
+        $organism = Organism::byUuid($request->organism_id)->firstOrFail();
+
+        $request->merge(array('organism_id' => $organism->id));
         
 
         $this->validate($request, $rules);

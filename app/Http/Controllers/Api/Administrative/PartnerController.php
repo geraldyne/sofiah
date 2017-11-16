@@ -19,7 +19,6 @@ namespace App\Http\Controllers\Api\Administrative;
 
 
 use Illuminate\Http\Request;
-use App\Entities\Association;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\User;
@@ -66,7 +65,11 @@ class PartnerController extends Controller {
             'user',
             'bankdetails',
             'managers',
-            'dividends'
+            'dividends',
+            'guarantors',
+            'loans',
+            'assetsmovements',
+            'assetsbalance'
         )->get();
 
         return $this->response->collection($paginator, new PartnerTransformer());
@@ -94,7 +97,6 @@ class PartnerController extends Controller {
     }
     
     public function store(Request $request) {
-
 
         $this->validate($request, [
 

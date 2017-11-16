@@ -24,6 +24,8 @@ use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
 use App\Entities\Operative\Issue;
 use App\Entities\Operative\Issuedetails;
+use App\Entities\Operative\Amortdefloans;
+use App\Entities\Operative\Loantypecodes;
 use App\Transformers\Operative\IssuedetailsTransformer;
 
 use League\Fractal;
@@ -53,7 +55,10 @@ class IssuedetailsController extends Controller {
         }
 
         $paginator = $this->model->with(
-            'issue'
+            'amortdefloans',
+            'loantypecodes',
+            'issue',
+            'amortdefdetails'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {
@@ -75,17 +80,29 @@ class IssuedetailsController extends Controller {
         
         $this->validate($request, [
 
-            'amount'        => 'required',
-            'capital'       => 'required',
-            'interests'     => 'required',
-            'loan_balance'  => 'required',
-            'quota_balance' => 'required',
-            'quota_date'    => 'required',
-            'type'          => 'required',
-            'quota_number'  => 'required',
-            'days'          => 'required',
-            'issue_id'      => 'required'
+            'amount'               => 'required',
+            'capital'              => 'required',
+            'interests'            => 'required',
+            'loan_balance'         => 'required',
+            'quota_balance'        => 'required',
+            'quota_date'           => 'required',
+            'type'                 => 'required',
+            'quota_number'         => 'required',
+            'days'                 => 'required',
+            'amortdefloan_id'      => 'required',
+            'loantypecode_id'      => 'required',
+            'issue_id'             => 'required'
         ]);
+
+        $amortdefloans = Amortdefloans::byUuid($request->amortdefloan_id)->firstOrFail();
+
+        $request->merge(array('amortdefloan_id' => $amortdefloans->id));
+
+        
+        $loantypecodes = Loantypecodes::byUuid($request->loantypecode_id)->firstOrFail();
+
+        $request->merge(array('loantypecode_id' => $loantypecodes->id));
+
 
         $issue = Issue::byUuid($request->issue_id)->firstOrFail();
 
@@ -107,34 +124,48 @@ class IssuedetailsController extends Controller {
 
         $rules = [
 
-            'amount'        => 'required',
-            'capital'       => 'required',
-            'interests'     => 'required',
-            'loan_balance'  => 'required',
-            'quota_balance' => 'required',
-            'quota_date'    => 'required',
-            'type'          => 'required',
-            'quota_number'  => 'required',
-            'days'          => 'required',
-            'issue_id'      => 'required'
+            'amount'               => 'required',
+            'capital'              => 'required',
+            'interests'            => 'required',
+            'loan_balance'         => 'required',
+            'quota_balance'        => 'required',
+            'quota_date'           => 'required',
+            'type'                 => 'required',
+            'quota_number'         => 'required',
+            'days'                 => 'required',
+            'amortdefloan_id'      => 'required',
+            'loantypecode_id'      => 'required',
+            'issue_id'             => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'amount'        => 'required',
-                'capital'       => 'required',
-                'interests'     => 'required',
-                'loan_balance'  => 'required',
-                'quota_balance' => 'required',
-                'quota_date'    => 'required',
-                'type'          => 'required',
-                'quota_number'  => 'required',
-                'days'          => 'required',
-                'issue_id'      => 'required'
+            'amount'               => 'required',
+            'capital'              => 'required',
+            'interests'            => 'required',
+            'loan_balance'         => 'required',
+            'quota_balance'        => 'required',
+            'quota_date'           => 'required',
+            'type'                 => 'required',
+            'quota_number'         => 'required',
+            'days'                 => 'required',
+            'amortdefloan_id'      => 'required',
+            'loantypecode_id'      => 'required',
+            'issue_id'             => 'required'
             ];
         }
+
+        $amortdefloans = Amortdefloans::byUuid($request->amortdefloan_id)->firstOrFail();
+
+        $request->merge(array('amortdefloan_id' => $amortdefloans->id));
+
+        
+        $loantypecodes = Loantypecodes::byUuid($request->loantypecode_id)->firstOrFail();
+
+        $request->merge(array('loantypecode_id' => $loantypecodes->id));
+
 
         $issue = Issue::byUuid($request->issue_id)->firstOrFail();
 
@@ -144,6 +175,7 @@ class IssuedetailsController extends Controller {
         $this->validate($request, $rules);
 
         $issuedetails->update($request->all());
+        
 
         return $this->response->item($issuedetails->fresh(), new IssuedetailsTransformer());
     }

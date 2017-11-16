@@ -27,6 +27,7 @@ use Webpatser\Uuid\Uuid;
 
 use App\Entities\Operative\Loantypes;
 use App\Entities\Operative\Loan;
+use App\Entities\Operative\Issuedetails;
 use App\Entities\Administrative\Organism;
 
 /**
@@ -88,6 +89,16 @@ class Loantypecodes extends Model {
     public function organism() {
 
         return $this->belongsTo(Organism::class);
+    }
+
+    /**
+      * El código del tipo de préstamo es asignado a un detalle de emision
+      * @return type
+      */ 
+
+    public function issuedetails() {
+
+        return $this->hasOne(Issuedetails::class);
     }
 
     /**

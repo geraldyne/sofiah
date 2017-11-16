@@ -28,6 +28,7 @@ use App\Entities\Administrative\Direction;
 use App\Entities\Administrative\Partner;
 use App\Entities\Operative\Assetstypecodes;
 use App\Entities\Operative\Loantypecodes;
+use App\Entities\Operative\Amortdefloans;
 use App\Entities\Operative\Issue;
 
 class Organism extends Model {
@@ -129,7 +130,7 @@ class Organism extends Model {
 
 
     /**
-     * Un organismo tiene una emision
+     * Un organismo tiene muchas emisiones
      * 
      * @return type
      */
@@ -137,6 +138,18 @@ class Organism extends Model {
     public function issues() {
 
         return $this->hasMany(Issue::class);
+    }
+
+
+    /**
+     * Un organismo tiene una emision
+     * 
+     * @return type
+     */
+
+    public function amortdefloans() {
+
+        return $this->hasMany(Amortdefloans::class);
     }
 
 

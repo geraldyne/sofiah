@@ -54,12 +54,13 @@ class OrganismsController extends Controller {
         }
 
         $paginator = $this->model->with(
-            'direction', 
-            'association', 
+            'direction',
+            'association',
             'partners',
             'assetstypecodes',
             'loantypecodes',
-            'issues'
+            'issues',
+            'amortdefloans'
         )->paginate($request->get('limit', config('app.pagination_limit')));
         
         if ($request->has('limit')) {

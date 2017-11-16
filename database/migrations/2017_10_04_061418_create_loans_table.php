@@ -190,6 +190,8 @@ class CreateLoansTable extends Migration
             $table->date('issue_date')->nullable()->comment('Fecha en que la fianza es otorgada');
             $table->float('amount')->comment('Monto otorgado de fianza al asociado en el préstamo solicitado');
             $table->float('commission')->comment('Comisión de la fianza');
+            $table->enum('status', ['P','C'])->comment('P: Pendiente - C: Cancelado');
+
             $table->integer('provider_id')->unsigned()->comment('Id del proveedor de la fianza');  
             $table->integer('loan_id')->unsigned()->comment('Prestamo que posee una fianza.');
 
@@ -258,7 +260,6 @@ class CreateLoansTable extends Migration
         Schema::dropIfExists('loans');
         Schema::dropIfExists('special_fee');
         Schema::dropIfExists('special_fee_details');
-        Schema::dropIfExists('loan_type_group_has_loan_types');
         Schema::dropIfExists('loans_groups');
         Schema::dropIfExists('loan_type_groups');
         Schema::dropIfExists('loan_type_codes');

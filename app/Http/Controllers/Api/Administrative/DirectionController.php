@@ -52,7 +52,7 @@ class DirectionController extends Controller {
             $fractal->parseIncludes($_GET['include']);
         }
 
-        $paginator = $this->model->with('city', 'associations', 'organisms', 'employees')->paginate($request->get('limit', config('app.pagination_limit')));
+        $paginator = $this->model->with('city', 'associations', 'organisms', 'employees', 'providers')->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {
         

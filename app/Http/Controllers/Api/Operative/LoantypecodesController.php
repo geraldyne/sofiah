@@ -56,7 +56,8 @@ class LoantypecodesController extends Controller {
         $paginator = $this->model->with(
             'loantypes',
             'loan',
-            'organism'
+            'organism',
+            'issuedetails'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {
