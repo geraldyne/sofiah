@@ -128,7 +128,7 @@ class ProviderController extends Controller {
 
         else return response()->json([
                                       'status'    => false,
-                                      'message'   => '¡No se ha podido almacenar la dirección de la asociación! Por favor verifique los datos he intente nuevamente.'
+                                      'message'   => '¡No se ha podido almacenar la dirección del proveedor! Por favor verifique los datos he intente nuevamente.'
                                     ]);
 
         $provider = $this->model->create($request->all());
@@ -164,7 +164,8 @@ class ProviderController extends Controller {
             'rif_type'        => 'required',
             'rif'             => 'required',
             'phone'           => 'required',
-            'direction_id'    => 'required'
+            'direction'       => 'required',
+            'city_id'         => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
@@ -179,13 +180,28 @@ class ProviderController extends Controller {
                 'rif_type'        => 'required',
                 'rif'             => 'required',
                 'phone'           => 'required',
-                'direction_id'    => 'required'
+                'direction'       => 'required',
+                'city_id'         => 'required'
             ];
         }
 
-        $direction = Direction::byUuid($request->direction_id)->firstOrFail();
+        # Obtiene la ciudad mediante el UUID
+        
+        $city = City::byUuid($request->city_id)->firstOrFail();
 
-        $request->merge(array('direction_id' => $direction->id));        
+        $request->merge(array('city_id' => $city->id));
+
+
+         # Crea la dirección
+
+        $direction = Direction::create($request->only('city_id','direction'));
+
+        if($direction) $request->merge(array('direction_id' => $direction->id));
+
+        else return response()->json([
+                                      'status'    => false,
+                                      'message'   => '¡No se ha podido almacenar la dirección del proveedor! Por favor verifique los datos he intente nuevamente.'
+                                    ]);
 
         $this->validate($request, $rules);
  

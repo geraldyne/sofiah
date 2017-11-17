@@ -50,22 +50,10 @@ class OrganismsController extends Controller {
 
         if (isset($_GET['include'])) $fractal->parseIncludes($_GET['include']);
 
-        $paginator = $this->model->with(
-            'direction',
-            'association',
-            'partners',
-            'assetstypecodes',
-            'loantypecodes',
-            'issues',
-            'amortdefloans'
-        )->paginate($request->get('limit', config('app.pagination_limit')));
-        
-        if ($request->has('limit')) {
-            
         return $this->response->collection($this->model->get(), new OrganismTransformer());
     }
 
-     public function create() {
+    public function create() {
         
         $countries = $this->api->get('administrative/countries?include=states.cities');
 
@@ -258,4 +246,5 @@ class OrganismsController extends Controller {
             'message'   => 'El organismo ha sido eliminado con éxito.'
         ]);
     }
+
 }

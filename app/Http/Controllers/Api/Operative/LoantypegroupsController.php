@@ -116,22 +116,46 @@ class LoantypegroupsController extends Controller {
 
         $rules = [
 
-            'name'           => 'required|unique:loan_type_groups',
-            'max_amount'     => 'required|numeric'
+            'name'           => 'required',
+            'max_amount'     => 'required|numeric',
+            'loanTypeList'   => 'required'
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'name'           => 'required|unique:loan_type_groups',
-                'max_amount'     => 'required|numeric'
+                'name'           => 'required',
+                'max_amount'     => 'required|numeric',
+                'loanTypeList'   => 'required'
             ];
         }
 
         $this->validate($request, $rules);
+
+        // Actualizamos el Grupo de tipo de prestamo
  
-        $loantypegroups->update($request->all());
+        $loantypegroups->update($request->except([ 'loanTypeList']));
+
+
+        // Limpiamos la tabla pivote "Grupo de Prestamos"
+
+        $loansgroupsAll = Loansgroups::where('loantypegroups_id',$loantypegroups->id)->delete();
+
+        // Guardamos los tipos de prestamos asociados al Tipo grupo de prestamo
+
+        foreach ($request->loanTypeList as $loantype)
+        {
+            $loantype = Loantypes::byUuid($loantype['loantypes_id'])->firstOrFail();
+
+            $loansgroups = new Loansgroups ();
+
+            $loansgroups->name              = $request->name;
+            $loansgroups->loantypes_id      = $loantype->id;
+            $loansgroups->loantypegroups_id = $loantypegroups->id;
+
+            $loansgroups->save();
+        }
 
         return $this->response->item($loantypegroups->fresh(), new LoantypegroupsTransformer());
     }

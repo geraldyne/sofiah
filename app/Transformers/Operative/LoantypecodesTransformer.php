@@ -18,6 +18,7 @@
 
 namespace App\Transformers\Operative;
 
+use App\Transformers\Administrative\OrganismTransformer;
 use App\Entities\Operative\Loantypecodes;
 use League\Fractal\TransformerAbstract;
 

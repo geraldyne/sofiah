@@ -85,7 +85,7 @@ class viewLoantypesController extends Controller {
 
         $this->validate($request, [
 
-            //'name'                                => 'required|unique:loan_types',
+            'name'                                => 'required|unique:loan_types',
             'guarantor'                           => 'required|boolean',
             'guarantee'                           => 'required|boolean',
             'guarantee_comision'                  => 'required|boolean',
@@ -212,7 +212,7 @@ class viewLoantypesController extends Controller {
 
         $rules = [
 
-            'name'                                => 'required|unique:loan_types',
+            'name'                                => 'required',
             'guarantor'                           => 'required|boolean',
             'guarantee'                           => 'required|boolean',
             'guarantee_comision'                  => 'required|boolean',
@@ -242,14 +242,14 @@ class viewLoantypesController extends Controller {
             #Organismo
             'organismList'                        => 'required',
             #Cuota Especial
-            'specialfeeList'                      => 'required'
+            'specialfeeList'                      => ''
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'name'                                => 'required|unique:loan_types',
+                'name'                                => 'required',
                 'guarantor'                           => 'required|boolean',
                 'guarantee'                           => 'required|boolean',
                 'guarantee_comision'                  => 'required|boolean',
@@ -279,7 +279,7 @@ class viewLoantypesController extends Controller {
                 #Organismo
                 'organismList'                        => 'required',
                 #Cuota Especial
-                'specialfeeList'                      => 'required'
+                'specialfeeList'                      => ''
             ];
         }
 
@@ -305,17 +305,19 @@ class viewLoantypesController extends Controller {
 
         $request->merge(array('operatingexpenseaccount_id' => $operatingexpenseaccount->id));
 
+        // Actualizamos el tipo de prestamo
 
-        $loantypes = $this->model->create($request->except([ 'organismList', 'specialfeeList']));
+        $loantypes->update($request->except([ 'organismList', 'specialfeeList']));
         
-        
+        // Limpiamos la tabla pivote "Codigo tipo de prestamo"
 
+        $loantypecodesAll = Loantypecodes::where('loantypes_id', $loantypes->id)->delete();
+        
         # Registramos un codigo de tipo de prestamo
 
         foreach ($request->organismList as $organisms) 
         {
             $organism = Organism::byUuid($organisms['organism_id'])->firstOrFail();
-
 
             $loantypecodes =  new Loantypecodes();
 
@@ -333,6 +335,10 @@ class viewLoantypesController extends Controller {
 
         if ($request->special_fees === true) 
         {
+            // Limpiamos la tabla pivote "Codigo tipo de prestamo"
+
+            $specialfeeAll = Specialfee::where('loantypes_id', $loantypes->id)->delete();
+
             # Guardamos las cuotas especiales
 
             foreach ($request->specialfeeList as $item) 
@@ -362,8 +368,6 @@ class viewLoantypesController extends Controller {
             }
         
         }
-
-
 
         return $this->response->item($loantypes->fresh(), new LoantypesTransformer());
     }
