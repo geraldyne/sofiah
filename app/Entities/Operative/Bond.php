@@ -54,6 +54,7 @@ class Bond extends Model {
                            'issue_date',
                            'amount',
                            'commission',
+                           'status',
                            'provider_id',  
                            'loan_id'];
 

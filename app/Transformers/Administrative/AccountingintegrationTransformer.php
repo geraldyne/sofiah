@@ -2,6 +2,7 @@
 
 namespace App\Transformers\Administrative;
 
+use App\Transformers\Operative\LoantypesTransformer;
 use App\Entities\Administrative\Accountingintegration;
 use League\Fractal\TransformerAbstract;
 
@@ -16,7 +17,8 @@ class AccountingintegrationTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'accountlvl6'
+        'accountlvl6',
+        'loantypes'
     ];
 
     /**
@@ -45,5 +47,15 @@ class AccountingintegrationTransformer extends TransformerAbstract
     public function includeAccountlvl6(Accountingintegration $model)
     {
         return $this->item($model->accountlvl6, new Accountlvl6Transformer);
+    }
+
+    /**
+     * Include Accounts
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeLoantypes(Accountingintegration $model)
+    {
+        return $this->collection($model->loantypes, new LoantypesTransformer);
     }
 }

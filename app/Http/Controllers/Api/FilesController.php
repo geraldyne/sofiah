@@ -58,41 +58,41 @@ class FilesController extends Controller
             $excel->sheet('Asociados', function($sheet) use($partners)
             {
 
-            # Formateamos el encabezado del archivo
+                # Formateamos el encabezado del archivo
 
-            $sheet->row(1, [
-                            'Código Empleado', 
-                            'Cédula', 
-                            'Nombre', 
-                            'Apellido', 
-                            'Teléfono', 
-                            'Correo', 
-                            'Estatus', 
-                            'Fecha de Ingreso', 
-                            'Organismo' ]);
+                $sheet->row(1, [
+                                'Código Empleado', 
+                                'Cédula', 
+                                'Nombre', 
+                                'Apellido', 
+                                'Teléfono', 
+                                'Correo', 
+                                'Estatus', 
+                                'Fecha de Ingreso', 
+                                'Organismo' ]);
 
-            # Seleccionamos los campos a imprimir 
+                # Seleccionamos los campos a imprimir 
 
-            foreach($partners as $index => $partner) 
-            {
-                $sheet->row($index+2, [
-                                        $partner->employee_code, 
-                                        $partner->id_card, 
-                                        $partner->names, 
-                                        $partner->lastnames, 
-                                        $partner->local_phone,
-                                        $partner->email,
-                                        $partner->status,
-                                        ' ',
-                                        $partner->organism->name ]); 
-            } 
+                foreach($partners as $index => $partner) 
+                {
+                    $sheet->row($index+2, [
+                                            $partner->employee_code, 
+                                            $partner->id_card, 
+                                            $partner->names, 
+                                            $partner->lastnames, 
+                                            $partner->local_phone,
+                                            $partner->email,
+                                            $partner->status,
+                                            ' ',
+                                            $partner->organism->name ]); 
+                } 
 
 
-        });
+            });
 
         })->export($request->type_file);
 
-        /*
+    
 
         return response()->json([
 
@@ -100,7 +100,7 @@ class FilesController extends Controller
             'message'   => '¡El archivo se ha generado con éxito!'
         ]);
 
-        */
+        
 
     }
 

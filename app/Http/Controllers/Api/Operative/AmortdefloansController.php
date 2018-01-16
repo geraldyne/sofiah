@@ -30,7 +30,7 @@ use App\Transformers\Operative\AmortdefloansTransformer;
 use League\Fractal;
 
 /**
- *  Controlador grupos de tipos de préstamos
+ *  Controlador amortizacion de préstamos
  */
 
 class AmortdefloansController extends Controller {

@@ -49,6 +49,7 @@ class BondTransformer extends TransformerAbstract
             'issue_date'     => $model->issue_date,
             'amount'         => $model->amount,
             'commission'     => $model->commission,
+            'status'         => $model->status,
             'provider_id'    => $model->provider_id,
             'loan_id'        => $model->loan_id,
             'created_at'     => $model->created_at->toIso8601String(),
@@ -65,7 +66,7 @@ class BondTransformer extends TransformerAbstract
      */
     public function includeLoan(Bond $model)
     {
-        return $this->item($model->loan, new LoansTransformer);
+        return $this->item($model->loan, new LoanTransformer);
     }
 
 
@@ -76,7 +77,7 @@ class BondTransformer extends TransformerAbstract
      */
     public function includeProvider(Bond $model)
     {
-        return $this->item($model->provider, new ProvidersTransformer);
+        return $this->item($model->provider, new ProviderTransformer);
     }
 
 }

@@ -18,6 +18,7 @@
 
 namespace App\Transformers\Operative;
 
+use App\Transformers\Administrative\PartnerTransformer;
 use App\Entities\Operative\Loan;
 use League\Fractal\TransformerAbstract;
 
@@ -44,7 +45,7 @@ class LoanTransformer extends TransformerAbstract
         'policies',
         'bonds',
         'guarantors',
-        'partners',
+        'partner',
         'loanmovements'
     ];
 
@@ -81,7 +82,7 @@ class LoanTransformer extends TransformerAbstract
      */
     public function includeLoantypes(Loan $model)
     {
-        return $this->item($model->loantypes, new LoantypesTransformer);
+        return $this->item($model->loantypes, new LoantypeTransformer);
     }
 
 
@@ -144,9 +145,9 @@ class LoanTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includePartners(Loan $model)
+    public function includePartner(Loan $model)
     {
-        return $this->item($model->partners, new PartnersTransformer);
+        return $this->item($model->partner, new PartnerTransformer);
     }
 
 

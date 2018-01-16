@@ -62,7 +62,8 @@ class viewLoantypesController extends Controller {
             'loansgroups',
             'loantypecodes',
             'loans',
-            'specialfees'
+            'specialfees',
+            'accountingintegration'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
         if ($request->has('limit')) {

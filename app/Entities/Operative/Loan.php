@@ -95,12 +95,10 @@ class Loan extends Model {
       * @return type
       */ 
 
-    /*
     public function loantypecodes() {
 
         return $this->hasOne(Loantypecodes::class);
     }
-    */
 
     /**
       * Un préstamo posee varias amortizacion préstamos
@@ -152,7 +150,7 @@ class Loan extends Model {
       * @return type
       */ 
 
-    public function partners() {
+    public function partner() {
 
         return $this->belongsTo(Partner::class);
     }

@@ -54,11 +54,12 @@ class CreateAmortizationIssueTable extends Migration
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
             $table->integer('quota_number')->unsigned()->comment('Número de la cuota, este número es consecutivo');
-            $table->float('quota_amount')->comment('');
-            $table->date('quota_date')->comment('');
+            $table->float('quota_amount')->comment('Monto de la Cuota');
+            $table->date('quota_date')->comment('Fecha de la cuota');
             $table->enum('status', ['P','A'])->comment('Estatus de la amortizacion prestamos. P: Pendiente. A: Aplicado');
             $table->enum('payroll_type', ['S','Q','M'])->comment('Tipo de nomina. S: Semanal. Q: Quincenal. M: Mensual');
             $table->string('issue_date')->comment('Fecha de emision');
+            // Abono o Pago capital
             $table->float('quota_amount_ordinary')->comment('');
             $table->float('capital_quota_ordinary')->comment('');
             $table->float('interests_quota_ordinary')->comment('');

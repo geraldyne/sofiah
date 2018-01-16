@@ -18,6 +18,7 @@
 
 namespace App\Transformers\Operative;
 
+use App\Transformers\Administrative\AccountingintegrationTransformer;
 use App\Entities\Operative\Loantypes;
 use League\Fractal\TransformerAbstract;
 
@@ -38,7 +39,8 @@ class LoantypesTransformer extends TransformerAbstract
         'loansgroups',
         'loantypecodes',
         'loans',
-        'specialfees'
+        'specialfees',
+        'accountingintegration'
     ];
 
     /**
@@ -125,6 +127,17 @@ class LoantypesTransformer extends TransformerAbstract
     public function includeSpecialfees(Loantypes $model)
     {
         return $this->collection($model->specialfees, new SpecialfeeTransformer);
+    }
+
+
+    /**
+     * Include Specialfee
+     *
+     * @return League\Fractal\ItemResource
+     */
+    public function includeAccountingintegration(Loantypes $model)
+    {
+        return $this->item($model->accountingintegration, new AccountingintegrationTransformer);
     }
 
 

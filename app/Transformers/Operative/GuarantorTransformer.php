@@ -18,6 +18,7 @@
 
 namespace App\Transformers\Operative;
 
+use App\Transformers\Administrative\PartnerTransformer;
 use App\Entities\Operative\Guarantor;
 use League\Fractal\TransformerAbstract;
 
@@ -76,7 +77,7 @@ class GuarantorTransformer extends TransformerAbstract
      */
     public function includePartner(Guarantor $model)
     {
-        return $this->item($model->partner, new PartnersTransformer);
+        return $this->item($model->partner, new PartnerTransformer);
     }
 
 }

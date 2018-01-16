@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
+use App\Entities\Administrative\Accountingintegration;
 use App\Entities\Operative\Loansgroups;
 use App\Entities\Operative\Loantypecodes;
 use App\Entities\Operative\Loan;
@@ -148,6 +149,17 @@ class Loantypes extends Model {
     public function specialfees() {
 
         return $this->hasMany(Specialfee::class);
+    }
+
+    /**
+      * Un tipo de préstamo tiene muchas cuentas de integracion contable
+      * 
+      * @return type
+      */ 
+
+    public function accountingintegration() {
+
+        return $this->belongsTo(Accountingintegration::class);
     }
 
     /**

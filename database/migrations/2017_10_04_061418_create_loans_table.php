@@ -186,7 +186,7 @@ class CreateLoansTable extends Migration
 
             $table->increments('id');
             $table->uuid('uuid')->index()->unique();
-            $table->string('number')->comment('Numero de la fianza');
+            //$table->string('number')->comment('Numero de la fianza');
             $table->date('issue_date')->nullable()->comment('Fecha en que la fianza es otorgada');
             $table->float('amount')->comment('Monto otorgado de fianza al asociado en el préstamo solicitado');
             $table->float('commission')->comment('Comisión de la fianza');

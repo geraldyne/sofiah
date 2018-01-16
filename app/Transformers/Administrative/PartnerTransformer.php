@@ -118,7 +118,7 @@ class partnerTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeLoan(Partner $model)
+    public function includeLoans(Partner $model)
     {
         return $this->collection($model->loans, new LoanTransformer);
     }

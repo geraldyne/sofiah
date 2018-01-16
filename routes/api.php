@@ -178,15 +178,19 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     $api->resource('loansgroups', 'Api\Operative\LoansgroupsController', ['except' => ['edit', 'create']]);
 
                     
-                    # Rutas para los grupos de préstamos
+                    # Rutas para préstamos
 
                     $api->resource('loan', 'Api\Operative\LoanController', ['except' => ['edit', 'create']]);
 
-                    # Rutas para cuota especial
+                    # Ruta para cuota especial
 
                     $api->resource('specialfeedetails', 'Api\Operative\SpecialfeedetailsController', ['except' => ['edit', 'create']]);
 
+                    # Ruta para la disponibilidad de un prestamo
+
                     $api->post('view/loan/disponibility', 'Api\Operative\viewLoanController@disponibility');
+
+                    # Ruta para un prestamo
 
                     $api->resource('view/loan', 'Api\Operative\viewLoanController', ['except' => ['edit', 'create', 'disponibility']]);
 
@@ -194,8 +198,14 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                     $api->resource('amortdefloans', 'Api\Operative\AmortdefloansController', ['except' => ['edit', 'create']]);
 
+
+                    # Ruta para abono de un prestamo
+
+                    $api->post('loanmovements/querypartner', 'Api\Operative\LoanmovementsController@querypartner');
+
                     $api->resource('loanmovements', 'Api\Operative\LoanmovementsController', ['except' => ['edit', 'create']]);
 
+                    # Ruta para emisiones de prestamos
 
                     $api->resource('issue', 'Api\Operative\IssueController', ['except' => ['edit', 'create']]);
 
@@ -226,9 +236,13 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                     $api->resource('guarantor', 'Api\Operative\GuarantorController', ['except' => ['edit', 'create']]);
 
-                     # Rutas para fianzas
+                     # Rutas para movimiento de haberes
 
-                    $api->resource('assetsmovements', 'Api\Operative\AssetsmovementsController', ['except' => ['edit', 'create']]);
+                    $api->post('assetsmovements/disponibility', 'Api\Operative\AssetsmovementsController@assetsdisponibility');
+
+                    $api->resource('assetsmovements', 'Api\Operative\AssetsmovementsController', ['except' => ['edit', 'create', 'assetspartner']]);
+
+                    # Rutas para movimiento de haberes detalles
 
                     $api->resource('assetsmovementsdetails', 'Api\Operative\AssetsmovementsdetailsController', ['except' => ['edit', 'create']]);
 

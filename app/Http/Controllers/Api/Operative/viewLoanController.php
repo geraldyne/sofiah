@@ -28,6 +28,7 @@ use App\Entities\Operative\Guarantor;
 use App\Entities\Operative\Provider;
 use App\Entities\Operative\Amortdefloans;
 use App\Entities\Operative\Loanmovements;
+use App\Entities\Operative\Loantypes;
 use App\Entities\Operative\Policie;
 use App\Entities\Operative\Issuedetails;
 use App\Entities\Administrative\Partner;
@@ -65,7 +66,7 @@ class viewLoanController extends Controller {
             'policies',
             'bonds',
             'guarantors',
-            'partners',
+            'partner',
             'loanmovements'
         )->paginate($request->get('limit', config('app.pagination_limit')));
 
@@ -119,38 +120,31 @@ class viewLoanController extends Controller {
 
     public function store(Request $request) {
 
-        /*
-
-        for ($i=0; $i < sizeof($request->amortizations); $i++) 
-        { 
-            //dd('hola');
-            echo $request->amortizations[$i]['name'], "<br>";
-        }
-
-        */
         
         $this->validate($request, [
 
-            'issue_date'                 => 'required|date',
+            'issue_date'                 => 'required',
             'amount'                     => 'required',
             'rate'                       => 'required',
             'balance'                    => 'required',
-            'administrative_expenditure' => 'required',
+            'administrative_expenditure' => '',
             'fee_frequency'              => 'required',
             'status'                     => 'required',
             'destination'                => 'required',
             'monthly_fees'               => 'required',
             'loantypes_id'               => 'required',
+            'partner_id'                 => 'required',
             # Amortizacion Prestamo
             'amortizations'              => 'required',
             # Fianza
-            'bonds'                      => 'required',
+            'bonds'                      => '',
             # Fiadores 
-            'guarantors'                 => 'required',
+            'guarantors'                 => '',
             # Polizas 
-            'policies'                   => 'required',
+            'policies'                   => '',
             
         ]);
+
 
         # Buscamos el tipo de prestamo
 
@@ -159,6 +153,10 @@ class viewLoanController extends Controller {
         $request->merge(array('loantypes_id' => $loantypes->id));
 
 
+        $partner = Partner::where('uuid', $request->partner_id)->firstOrFail();
+
+        $request->merge(array('partner_id' => $partner->id));
+
         # Guardamos el prestamo
 
         $loan = $this->model->create($request->except([ 'amortizations', 'bonds', 'guarantors', 'policies']));
@@ -166,45 +164,46 @@ class viewLoanController extends Controller {
 
         # Guardamos las amortizaciones del prestamo
 
-        foreach ($amortizations as $amort) 
+        foreach ($request->amortizations as $amort) 
         {
             $amortization = new Amortdefloans();
 
 
-            $amortization->date_issue                = $amort->issue_date;
+            $amortization->quota_number              = $amort['quota_number'];
 
-            $amortization->quota_amount              = $amort->quota_amount;
+            $amortization->quota_amount              = $amort['quota_amount'];
 
-            $amortization->quota_date                = $amort->quota_date;
+            $amortization->quota_date                = '2018-01-12 16:55:05';
 
             $amortization->status                    = 'P';
 
-            $amortization->payroll_type              = $amort->payroll_type;
+            $amortization->payroll_type              = 'M';
 
-            $amortization->quota_type                = $amort->quota_type;
+            $amortization->issue_date                = $request->issue_date;
 
-            $amortization->quota_amount_ordinary     = $amort->quota_amount_ordinary;
 
-            $amortization->capital_quota_ordinary    = $amort->capital_quota_ordinary;
+            $amortization->quota_amount_ordinary     = $amort['quota_amount_ordinary'];
 
-            $amortization->interests_quota_ordinary  = $amort->interests_quota_ordinary;
+            $amortization->capital_quota_ordinary    = $amort['capital_quota_ordinary'];
 
-            $amortization->capital_quota_special     = $amort->capital_quota_special;
+            $amortization->interests_quota_ordinary  = $amort['interests_quota_ordinary'];
 
-            $amortization->amount_quota_special      = $amort->amount_quota_special;
+            $amortization->balance_quota_ordinary    = $amort['balance_quota_ordinary'];
 
-            $amortization->balance_quota_ordinary    = $amort->balance_quota_ordinary;
 
-            $amortization->balance_quota_special     = $amort->balance_quota_special;
+            $amortization->capital_quota_special     = 0;
 
-            $amortization->balance_quota_special     = $amort->balance_quota_special;
+            $amortization->amount_quota_special      = 0;
 
-            $amortization->loan_id                   = $loan->loan_id;
+            $amortization->balance_quota_special     = 0;
+
+            $amortization->organism_id               = $partner->organism_id;
+
+            $amortization->loan_id                   = $loan->id;
 
 
             $amortization->save();
         }
-
 
         # Verificamos si el tipo de prestamo admite Fianza y si existen fianzas
 
@@ -212,27 +211,25 @@ class viewLoanController extends Controller {
         {
             # Guardamos los datos de la fianza correspondiente al prestamo
 
-            foreach ($bonds as $bond) 
+            foreach ($request->bonds as $bond) 
             {
-                $provider = Provider::byUuid($bond->provider_id)->firstOrFail();
-
-                $bond->merge(array('provider_id' => $provider->id));
+                $provider = Provider::byUuid($bond['provider_id'])->firstOrFail();
 
 
                 $Bond = new Bond();
 
 
-                $Bond->number      = $bond->number;
+                $Bond->number      = $bond['number'];;
 
-                $Bond->issue_date  = $bond->issue_date;
+                $Bond->issue_date  = $request->issue_date;
                 
-                $Bond->amount      = $bond->amount;
+                $Bond->amount      = $bond['amount'];
 
-                $Bond->commission  = $bond->commission;
+                $Bond->commission  = $bond['commission'];
 
                 $Bond->status      = 'P';
 
-                $Bond->provider_id = $bond->provider_id;
+                $Bond->provider_id = $provider->id;
                 
                 $Bond->loan_id     = $loan->id;
 
@@ -242,32 +239,29 @@ class viewLoanController extends Controller {
 
         }
 
-
         # Verificamos si el tipo de prestamo admite Fiadores y si existen fiadores
 
         if ($loantypes->guarantor == true && $request->guarantors) 
         {
             # Guardamos los datos de los fiadores correspondientes al prestamo
 
-            foreach ($guarantors as $guarantor) 
+            foreach ($request->guarantors as $guarantor) 
             {
-                $partner = Partner::byUuid($guarantor->partner_id)->firstOrFail();
-
-                $guarantor->merge(array('partner_id' => $partner->id));
+                $partner = Partner::byUuid($guarantor['partner_id'])->firstOrFail();
 
 
                 $Guarantor = new Guarantor();
 
              
-                $Guarantor->amount     = $guarantor->amount;
+                $Guarantor->amount     = $guarantor['amount'];
 
-                $Guarantor->balance    = $guarantor->balance;
+                $Guarantor->balance    = $guarantor['amount'];
 
-                $Guarantor->percentage = $guarantor->percentage;
+                $Guarantor->percentage = $guarantor['percentage'];
 
                 $Guarantor->status     = 'P';
 
-                $Guarantor->partner_id = $guarantor->partner_id;
+                $Guarantor->partner_id = $partner->id;
 
                 $Guarantor->loan_id    = $loan->id;
 
@@ -276,7 +270,6 @@ class viewLoanController extends Controller {
             } 
         }
 
-
         # Verificamos si admite polizas
 
         if ($loantypes->valid_policy == true) 
@@ -284,7 +277,7 @@ class viewLoanController extends Controller {
 
             # Guardamos los datos de la poliza correspondiente al prestamo
 
-            foreach ($policies as $policie) 
+            foreach ($request->policies as $policie) 
             {
                 $provider = Provider::byUuid($policie->provider_id)->firstOrFail();
 
@@ -298,7 +291,7 @@ class viewLoanController extends Controller {
 
                 $Policie->type        = $policie->type;
 
-                $Policie->issue_date  = $policie->issue_date;
+                $Policie->issue_date  = $request->issue_date;
 
                 $Policie->due_date    = $policie->due_date;
 
@@ -314,7 +307,6 @@ class viewLoanController extends Controller {
                 $Policie->save();
             }
         }
-
 
         # Guardamos el movimiento del prestamo
 
@@ -347,59 +339,65 @@ class viewLoanController extends Controller {
 
         $rules = [
 
-            'issue_date'                 => 'required|date',
+            'issue_date'                 => '',
             'amount'                     => 'required',
             'rate'                       => 'required',
             'balance'                    => 'required',
-            'administrative_expenditure' => 'required',
+            'administrative_expenditure' => '',
             'fee_frequency'              => 'required',
             'status'                     => 'required',
             'destination'                => 'required',
             'monthly_fees'               => 'required',
             'loantypes_id'               => 'required',
+            'partner_id'                 => 'required',
             # Amortizacion Prestamo
             'amortizations'              => 'required',
             # Fianza
-            'bonds'                      => 'required',
+            'bonds'                      => '',
             # Fiadores 
-            'guarantors'                 => 'required',
+            'guarantors'                 => '',
             # Polizas 
-            'policies'                   => 'required',
+            'policies'                   => '',
         ];
 
         if ($request->method() == 'PATCH') {
 
             $rules = [
 
-                'issue_date'                 => 'required|date',
+                'issue_date'                 => '',
                 'amount'                     => 'required',
                 'rate'                       => 'required',
                 'balance'                    => 'required',
-                'administrative_expenditure' => 'required',
+                'administrative_expenditure' => '',
                 'fee_frequency'              => 'required',
                 'status'                     => 'required',
                 'destination'                => 'required',
                 'monthly_fees'               => 'required',
                 'loantypes_id'               => 'required',
+                'partner_id'                 => 'required',
                 # Amortizacion Prestamo
                 'amortizations'              => 'required',
                 # Fianza
-                'bonds'                      => 'required',
+                'bonds'                      => '',
                 # Fiadores 
-                'guarantors'                 => 'required',
+                'guarantors'                 => '',
                 # Polizas 
-                'policies'                   => 'required',
+                'policies'                   => '',
             ];
         }
 
 
-        # Buscamos el tipo de prestamo
+       # Buscamos el tipo de prestamo
 
         $loantypes = Loantypes::where('uuid', $request->loantypes_id)->firstOrFail();
 
         $request->merge(array('loantypes_id' => $loantypes->id));
 
 
+        $partner = Partner::where('uuid', $request->partner_id)->firstOrFail();
+
+        $request->merge(array('partner_id' => $partner->id));
+     
         # Guardamos el prestamo
 
         $this->validate($request, $rules);
@@ -407,41 +405,48 @@ class viewLoanController extends Controller {
         $loan->update($request->except([ 'amortizations', 'bonds', 'guarantors', 'policies']));
 
 
-        # Guardamos las amortizaciones del prestamo
+         # Guardamos las amortizaciones del prestamo
 
-        foreach ($amortizations as $amort) 
+        foreach ($request->amortizations as $amort) 
         {
             $amortization = new Amortdefloans();
 
 
-            $amortization->date_issue                = $amort->issue_date;
+            $amortization->quota_number              = $amort['quota_number'];
 
-            $amortization->quota_amount              = $amort->quota_amount;
+            $amortization->quota_amount              = $amort['quota_amount'];
 
-            $amortization->quota_date                = $amort->quota_date;
+            $amortization->quota_date                = '2018-01-12 16:55:05';
 
-            $amortization->quota_amount_ordinary     = $amort->quota_amount_ordinary;
+            $amortization->status                    = 'P';
 
-            $amortization->capital_quota_ordinary    = $amort->capital_quota_ordinary;
+            $amortization->payroll_type              = 'M';
 
-            $amortization->interests_quota_ordinary  = $amort->interests_quota_ordinary;
+            $amortization->issue_date                = '2018-01-12 16:55:05';
 
-            $amortization->capital_quota_special     = $amort->capital_quota_special;
 
-            $amortization->amount_quota_special      = $amort->amount_quota_special;
+            $amortization->quota_amount_ordinary     = $amort['quota_amount_ordinary'];
 
-            $amortization->balance_quota_ordinary    = $amort->balance_quota_ordinary;
+            $amortization->capital_quota_ordinary    = $amort['capital_quota_ordinary'];
 
-            $amortization->balance_quota_special     = $amort->balance_quota_special;
+            $amortization->interests_quota_ordinary  = $amort['interests_quota_ordinary'];
 
-            $amortization->balance_quota_special     = $amort->balance_quota_special;
+            $amortization->balance_quota_ordinary    = $amort['balance_quota_ordinary'];
 
-            $amortization->loan_id                   = $loan->loan_id;
+
+            $amortization->capital_quota_special     = 0;
+
+            $amortization->amount_quota_special      = 0;
+
+            $amortization->balance_quota_special     = 0;
+
+            $amortization->organism_id               = $partner->organism_id;
+
+            $amortization->loan_id                   = $loan->id;
 
 
             $amortization->save();
         }
-
 
         # Verificamos si el tipo de prestamo admite Fianza y si existen fianzas
 
@@ -449,27 +454,25 @@ class viewLoanController extends Controller {
         {
             # Guardamos los datos de la fianza correspondiente al prestamo
 
-            foreach ($bonds as $bond) 
+            foreach ($request->bonds as $bond) 
             {
-                $provider = Provider::byUuid($bond->provider_id)->firstOrFail();
-
-                $bond->merge(array('provider_id' => $provider->id));
+                $provider = Provider::byUuid($bond['provider_id'])->firstOrFail();
 
 
                 $Bond = new Bond();
 
 
-                $Bond->number      = $bond->number;
+                $Bond->number      = $bond['number'];;
 
-                $Bond->issue_date  = $bond->issue_date;
+                $Bond->issue_date  = '2018-01-12 16:55:05';
                 
-                $Bond->amount      = $bond->amount;
+                $Bond->amount      = $bond['amount'];
 
-                $Bond->commission  = $bond->commission;
+                $Bond->commission  = $bond['commission'];
 
                 $Bond->status      = 'P';
 
-                $Bond->provider_id = $bond->provider_id;
+                $Bond->provider_id = $provider->id;
                 
                 $Bond->loan_id     = $loan->id;
 
@@ -479,32 +482,29 @@ class viewLoanController extends Controller {
 
         }
 
-
         # Verificamos si el tipo de prestamo admite Fiadores y si existen fiadores
 
         if ($loantypes->guarantor == true && $request->guarantors) 
         {
             # Guardamos los datos de los fiadores correspondientes al prestamo
 
-            foreach ($guarantors as $guarantor) 
+            foreach ($request->guarantors as $guarantor) 
             {
-                $partner = Partner::byUuid($guarantor->partner_id)->firstOrFail();
-
-                $guarantor->merge(array('partner_id' => $partner->id));
+                $partner = Partner::byUuid($guarantor['partner_id'])->firstOrFail();
 
 
                 $Guarantor = new Guarantor();
 
              
-                $Guarantor->amount     = $guarantor->amount;
+                $Guarantor->amount     = $guarantor['amount'];
 
-                $Guarantor->balance    = $guarantor->balance;
+                $Guarantor->balance    = $guarantor['amount'];
 
-                $Guarantor->percentage = $guarantor->percentage;
+                $Guarantor->percentage = $guarantor['percentage'];
 
                 $Guarantor->status     = 'P';
 
-                $Guarantor->partner_id = $guarantor->partner_id;
+                $Guarantor->partner_id = $partner->id;
 
                 $Guarantor->loan_id    = $loan->id;
 
@@ -513,7 +513,6 @@ class viewLoanController extends Controller {
             } 
         }
 
-
         # Verificamos si admite polizas
 
         if ($loantypes->valid_policy == true) 
@@ -521,7 +520,7 @@ class viewLoanController extends Controller {
 
             # Guardamos los datos de la poliza correspondiente al prestamo
 
-            foreach ($policies as $policie) 
+            foreach ($request->policies as $policie) 
             {
                 $provider = Provider::byUuid($policie->provider_id)->firstOrFail();
 
@@ -541,7 +540,7 @@ class viewLoanController extends Controller {
 
                 $Policie->amount      = $policie->amount;
 
-                $Policie->status      = $policie->status;
+                $Policie->status      = 'A';
 
                 $Policie->provider_id = $policie->provider_id;
 
@@ -552,12 +551,11 @@ class viewLoanController extends Controller {
             }
         }
 
-
         # Guardamos el movimiento del prestamo
 
         $loanmovement = new Loanmovements();
 
-        $loanmovement->date_issue = $request->issue_date;
+        $loanmovement->date_issue = '2018-01-12 16:55:05';
 
         $loanmovement->amount     = $request->amount;
 

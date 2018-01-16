@@ -22,6 +22,7 @@ namespace App\Http\Controllers\Api\Operative;
 use Illuminate\Http\Request;
 use Dingo\Api\Routing\Helpers;
 use App\Http\Controllers\Controller;
+use App\Entities\Administrative\Partner;
 use App\Entities\Operative\Loan;
 use App\Entities\Operative\Amortdefdetails;
 use App\Entities\Operative\Loanmovements;
@@ -74,29 +75,64 @@ class LoanmovementsController extends Controller {
         return $this->response->item($loanmovements, new LoanmovementsTransformer());  
     }
 
+    public function querypartner(Request $request) 
+    {
+
+        if ($request->id_card) // Si existe una cedula como parametro
+        {
+            $partner = Partner::where('id_card', $request->id_card)->firstOrFail();
+            $loan = Loan::where('partner_id', $partner->id)->firstOrFail();
+        }
+        else if ($request->employee_code) // Si existe un codigo de empleado como parametro
+        {
+            $partner = Partner::where('employee_code', $request->employee_code)->firstOrFail();
+            $loan = Loan::where('partner_id', $partner->id)->firstOrFail();
+        }
+
+        return response()->json([
+
+            'status'    => true,
+            'partner'   => $partner,
+            'loans'     => $partner->loans,
+            'loanType'  => $loan->loantypes
+        ]);
+    }
+
     public function store(Request $request) {
         
         $this->validate($request, [
 
-            'date_issue'          => 'required',
-            'amount'              => 'required',
-            'type'                => 'required',
-            'status'              => 'required',
-            'loan_id'             => 'required',
-            'amortdefdetails_id'  => 'required'
+            'loanMovements'          => 'required',
         ]);
 
-        $loan = Loan::byUuid($request->loan_id)->firstOrFail();
+        foreach ($request->loanMovements as $movement)
+        {
+            $loan = Loan::byUuid($movement['loan_id'])->firstOrFail();
+        
+            $loanmovements = new Loanmovements();
 
-        $request->merge(array('loan_id' => $loan->id));
+            // Monto del movimiento. Si es de tipo préstamo registrar en positivo, si es amortización o abono registrar en negativo.
 
+            if ($movement['type']=='PR')
+            {
+                $loanmovements->amount = $movement['amount'];
+            }
+            else
+            {
+                $loanmovements->amount = -1 * $movement['amount'];
+                $loan->balance-= $movement['amount']; 
+            }
 
-        $amortdefdetails = Amortdefdetails::byUuid($request->amortdefdetails_id)->firstOrFail();
+            $loanmovements->date_issue = $movement['date_issue'];
+            $loanmovements->amount     = $movement['amount'];
+            $loanmovements->type       = $movement['type'];
+            $loanmovements->status     = 'P';
+            $loanmovements->loan_id    = $loan->id;
 
-        $request->merge(array('amortdefdetails_id' => $amortdefdetails->id));
+            $loanmovements->save();
+            $loan->update();
 
-
-        $loanmovements = $this->model->create($request->all());
+        }
 
         return response()->json([ 
             'status'  => true, 
@@ -104,50 +140,5 @@ class LoanmovementsController extends Controller {
             'object'  => $loanmovements 
         ]);
     }
-
-    public function update(Request $request, $uuid) {
-
-        $loanmovements = $this->model->byUuid($uuid)->firstOrFail();
-
-        $rules = [
-
-            'date_issue'          => 'required',
-            'amount'              => 'required',
-            'type'                => 'required',
-            'status'              => 'required',
-            'loan_id'             => 'required',
-            'amortdefdetails_id'  => 'required' 
-        ];
-
-        if ($request->method() == 'PATCH') {
-
-            $rules = [
-
-                'date_issue'          => 'required',
-                'amount'              => 'required',
-                'type'                => 'required',
-                'status'              => 'required',
-                'loan_id'             => 'required',
-                'amortdefdetails_id'  => 'required'
-            ];
-        }
-    
-        $loan = Loan::byUuid($request->loan_id)->firstOrFail();
-
-        $request->merge(array('loan_id' => $loan->id));
-
-
-        $amortdefdetails = Amortdefdetails::byUuid($request->amortdefdetails_id)->firstOrFail();
-
-        $request->merge(array('amortdefdetails_id' => $amortdefdetails->id));
-
-
-        $this->validate($request, $rules);
-
-        $loanmovements->update($request->all());
-
-        return $this->response->item($loanmovements->fresh(), new LoanmovementsTransformer());
-    }
-
     
 }

@@ -112,7 +112,7 @@ class LoantypeTransformer extends TransformerAbstract
      */
     public function includeLoans(Loantype $model)
     {
-        return $this->collection($model->loans, new LoansTransformer);
+        return $this->collection($model->loans, new LoanTransformer);
     }
 
 

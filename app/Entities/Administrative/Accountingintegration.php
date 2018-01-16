@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
+use App\Entities\Operative\Loantypes;
 use App\Entities\Administrative\Accountlvl6;
 
 class Accountingintegration extends Model {
@@ -59,6 +60,17 @@ class Accountingintegration extends Model {
     public function accountlvl6() {
 
         return $this->belongsTo(Accountlvl6::class);
+    }
+
+    /**
+     * Una cuenta de integracion contable pertenece a una cuenta del plan de cuentas
+     * 
+     * @return type
+     */
+
+    public function loantypes() {
+
+        return $this->hasMany(Loantypes::class);
     }
 
     /**

@@ -82,6 +82,7 @@ class BondController extends Controller {
             'issue_date'    => 'required',
             'amount'        => 'required',
             'commission'    => 'required',
+            'status'        => 'required',
             'provider_id'   => 'required',
             'loan_id'       => 'required'
             
@@ -116,6 +117,7 @@ class BondController extends Controller {
             'issue_date'    => 'required',
             'amount'        => 'required',
             'commission'    => 'required',
+            'status'        => 'required',
             'provider_id'   => 'required',
             'loan_id'       => 'required'
         ];
@@ -128,6 +130,7 @@ class BondController extends Controller {
                 'issue_date'    => 'required',
                 'amount'        => 'required',
                 'commission'    => 'required',
+                'status'        => 'required',
                 'provider_id'   => 'required',
                 'loan_id'       => 'required'
             ];
