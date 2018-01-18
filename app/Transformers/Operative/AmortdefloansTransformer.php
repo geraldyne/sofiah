@@ -45,7 +45,7 @@ class AmortdefloansTransformer extends TransformerAbstract
     public function transform(Amortdefloans $model)
     {
         return [
-            'uuid'                     => $model->uuid,
+            'id'                       => $model->uuid,
             'quota_number'             => $model->quota_number,
             'quota_amount'             => $model->quota_amount,
             'quota_date'               => $model->quota_date,
@@ -73,9 +73,9 @@ class AmortdefloansTransformer extends TransformerAbstract
      *
      * @return League\Fractal\ItemResource
      */
-    public function includeLoans(Amortdefloans $model)
+    public function includeLoan(Amortdefloans $model)
     {
-        return $this->item($model->loan, new LoansTransformer);
+        return $this->item($model->loan, new LoanTransformer);
     }
 
 

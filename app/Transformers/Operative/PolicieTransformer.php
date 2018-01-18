@@ -45,7 +45,7 @@ class PolicieTransformer extends TransformerAbstract
     public function transform(Policie $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'number'         => $model->number,
             'type'           => $model->type,
             'issue_date'     => $model->issue_date,

@@ -576,16 +576,24 @@ class viewLoanController extends Controller {
 
         $loan = $this->model->byUuid($uuid)->firstOrFail();
 
-        if($loan->amortdefloans->issuedetails->count() > 0) 
+        foreach ($loan->amortdefloans as $amortdefloans) 
         {
+            $issuedetails = Issuedetails::where('amortdefloan_id', $amortdefloans->id)->first();
 
-            return response()->json([ 
-                'status' => false, 
-                'message' => 'El prestamo posee detalles de emisiones asociadas, no se puede suspender!', 
-            ]);
+            if($issuedetails) 
+            {
+                return response()->json([ 
+                    'status' => false, 
+                    'message' => 'El prestamo posee detalles de emisiones asociadas, no se puede suspender!', 
+                ]);
+            }
+
+            echo " JD";
         }
 
         // Suspendemos el prestamo
+
+        /*
 
         $loan->status= 0;
 
@@ -595,5 +603,7 @@ class viewLoanController extends Controller {
             'status' => true, 
             'message' => '¡El tipo de prestamo se ha suspendido exitosamente!', 
         ]);
+
+        */
     }
 }

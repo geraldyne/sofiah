@@ -46,7 +46,7 @@ class IssuedetailsTransformer extends TransformerAbstract
     public function transform(Issuedetails $model)
     {
         return [
-            'uuid'                 => $model->uuid,
+            'id'                   => $model->uuid,
             'amount'               => $model->amount,
             'capital'              => $model->capital,
             'interests'            => $model->interests,

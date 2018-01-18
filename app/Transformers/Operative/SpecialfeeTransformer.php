@@ -46,7 +46,7 @@ class SpecialfeeTransformer extends TransformerAbstract
     public function transform(Specialfee $model)
     {
         return [
-            'uuid'                   => $model->uuid,
+            'id'                     => $model->uuid,
             'loantypes_id'           => $model->loantypes_id,
             'specialfeedetails_id'   => $model->specialfeedetails_id,
             'created_at'             => $model->created_at->toIso8601String(),

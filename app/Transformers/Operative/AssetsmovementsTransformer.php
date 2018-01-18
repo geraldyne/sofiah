@@ -44,7 +44,7 @@ class AssetsmovementsTransformer extends TransformerAbstract
     public function transform(Assetsmovements $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'date_issue'     => $model->date_issue,
             'reason'         => $model->reason,
             'status'         => $model->status,

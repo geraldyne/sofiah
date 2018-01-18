@@ -141,7 +141,7 @@ class IssueController extends Controller {
             $issueDetails->days            = 0; // Ni idea..
             $issueDetails->amortdefloan_id = $amortization->id;
 
-            $loantypecode = Loantypecodes::where('loantypes_id', $amortization->loan->loantypes_id)->firstOrFail();loantypecode
+            $loantypecode = Loantypecodes::where('loantypes_id', $amortization->loan->loantypes_id)->firstOrFail();
 
             $issueDetails->loantypecode_id = $loantypecode->id; 
             $issueDetails->issue_id        = $issueQuota->id;

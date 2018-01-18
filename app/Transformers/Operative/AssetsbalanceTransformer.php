@@ -43,7 +43,7 @@ class AssetsbalanceTransformer extends TransformerAbstract
     public function transform(Assetsbalance $model)
     {
         return [
-            'uuid'                              => $model->uuid,
+            'id'                                => $model->uuid,
             'balance_employers_contribution'    => $model->status,
             'balance_individual_contribution'   => $model->total_amount,
             'balance_voluntary_contribution'    => $model->description,

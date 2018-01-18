@@ -44,7 +44,7 @@ class BondTransformer extends TransformerAbstract
     public function transform(Bond $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'number'         => $model->number,
             'issue_date'     => $model->issue_date,
             'amount'         => $model->amount,

@@ -45,7 +45,7 @@ class AmortdefdetailsTransformer extends TransformerAbstract
     public function transform(Amortdefdetails $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'              => $model->uuid,
             'amount'          => $model->amount,
             'capital'         => $model->capital,
             'interests'       => $model->interests,

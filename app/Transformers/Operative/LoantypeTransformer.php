@@ -48,7 +48,7 @@ class LoantypeTransformer extends TransformerAbstract
     public function transform(Loantype $model)
     {
         return [
-            'uuid'                                => $model->uuid,
+            'id'                                  => $model->uuid,
             'name'                                => $model->name,
             'guarantor'                           => $model->guarantor,
             'guarantee'                           => $model->guarantee,
@@ -75,7 +75,7 @@ class LoantypeTransformer extends TransformerAbstract
             'billtopay_id'                        => $model->billtopay_id,
             'incomeaccount_id'                    => $model->incomeaccount_id,
             'max_amount'                          => $model->max_amount,
-            'operatingexpenseaccount_id'          => $model->operatingexpenseaccount_id
+            'operatingexpenseaccount_id'          => $model->operatingexpenseaccount_id,
             'created_at'                          => $model->created_at->toIso8601String(),
             'updated_at'                          => $model->updated_at->toIso8601String()
         ];

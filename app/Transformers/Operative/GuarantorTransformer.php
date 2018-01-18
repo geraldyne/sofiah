@@ -45,7 +45,7 @@ class GuarantorTransformer extends TransformerAbstract
     public function transform(Guarantor $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'amount'         => $model->amount,
             'balance'        => $model->balance,
             'percentage'     => $model->percentage,
@@ -66,7 +66,7 @@ class GuarantorTransformer extends TransformerAbstract
      */
     public function includeLoan(Guarantor $model)
     {
-        return $this->item($model->loan, new LoansTransformer);
+        return $this->item($model->loan, new LoanTransformer);
     }
 
 

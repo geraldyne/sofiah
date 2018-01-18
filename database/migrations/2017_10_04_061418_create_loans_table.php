@@ -236,7 +236,7 @@ class CreateLoansTable extends Migration
             $table->float('percentage')->comment('Porcentaje del monto afianzado en base al total de la fianza');
             $table->enum('status', ['P','C'])->comment('P: Pendiente - C: Cancelado');
 
-            $table->integer('partner_id')->unsigned()->comment('Id del proveedor de la poliza');           
+            $table->integer('partner_id')->unsigned()->comment('Id del asociado de la fianza');           
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
 
             $table->integer('loan_id')->unsigned()->comment('Prestamo que posee una poliza.');

@@ -48,7 +48,7 @@ class LoantypecodesTransformer extends TransformerAbstract
     public function transform(Loantypecodes $model)
     {
         return [
-            'uuid'           => $model->uuid,
+            'id'             => $model->uuid,
             'loan_code'      => $model->loan_code,
             'loantypes_id'   => $model->loantypes_id,
             'organism_id'    => $model->organism_id,

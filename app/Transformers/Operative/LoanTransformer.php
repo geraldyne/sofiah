@@ -56,7 +56,7 @@ class LoanTransformer extends TransformerAbstract
     public function transform(Loan $model)
     {
         return [
-            'uuid'                        => $model->uuid,
+            'id'                          => $model->uuid,
             'issue_date'                  => $model->issue_date,
             'amount'                      => $model->amount,
             'rate'                        => $model->rate,
@@ -114,7 +114,7 @@ class LoanTransformer extends TransformerAbstract
      */
     public function includePolicies(Loan $model)
     {
-        return $this->collection($model->policies, new PoliciesTransformer);
+        return $this->collection($model->policies, new PolicieTransformer);
     }
 
 
@@ -125,7 +125,7 @@ class LoanTransformer extends TransformerAbstract
      */
     public function includeBonds(Loan $model)
     {
-        return $this->collection($model->bonds, new BondsTransformer);
+        return $this->collection($model->bonds, new BondTransformer);
     }
 
 
@@ -136,7 +136,7 @@ class LoanTransformer extends TransformerAbstract
      */
     public function includeGuarantors(Loan $model)
     {
-        return $this->collection($model->guarantors, new GuarantorsTransformer);
+        return $this->collection($model->guarantors, new GuarantorTransformer);
     }
 
 

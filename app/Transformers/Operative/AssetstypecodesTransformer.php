@@ -45,7 +45,7 @@ class AssetstypecodesTransformer extends TransformerAbstract
     {
         return [
 
-            'uuid'                  => $model->uuid,
+            'id'                    => $model->uuid,
             'assets_organisms_code' => $model->assets_organisms_code,
             'type'                  => $model->type,
             'organism_id'           => $model->organism_id,

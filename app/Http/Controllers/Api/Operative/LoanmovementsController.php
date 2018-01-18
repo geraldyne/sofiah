@@ -130,6 +130,24 @@ class LoanmovementsController extends Controller {
             $loanmovements->loan_id    = $loan->id;
 
             $loanmovements->save();
+
+            // Verificamos si el préstamo posee fiador, fianza o poliza 
+
+            if ($loan->loantype->guarantor === true) 
+            {
+                echo " JD ";
+            }
+            else if ($loan->loantype->guarantee === true) 
+                    {
+                        echo " JD ";
+                    }
+                    else if ($loan->loantype->valid_policy === true) 
+                            {
+                                echo " JD ";
+                            }
+
+            
+
             $loan->update();
 
         }
