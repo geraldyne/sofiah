@@ -144,7 +144,7 @@ class CreateLoansTable extends Migration
             $table->float('balance')->comment('Saldo del préstamo, mantener el campo actualizado');            
             $table->float('administrative_expenditure')->comment('Si el tipo de préstamo tiene configurado gasto administrativo ingresar el monto correspondiente, sino ingresar 0');            
             $table->enum('fee_frequency', ['S','Q','M'])->comment('Almacena el tipo de nómina del organismo. S: Semanal Q: Quincenal M: Mensual');
-            $table->enum('status', ['PEN','PAP','APR', 'APL'])->comment('Almacena el estatus del préstamo. PEN: Pendiente PAP: Por aprobar APR: Aprobado APL: Aplicado');
+            $table->enum('status', ['PEN','PAP','APR', 'APL', 'SUS'])->comment('Almacena el estatus del préstamo. PEN: Pendiente PAP: Por aprobar APR: Aprobado APL: Aplicado SUS: Suspendido');
             $table->string('destination')->comment('Indicar el motivo por el cual está solicitando el préstamo');
             $table->integer('monthly_fees')->unsigned()->comment('Número de coutas para el pago del préstamo');
 

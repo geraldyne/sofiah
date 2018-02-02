@@ -114,6 +114,7 @@ class AssetsmovementsController extends Controller {
         $request->merge(array('partner_id' => $partner->id));
 
         /*
+        
         // Verificamos que tipo de aporte tiene como concepto de retiro y descontamos de su saldo de haberes
 
         if ($request->type === 'AP') 

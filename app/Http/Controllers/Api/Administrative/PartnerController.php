@@ -239,7 +239,6 @@ class PartnerController extends Controller {
 
             'title' => 'required',
             'local_phone' => 'required|numeric',
-            'nationality' => 'required',
             'status' => 'required',
             'phone' => 'required|numeric'
         ];
@@ -250,7 +249,6 @@ class PartnerController extends Controller {
 
                 'title' => 'sometimes|required',
                 'local_phone' => 'sometimes|required|numeric',
-                'nationality' => 'sometimes|required',
                 'status' => 'sometimes|required',
                 'phone' => 'sometimes|required|numeric',
             ];
@@ -356,17 +354,17 @@ class PartnerController extends Controller {
         return $this->response->item($partner->fresh(), new PartnerTransformer());
     }
 
-    public function updateDataBank(Request $request, $uuid) {
+    public function updateDataBanks(Request $request) {
 
-        $partner = $this->model->byUuid($uuid)->firstOrFail();
+        $partner = $this->model->byUuid($request->id)->firstOrFail();
 
-        $bank = Bank::byUuid($request->bankuuid)->first();
+        $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
 
         if($bank) {
 
             $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
 
-            if($bankd->count() > 0)
+            if($bankd->count() >= 2)
 
                 return response()->json([
 
@@ -380,8 +378,13 @@ class PartnerController extends Controller {
 
             $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
 
-            $request->merge(array('bankdetails_id' => $bankdetails->id));
         }
+
+        return response()->json([
+
+            'status'    => true,
+            'message'   => '¡Datos Bancarios Actualizados Exitosamente!'
+        ]);
     }
 }
 

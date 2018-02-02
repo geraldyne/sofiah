@@ -2,6 +2,8 @@
 
 namespace App\Transformers\Administrative;
 
+use App\Entities\Association;
+use App\Transformers\AssociationTransformer;
 use App\Entities\Administrative\Employee;
 use League\Fractal\TransformerAbstract;
 

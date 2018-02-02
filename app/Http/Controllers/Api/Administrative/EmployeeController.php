@@ -245,7 +245,6 @@ class EmployeeController extends Controller {
             'email'            => 'required',
             'department'       => 'required',
             'phone'            => 'required|numeric',
-            'nationality'      => 'required',
             'status'           => 'required',
             'birthdate'        => 'required',
             'date_of_admission'=> 'required',
@@ -263,7 +262,6 @@ class EmployeeController extends Controller {
                 'email'            => 'sometimes|required',
                 'department'       => 'sometimes|required',
                 'phone'            => 'sometimes|required|numeric',
-                'nationality'      => 'sometimes|required',
                 'status'           => 'sometimes|required',
                 'birthdate'        => 'sometimes|required',
                 'date_of_admission'=> 'sometimes|required',
@@ -338,17 +336,17 @@ class EmployeeController extends Controller {
         return $this->response->item($employee->fresh(), new EmployeeTransformer());
     }
 
-    public function updateDataBank(Request $request, $uuid) {
+    public function updateDataBank(Request $request) {
 
-        $employee = $this->model->byUuid($uuid)->firstOrFail();
+        $employee = $this->model->byUuid($request->id)->firstOrFail();
 
-        $bank = Bank::byUuid($request->bankuuid)->first();
+        $bank = Bank::byUuid($request->bankuuid)->firstOrFail();
 
         if($bank) {
 
             $bankd = Bankdetails::where('account_number','=',$request->account_number)->get();
 
-            if($bankd->count() > 0)
+            if($bankd->count() >= 2)
 
                 return response()->json([
 
@@ -360,7 +358,13 @@ class EmployeeController extends Controller {
 
             $bankdetails = $employee->bankdetails;
 
-            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id']));
+            $bankdetails->update($request->only(['account_number', 'account_type', 'bank_id' => $bank->id]));
         }
+
+        return response()->json([
+
+            'status'    => true,
+            'message'   => '¡Datos Bancarios Actualizados Exitosamente!'
+        ]);
     }
 }

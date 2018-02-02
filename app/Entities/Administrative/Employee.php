@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Support\UuidScopeTrait;
 use Webpatser\Uuid\Uuid;
 
-use App\Entities\Administrative\Association;
+use App\Entities\Association;
 use App\Entities\Administrative\Direction;
 use App\Entities\User;
 use App\Entities\Administrative\Bankdetails;

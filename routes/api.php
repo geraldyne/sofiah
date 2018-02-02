@@ -58,7 +58,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     # RUTAS DE ASOCIADOS
 
                         $api->get('partners/create', 'Api\Administrative\PartnerController@create');
-                        $api->get('partners/updatedatabank', 'Api\Administrative\PartnerController@updateDataBank');
+                        $api->post('partners/updatedatabank', 'Api\Administrative\PartnerController@updateDataBanks');
                         $api->resource('partners', 'Api\Administrative\PartnerController', ['except' => 'destroy']);
 
                         $api->get('managers/create/{uuid}', 'Api\Administrative\ManagerController@create');
@@ -69,6 +69,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                     # RUTAS DE EMPLEADOS
                      
                         $api->get('employees/create', 'Api\Administrative\EmployeeController@create');
+                        $api->post('employees/updatedatabank', 'Api\Administrative\EmployeeController@updateDataBank');
                         $api->resource('employees', 'Api\Administrative\EmployeeController', ['except' => 'destroy']);
 
                     # RUTAS DE INTEGRACIÓN CONTABLE
