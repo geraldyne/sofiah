@@ -349,6 +349,33 @@ class AssociationsController extends Controller {
         #
     }
 
+    public function storeImg(Request $request) {
+
+        /*
+        $this->validate($request, [
+
+            'file' => 'required',
+        ]);
+        */ 
+
+        echo "--> ", $request, "<-- ";
+
+        //obtenemos el campo file definido en el formulario
+        $file = $request->file('file');
+ 
+       //obtenemos el nombre del archivo
+       $nombre = $file->getClientOriginalName();
+ 
+       //indicamos que queremos guardar un nuevo archivo en el disco local
+       \Storage::disk('local')->put($nombre,  \File::get($file));
+
+        return response()->json([
+
+            'status'    => true,
+            'message'   => '¡El archivo se ha guardado exitosamente!'
+        ]);
+    }
+
     public function update(Request $request, $uuid) {
 
         $association = $this->model->byUuid($uuid)->firstOrFail();
@@ -475,4 +502,6 @@ class AssociationsController extends Controller {
                 'message'   => '¡La asociación se ha eliminado con éxito!'
             ]);
     }
+
+
 }

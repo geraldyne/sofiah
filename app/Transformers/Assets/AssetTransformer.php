@@ -17,11 +17,14 @@ class AssetTransformer extends TransformerAbstract
     public function transform(Asset $model)
     {
         return [
-            'id' => $model->uuid,
-            'type' => $model->type,
-            'path' => $model->path,
-            'mime' => $model->mime,
+            'id'         => $model->uuid,
+            'user_id'    => $model->user_id,
+            'type'       => $model->type,
+            'path'       => $model->path,
+            'mime'       => $model->mime,
             'created_at' => $model->created_at->toIso8601String(),
+            'updated_at' => $model->updated_at->toIso8601String(),
         ];
     }
+
 }

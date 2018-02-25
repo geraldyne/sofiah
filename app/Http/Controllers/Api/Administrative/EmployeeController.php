@@ -88,13 +88,13 @@ class EmployeeController extends Controller {
          
             $this->validate($request, [
 
-                'employee_code'    => 'required|numeric|unique:employees',
+                'employee_code'    => 'required|numeric|unique:employees|unique:partners',
                 'names'            => 'required',
                 'lastnames'        => 'required',
-                'email'            => 'required',
+                'email'            => 'required|unique:employees|unique:partners|unique:organisms',
                 'department'       => 'required',
-                'rif'              => 'required|unique:employees',
-                'id_card'          => 'required|unique:employees',
+                'rif'              => 'required|unique:employees|unique:organisms|unique:associations',
+                'id_card'          => 'required|unique:employees|unique:partners',
                 'phone'            => 'required|numeric',
                 'nationality'      => 'required',
                 'status'           => 'required',
@@ -105,9 +105,9 @@ class EmployeeController extends Controller {
                 'direction'         => 'required',
                 'city_id'           => 'required|alpha_dash',
 
-                'bankuuid'          => 'alpha_dash',
-                'account_number'    => 'unique:bank_details',
-                'account_type'      => '',
+                'bankuuid'          => 'required|alpha_dash',
+                'account_number'    => 'required|unique:bank_details',
+                'account_type'      => 'required',
             ]);
 
         # Obtiene la asocición mediante el UUID

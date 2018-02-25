@@ -10,6 +10,10 @@ use League\Fractal\TransformerAbstract;
  */
 class PreferenceTransformer extends TransformerAbstract
 {
+    protected $availableIncludes = [
+        'user',
+    ];
+
     /**
      * @param Preference $model
      * @return array

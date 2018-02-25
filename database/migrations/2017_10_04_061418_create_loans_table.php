@@ -171,7 +171,7 @@ class CreateLoansTable extends Migration
             $table->string('slug')->nullable()->comment('Campo que almacena el nombre de manera legible en la url');
             $table->enum('rif_type', ['J','N'])->comment('Almacena el tipo de rif. J: Jurídico. N: Natural');
             $table->integer('rif')->comment('Número de Registro de Información Fiscal del proveedor');
-            $table->integer('phone')->comment('Número de teléfono de contacto del proveedor');
+            $table->string('phone')->comment('Número de teléfono de contacto del proveedor');
             $table->integer('direction_id')->unsigned()->comment('Direccion del proveedor');
             $table->enum('status', ['A','S'])->default('A')->comment('A: Activo - S: Suspendido');
             $table->foreign('direction_id')->references('id')->on('directions')->onDelete('cascade');

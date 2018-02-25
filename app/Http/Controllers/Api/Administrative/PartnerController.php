@@ -106,20 +106,20 @@ class PartnerController extends Controller {
         
             $this->validate($request, [
 
-                'employee_code'     => 'required|unique:partners',
+                'employee_code'     => 'required|unique:partners|unique:employees',
                 'names'             => 'required',
                 'lastnames'         => 'required',
-                'email'             => 'required|email|max:120|unique:partners',
+                'email'             => 'required|email|max:120|unique:partners|unique:employees|unique:organisms|unique:associations',
                 'title'             => 'required',
                 'local_phone'       => 'required|numeric',
                 'nationality'       => 'required',
                 'status'            => 'required',
-                'id_card'           => 'required|unique:partners',
+                'id_card'           => 'required|unique:partners|unique:employees',
                 'phone'             => 'required|numeric',
                 'organism_id'       => 'required|alpha_dash',
-                'bankuuid'          => 'alpha_dash',
-                'account_number'    => 'unique:bank_details',
-                'account_type'      => '',
+                'bankuuid'          => 'required|alpha_dash',
+                'account_number'    => 'required|unique:bank_details',
+                'account_type'      => 'required',
             ]);
 
         # Obtiene el organismo mediante el UUID

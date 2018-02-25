@@ -14,6 +14,7 @@ use App\Entities\Administrative\Dailymovement;
 use App\Entities\Administrative\Partner;
 use App\Entities\Administrative\Employee;
 use App\Entities\Administrative\Preference;
+use App\Entities\Assets\Asset;
 
 /**
  * Class User.
@@ -123,6 +124,17 @@ class User extends Authenticatable
     public function preference() {
 
         return $this->hasOne(Preference::class);
+    }
+
+    /**
+     * Una preferencia pertenece a un usuario
+     * 
+     * @return type
+     */
+    
+    public function asset() {
+
+        return $this->hasOne(Asset::class);
     }
 
     /**

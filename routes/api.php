@@ -47,6 +47,7 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                         $api->get('associations/edit', 'Api\AssociationsController@edit');
                         $api->get('associations/create', 'Api\AssociationsController@create');
+                        $api->post('associations/image', 'Api\AssociationsController@storeImg');
                         $api->resource('associations', 'Api\AssociationsController', ['except' => ['show']]);
 
                     # RUTAS DE ORGANISMOS

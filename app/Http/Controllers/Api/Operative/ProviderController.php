@@ -100,13 +100,13 @@ class ProviderController extends Controller {
         
         $this->validate($request, [
 
-            'name'            => 'required',
-            'email'           => 'required',
+            'name'            => 'required|unique:providers',
+            'email'           => 'required|unique:providers',
             'web_site'        => 'required',
             'contact'         => 'required',
             'slug'            => 'required',
             'rif_type'        => 'required',
-            'rif'             => 'required',
+            'rif'             => 'required|unique:providers',
             'phone'           => 'required',
             'direction'       => 'required',
             'city_id'         => 'required'

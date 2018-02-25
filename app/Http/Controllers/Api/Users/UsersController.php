@@ -54,7 +54,7 @@ class UsersController extends Controller
             $fractal->parseIncludes($_GET['include']);
         }
             
-        $paginator = $this->model->with('roles.permissions')->paginate($request->get('limit', config('app.pagination_limit')));
+        $paginator = $this->model->with('roles.permissions.asset')->paginate($request->get('limit', config('app.pagination_limit')));
         
         if ($request->has('limit')) {
             $paginator->appends('limit', $request->get('limit'));
@@ -69,7 +69,7 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $user = $this->model->with('roles.permissions')->byUuid($id)->firstOrFail();
+        $user = $this->model->with('roles.permissions.asset')->byUuid($id)->firstOrFail();
 
         return $this->response->item($user, new UserTransformer());
     }

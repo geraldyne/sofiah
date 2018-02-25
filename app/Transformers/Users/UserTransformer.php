@@ -4,6 +4,8 @@ namespace App\Transformers\Users;
 
 use App\Entities\User;
 use League\Fractal\TransformerAbstract;
+use App\Transformers\Administrative\PartnerTransformer;
+use App\Transformers\Assets\AssetTransformer;
 
 /**
  * Class UserTransformer.
@@ -13,7 +15,7 @@ class UserTransformer extends TransformerAbstract
     /**
      * @var array
      */
-    protected $defaultIncludes = ['roles', 'preference'];
+    protected $defaultIncludes = ['roles', 'preference', 'asset'];
 
     /**
      * List of resources possible to include
@@ -53,6 +55,16 @@ class UserTransformer extends TransformerAbstract
         return $this->collection($model->roles, new RoleTransformer());
     }
 
+
+    /**
+     * @param User $model
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeAsset(User $model)
+    {
+        return $this->item($model->asset, new AssetTransformer());
+    }
+
     /**/
 
     /**
@@ -84,7 +96,7 @@ class UserTransformer extends TransformerAbstract
      */
     public function includePartner(User $model)
     {
-        return $this->item($model->partner, new PartnerTransformer);
+        return $this->collection($model->partner, new PartnerTransformer);
     }
 
     /**

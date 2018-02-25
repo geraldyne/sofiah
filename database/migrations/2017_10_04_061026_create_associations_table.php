@@ -128,6 +128,7 @@ class CreateAssociationsTable extends Migration
         Schema::dropIfExists('employees');
         Schema::dropIfExists('bank_details');
         Schema::dropIfExists('banks');
+        Schema::dropIfExists('accountsassociation');
         Schema::dropIfExists('associations');
     }
 }
