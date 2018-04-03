@@ -5,6 +5,7 @@ namespace App\Entities\Assets;
 use Illuminate\Notifications\Notifiable;
 use App\Support\UuidScopeTrait;
 use Illuminate\Database\Eloquent\Model;
+use Webpatser\Uuid\Uuid;
 
 /**
  * Class Asset.

@@ -58,11 +58,11 @@ class UserTransformer extends TransformerAbstract
 
     /**
      * @param User $model
-     * @return \League\Fractal\Resource\Collection
+     * @return \League\Fractal\Resource\ItemResource
      */
     public function includeAsset(User $model)
     {
-        return $this->item($model->asset, new AssetTransformer());
+        return $this->collection($model->asset, new AssetTransformer());
     }
 
     /**/

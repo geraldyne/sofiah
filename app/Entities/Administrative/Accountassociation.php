@@ -74,6 +74,27 @@ class Accountassociation extends Model {
         return $this->belongsTo(Association::class);
     }
 
+   /**
+     *  Setup model event hooks UUID
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($model) {
+            $model->uuid = (string) Uuid::generate(4);
+        });
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     /**
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model

@@ -134,7 +134,7 @@ class User extends Authenticatable
     
     public function asset() {
 
-        return $this->hasOne(Asset::class);
+        return $this->hasMany(Asset::class);
     }
 
     /**

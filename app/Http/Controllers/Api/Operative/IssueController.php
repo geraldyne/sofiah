@@ -151,7 +151,7 @@ class IssueController extends Controller {
 
         */
 
-
+        
         // Generacion de archivo de emision
 
         \Excel::create('Emission', function($excel) {
@@ -195,11 +195,12 @@ class IssueController extends Controller {
 
         })->export($request->type_file);
 
-
+        
+    
         return response()->json([ 
             'status'  => true, 
             'message' => 'La emision se ha registrado exitosamente!', 
-            'object'  => $issueQuota
+            //'object'  => $issueQuota
         ]);
     }
 
