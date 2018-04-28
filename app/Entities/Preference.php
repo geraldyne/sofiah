@@ -1,12 +1,12 @@
 <?php
 
 /**
- *  @package        SOFIAH.App.Entities.Administrative
+ *  @package        SOFIAH.App.Entities
  *  
  *  @author         Idepixel. <idepixel@gmail.com>.
  *  @copyright      Todos los derechos reservados. SOFIAH. 2017.
  *  
- *  @since          Versión 1.0, revisión 16-07-2017.
+ *  @since          Versión 1.0, revisión 23-04-2018.
  *  @version        1.0
  * 
  *  @final  
@@ -16,7 +16,7 @@
  * Incluye la implementación de los siguientes Librerias
  */
 
-namespace App\Entities\Administrative;
+namespace App\Entities;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +38,7 @@ class Preference extends Model {
      *
      * @var String  estilo
      * @var String  idioma
+     * @var Integer zoom
      * @var Integer user_id
      */
 

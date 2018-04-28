@@ -65,6 +65,7 @@ class PermissionsController extends Controller
         $this->validate($request, [
             'name' => 'required',
         ]);
+        
         $permission = $this->model->create($request->all());
 
         //return $this->response->created(url('api/permissions/'.$permission->uuid));

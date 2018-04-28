@@ -262,33 +262,19 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
 
                     # Rutas para los usuarios
 
-                    $api->group(['prefix' => 'users'], function ($api) {
+                    $api->resource('users', 'Api\Users\UsersController');
 
-                        $api->get('/', 'Api\Users\UsersController@index');
-                        $api->post('/', 'Api\Users\UsersController@store');
-                        $api->get('/{uuid}', 'Api\Users\UsersController@show');
-                        $api->put('/{uuid}', 'Api\Users\UsersController@update');
-                        $api->patch('/{uuid}', 'Api\Users\UsersController@update');
-                        $api->delete('/{uuid}', 'Api\Users\UsersController@destroy');
-                    });
+                    # Rutas para los roles
 
-                    $api->group(['prefix' => 'roles'], function ($api) {
+                    $api->resource('roles', 'Api\Users\RolesController');
 
-                        $api->get('/', 'Api\Users\RolesController@index');
-                        $api->post('/', 'Api\Users\RolesController@store');
-                        $api->get('/{uuid}', 'Api\Users\RolesController@show');
-                        $api->put('/{uuid}', 'Api\Users\RolesController@update');
-                        $api->patch('/{uuid}', 'Api\Users\RolesController@update');
-                        $api->delete('/{uuid}', 'Api\Users\RolesController@destroy');
-                    });
+                    # Rutas para los permisos
 
-                    $api->group(['prefix' => 'permissions'], function ($api) {
+                    $api->resource('permissions', 'Api\Users\PermissionsController');
 
-                        $api->get('/', 'Api\Users\PermissionsController@index');
-                        $api->post('/', 'Api\Users\PermissionsController@store');
-                        $api->get('/{uuid}', 'Api\Users\PermissionsController@show');
-                    });
+                    # Ruta para las preferencias del sistema
 
+                    $api->resource('preferences', 'Api\Users\PreferencesController', ['except' => ['edit', 'create']]);
 
                     # Ruta para importar/exportar archivos 
 
@@ -299,13 +285,9 @@ $api->version('v1', ['namespace' => 'App\Http\Controllers'], function($api){
                         $api->post('importPartners', 'Api\FilesController@importPartners');
                     });
 
-                    $api->group(['prefix' => 'me'], function($api) {
+                    # Ruta para los perfiles de usuario
 
-                        $api->get('/', 'Api\Users\ProfileController@index');
-                        $api->put('/', 'Api\Users\ProfileController@update');
-                        $api->patch('/', 'Api\Users\ProfileController@update');
-                        $api->put('/password', 'Api\Users\ProfileController@updatePassword');
-                    });
+                    $api->resource('me', 'Api\Users\ProfileController', ['except' => ['updatePassword']]);
 
                     $api->group(['prefix' => 'assets'], function($api) {
 

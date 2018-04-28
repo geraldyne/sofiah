@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Entities\Administrative\Dailymovement;
 use App\Entities\Administrative\Partner;
 use App\Entities\Administrative\Employee;
-use App\Entities\Administrative\Preference;
+use App\Entities\Preference;
 use App\Entities\Assets\Asset;
 
 /**
