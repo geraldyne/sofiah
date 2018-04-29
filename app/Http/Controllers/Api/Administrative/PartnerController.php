@@ -171,6 +171,8 @@ class PartnerController extends Controller {
                 $request->merge(array('user_id' => $user->id));
             }
 
+            echo " 3";
+
             $request->merge(array('account_code' => bcrypt($request->names.$request->lastnames)));
 
         # Crea los detalles de bancos
